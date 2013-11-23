@@ -1,9 +1,9 @@
-\newcommand\thesistitle{Interactive Simulation of Deformable Models Using Implicit Surfaces and Finite Element Methods}
+\newcommand\thesistitle{High Performance Animation of Soft Tissues}
 % One needs to make adjustments for a Master's Thesis
 \newcommand\nameanddegrees{%
 Pourya Shirazian\\
-Iran University of Science and Technology, 2008\\
-Islamic Azad University of South Tehran, 2005}
+Iran University of Science and Technology, 2008}
+%Islamic Azad University of South Tehran, 2005}
 \newcommand\panel{
 \HRule\\\panelist{Dr. Brian Wyvill}{Supervisor}{Department of Computer Science, University of Victoria}
 \HRule\\\panelist{Dr. Paul Lalonde}{Departmental Member}{Department of Computer Science, University of Victoria}
