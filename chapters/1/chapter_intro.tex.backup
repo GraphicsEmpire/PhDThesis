@@ -10,117 +10,170 @@ cut small samples of a tumor.
 
 In this research we tackled three main problems found in the domain of soft tissue simulation and has been the topic of interest for many
 researchers in the field. First, our proposed modeling solution captures the key advantages found in volumetric modeling approaches using 
-implicit surfaces \cite{Bloomenthal1997, Wyvill1999, Wyvill1996, Wyvill1997, Schmidt2006, Bernhardt2010a}. Automatic blending, compact 
-representation and the ability to perform inside-outside tests are the major benefits of using implicit surfaces for modeling. 
+implicit surfaces \cite{Bloomenthal1997, Wyvill1986, Wyvill1999, Wyvill1996, Wyvill1997, Schmidt2006, Bernhardt2010a}. Automatic blending and compact 
+representation are the major benefits of using implicit surfaces for modeling. In addition, the ability to perform inside-outside tests 
+easily is an inherent advantage in implicit models when implementing physically based simulations requiring collision tests. 
 The \blob \cite{Wyvill1999} combined blending, affine transformations and constructive solid geometry (CSG) operators in a 
-comprenhensive and compact scene graph data-structure.
-This research introduces a novel approach to modeling complex deformable objects using 
+comprehensive and compact scene graph data-structure. \blob provides the ability to create complex models incrementally \cite{Schmidt2006}. 
+However, volumetric models in general are often several orders of magnitude slower during visualization \cite{Bloomenthal1990a, Bloomenthal1997}.
+We proposed a data-driven algorithm for rendering complex implicit models in realtime on multi-core processors \cite{Shirazian2012}, later, we 
+fine tuned that algorithm for running on many core architectures such as the ones in high-end graphical processing units (GPUs). 
+
+In traditional animation systems based on key-framing, specifying the motion and the successive shapes of objects interacting with a simulated 
+world requires a great amount of specialized knowledge and intuition from the animator. Models based on simplified physical laws have been 
+proposed for automating these tasks. They generate motion and deformation from initial conditions and from a set of externally applied forces 
+over time, and automatically detect and respond to collisions. These models are particularly appropriate for facilitating the animation of 
+deformable objects. They can either be used alone for the simulation of inanimate bodies, or be combined with user-controlled structures as 
+has been done for instance in character animation \cite{chadwick1989layered,miller1988motion}. We show that a number of problems that are difficult
+to solve with previous models can be easily handled by combining them with an external layer based on implicit surfaces. The implicit formulation
+defines a smooth surface around the object that can be used to perform efficient collision detection, to enable exact contact modeling, and to ease
+volume preservation. The second contribution of our research is the high performance volume discretization technique and non-linear finite element 
+formulation to support the elastic deformations of the created models \cite{Shirazian2013}. 
+
+In modern interactive simulation and modeling enviroments the ability to cut 3-dimensional geometry in realtime is of fundamental importance. 
+This creates the need for efficient cutting algorithms that process the underlying representation. Such methods can be utilized in a wide spectrum 
+of applications including surgical interventions, free form modeling, or scientific visualization. In surgery simulation, for instance, interactive 
+cutting algorithms enable the dynamic simulation of scalpel intersections that open immediately behind the scalpel \cite{Nienhuys2001}. In the 
+case of free-form modeling or sculpting, dynamic cutting supports a precise positioning and guidance of a cutting tool. In scientific visualization, 
+real-time cutting algorithms create new opportunities for the interactive analysis of volume data sets. Seismic data sets, as an example, can be 
+cut arbitrarily along interesting strata. The third main contribution of our research is our GPU-assisted interactive cutting algorithm that allows
+arbitrary cuts in the model and can enable many scenarios for tissue manipulation and sensing. 
+
+In what follows, the implicit modeling approach to deformable tissue modeling will be studied. To achieve the initial goal of this research, a
+computational framework for designing, rendering and animating deformable tissues has been developed which has the potential to be used in any 
+simulation system requiring deformable tissues with some level of interaction and topolgy modification. The final chapter of this thesis is dedicated
+for the evaluation of our system and analysis of some example scenarios in which our system might be a good fit for. 
+
+\section{Implicit Modeling}
+Implicit surfaces are two-dimensional, geometric shapes that exist in three-dimentional space; they can be defined based on discrete data, 
+radial basis functions, offset surfaces, algebraic surfaces, level sets or distance fields to skeletal geometric primitives \cite{Bloomenthal1997}.
+Independently of its origin, an implicit surface can be defined as a level-set function $F:\mathbb{R}^3 \rightarrow \mathbb{R}$ where the surface 
+can be defined for instance as the set of points $\left\{M(x,y,z) \in \mathbb{R}^3 | F(x,y,x) = c\right\}$. $c$ is a constant and is called 
+the \textit{iso-value} which is set to $0.5$ in our system. For each point in space if the field is greater than
+$c$ the point is considered inside the model otherwise outside. 
+
+Most of the primitives used in the \blob are built from geometric skeletons, which are incorporated in many implicit modeling software packages 
+such as BlobTree.net \cite{de2008blobtree} or ShapeShop \cite{Schmidt2006}. They are ideally suited to prototype shapes of arbitrary topology 
+\cite{Bloomenthal1997}. In general these works conclude that the use of skeletal primitives can lead to a simple and intuitive user modelling 
+methodology. The basic building block of a skeletal primitive is a skeleton $S$. To create a skeletal primitive the distance-field $dS$ of the 
+volume encapsulating the shape has to be computed as described in \cite{Barbier2004}. The distance field is a volume of scalar values which is 
+not bounded as the distance itself can be infinitely large.
+
+By modifying $dS$ with a field function $g$, it can be bound to a finite range. Usually the function maps the distances to the range $[0, 1]$, 
+where the field has values of 1 at the skeletons and 0 after a certain distance to the skeleton (usually at distance 1). A discussion of field 
+function appears in \cite{shirley2009graphics}. Skeletal implicit primitives are combined using binary operators, which are applied pair wise to 
+field-values f, and represented by a node in the BlobTree, whose children are either primitives or operators themselves.
+Field values are computed for the child-nodes and combined to yield a new value according to the operator type. This makes it possible to go beyond 
+the classical Boolean operators, and define general blend operators that e.g. create smooth transitions between shapes. The most common operator 
+that creates a smooth transition between several values is called the summation blend \cite{Bloomenthal1997}:
+
+\begin{equation}
+F_A(x, y, z)=\sum_{i=1}^{i=N_A}F_i(x, y, z)
+\end{equation}
+
+Where an implicit model $A$ is generated by summing the influences of $N_A$ skeletal elements: 
+The field value due to an skeletal element at a point in 3D space is computed as filtered distance to its skeleton 
+where the filter function (i.e. falloff function) is defined as follows \cite{Wyvill1999}: 
+
+\begin{equation}
+g_\mathrm{wyvill}(x)= \left\{ \begin{array}{rl}
+ 1 &\mbox{ if $x\leq0$} \\
+ (1-x^2)^3 &\mbox{ if $0<x<1$}\\
+  0 &\mbox{ if $x\geq1$}  
+  \end{array} \right.
+\label{eq:WyvillFunc}
+\end{equation}
+
+In equation \ref{eq:WyvillFunc}, $x$ is clamped to the range $[0,1]$. This polynomial smoothly decreases from 1 to 0 over the valid range, with zero
+tangents at each end. An important property of this skeletal primitive definition is that the scalar field is \textit{bounded}, meaning that $f=0$
+outside some sphere with finite radius. Bounded fields guarantee local influence, preventing changes made to a small part of a complex model from
+affecting distant portions of the surface. Local influence preserves a \textquotedblleft principle of least surprise\textquotedblright that is critical for interactive modeling.  
+Normals can be derived from gradients which are computed by evaluating 4 field values and performing a numerical approximation:
+
+\begin{equation}
+\nabla F(x,y,z)=\left\{ \begin{array}{rl}
+ F(x+\delta,y,z)-f \\
+ F(x, y +\delta,z)-f \\
+ F(x, y, z+\delta)-f \\
+  \end{array} \right. 
+\label{eq:Normal}
+\end{equation}
+
+Where $f = F(x,y,z)$ is the field at point $(x,y,z)$.
+% $fv = F(x,y,z)$ be the field at a point:
+%$\nabla F(x,y,z)=\frac{1}{\delta}\left( F(x+\delta,y,z)-fv \right)$
+
+Each skeletal primitive has a bounded region of influence in space. For each node in the tree an
+axis-aligned bounding box is computed which is used to trivially reject those field queries that 
+are outside the box. The bounding box of the entire model is computed as the union of all primitive
+nodes bounding boxes.
+
+For evaluating the field  at a point $P$ in a \blob model such as the one shown in figure (\ref{fig:CoffeeMugBlobTree}), 
+the tree structure should be traversed from root to leaves recursively. 
+Each operator combines the values of its children according to its type.
+For example, for a simple blend the values are summed. A leaf node represents
+a primitive,  and returns the value by applying equation~\ref{eq:WyvillFunc} to 
+  the distance of $P$ from the primitive.
+
+\begin{figure}[htb]
+  \centering
+  % the following command controls the width of the embedded PS file
+  % (relative to the width of the current column)
+  \includegraphics[width=1.0\linewidth]{figures/CoffeeMugBlobTree}
+  \caption{\label{fig:CoffeeMugBlobTree}
+           \blob structure of a coffee mug created with CSG and skeletal implicit primitives.}
+\end{figure}
+
+%As the tree gets deeper and the number of primitives increase the computation 
+For visualization purposes the \blob is queried numerous times to evaluate the field. As suggested in \cite{SWG2005} 
+accelerating field computation will have a large impact on the overall surface extraction process. 
+
+\section{Sweep Surfaces and Sketching}
+Implicit primitives in our system are created from skeletons which are simple geometrical shapes such as points, line segments or 
+polygons from which volumetric distance fields are created. In order to support more complex geometries Schmidt \etal proposed the
+implicit sweep objects technique where the 2D shape sketched by the user is sampled and an implicit approximation is created from 
+the sample points \cite{Schmidtc}. This is done by fitting a thin-plate spline as a base shape to the sampled points using variational 
+interpolation \cite{Turk1999}. One advantage of creating the base shape using variational interpolation is that the resulting implicit 
+field is $C^2$ continuous, a property needed when the shape is involved in several blending operations \cite{barthe2004controllable}.
+
+A continuous 2D scalar field is created from several distance value samples $(p_i, d_i)$, where $p_i$ describes the position of the 
+sample and $d_i$ its distance to the skeleton formed by the sketched polygon. The thin-plate spline used to create the variational 
+implicit field $f(p)$ is defined in terms of these points weighted by corresponding coefficients $w_i$ combined with a polynomial 
+$P(p) = c_1px +c_2p_y +c_3$.
+
+\begin{equation}
+f(p) = \sum_{i \in N} 
+\end{equation}
+
+f(p) =?
+wi(?p−pi?)2ln(?p−pi?)+P(p)
+i∈N
+The resulting thin plate spline can then be used as the basis of sev- eral different 3D objects:
+• sweep along a line • revolving around an axis • inflation.
+These sketched objects can then be used in the same way as the standard skeletal implicit primitives to create unique 3D shapes. Such unique shapes were not possible to create in previous collab- orative environments, especially given this technique’s small mem- ory footprint needed to transfer the information.
+4
 
 
 
 
 
 
-The main goal of this document was to set up competently the Latex framework for a thesis document at UVic, with all the assorted details of front pages, numbering and so on. In order to present such a template to other users, the content has been filled from the guidelines of an experienced graduate advisor and supervisor on how to write a thesis in the first place.
 
-The Latex framework given in these files should work in the Windows, Mac and Unix environments. In Windows, the development environment is MikTex, available as a free download from the web page at \textit{miktex.org}. Miktex includes all the tools for \LaTeX, without a convenient editor. I have been using
-\textit{WinEdt} which is still the best as far as working in a well integrated manner with MikTex, even if one has to pay a small price. \textit{WinEdt} is available from \textit{winedt.com}. The corresponding package for the Mac is MacTex, available from \textit{www.tug.org$\backslash$mactex}.
-Please note that in the actual file with the \LaTeX code there are extra local comments referring to small differences between platforms. This is especially crucial for the insertion of figures of any type (see also Chapter 3).
 
-The package \textit{BibTex} is used for the automatic bibliography and it is incorporated in the MikTex package. The style of bibliography exemplified is this document is the "plain" one,
-most often used in science theses. This is shown
-by the entry \textit{plain} in the \textit{bibliographystyle}
-command which can be found in the top file, namely
-\textit{mainthesisUVIC.tex}. Substitute the
-appropriate bibliography style for your needs by finding
-the correct parameter. In order to help you there is a PDF
-file entitled: "InformationOnBibliographyStyles.pdf" in the
-same folder as the top file \textit{mainthesisUVIC.tex}.
 
-The title pages are correctly formatted according to the guidelines. However the superset is given here as a template for a Ph.D. dissertation and adjustments must be made for a Master's thesis accordingly.
 
-When presented with the task of having to write a large document reporting on the work done for the thesis portion of a graduate degree most people have anxiety attacks. It seems that the research work has been done, probably with great competence, yet one feels totally lost on how to approach the writing part - unless of course one is a writer to start with. While I am not at all the expert, I have experience both in writing documents and in supervising many graduate students. I have developed a simple enough structure which guides me and my students most of the times fairly well. We then customize it for different audiences and situations. The content of this pseudo mini thesis summarizes the structure I use.
 
-This document, however, is \textit{not at all} a Latex manual. There are a few examples sprinkled here and there of various commands. However no explanations or full examples are given for how to use Latex itself. That is most certainly left to the user!
 
-Starting at the very beginning, my first step is to set up the formatting framework before the content itself, just like the frame of a building is the sustaining structure. By having the content only in bullet points which can be moved and changed at will I can have a whole document which will always compile and be ready for presentation. I ask my student to prepare mock chapters which contains only these bulleted lists to be used for discussion. The bulleted list I had for this chapter is as follows:
-\begin{enumerate}
-        \item State the dual purpose of this document (just mention briefly);
-        \item State what this document is not (just mention);
-        \item Describe what I think should go in the Introduction in general;
-        \item Describe what I think should not go in the "Introduction" chapter in general;
-        \item Describe the structure of the document.
-\end{enumerate}
 
-When the writing for a chapter is particularly long, it might be better to have some, if not all, sections in separate files. It makes it a lot easier to find possible errors in Latex as well, since the command to input a file for a separate section can always be commented out. When looking at the \textit{.tex} file itself for this introduction chapter you will notice that there are 2 sections, namely "How to Start an Introduction" and "Is a Review of All previous Work Necessary Here?" which are included as separate files, immediately following this paragraph.
-\input chapters/1/sec_intro
-\input chapters/1/sec_review
-%\pagebreak
-\section{My Claims}
-Something must be new in this work, no matter how small, since you are getting a graduate degree for it! Tell me about it clearly and succintly right now, just as you did in the abstract. Make an impact here. How about something like the following box:
 
-I make \textit{four} claims which
-my dissertation validates:
-\\
 
-\framebox{%
-\parbox{5in}{
-	My new algorithm to solve the problem of doing nothing include these important new features whose practical applicability can be proved both formally and empirically:
-	\begin{enumerate}
-	\item first feature;
-	\item second feature;
-	\item everything is much easier to understand, and therefore, easier to implement correctly.
-	\end{enumerate}
-}}
-\\
 
-\noindent Claim 1 and claim 2 are \textit{quantitative} - they will be proven by experiment.
 
-\noindent Claim 3 is \textit{qualitative} - they will be demonstrated by argument.
 
-\subsection{The Importance of My Claims}
 
-Some very important positive consequences
-arise from the validation of the above claims.
-It is these consequences that comprise a significant
-positive contribution to research in the field
-of whatever the field is.
-\\
 
-\noindent Claim 1 implies that:
-\begin{enumerate}
-\item{Something profound which applies to:
-	\begin{itemize}
-	\item {something excellent;}
-	\item {something important.}
-	\end{itemize}}
-\item{Something else just as profound.}
-\end{enumerate}
 
-\noindent Claim 2 implies that:
-\begin{itemize}
-\item{Repeat as above if necessary and useful.}
-\end{itemize}
 
-\noindent The consequence of claim 3 is that:
-\begin{itemize}
-\item{There must be something good coming out of all this work!}
-\end{itemize}
 
-\section{Agenda}
 
-This section provides a map of the dissertation
-to show the reader where and how it validates
-the claims previously made. Here is where I am also presenting my own style of organization which may be totally different from what your supervisor thinks. However, trust me, this is a good solid beginning for a structure. Your supervisor may ask you to change it, but will still appreciate what you have! For each of the chapters below I also give a short summary of what the main focus should be and then I expand on it  a bit within the chapter itself.
 
-\begin{description}
-\item[\textbf{Chapter 1}] contains a statement of
-the claims which will be proved by this dissertation followed by an overview of the structure of the document itself.
-\item[\textbf{Chapter 2}] describes in details the open problem which is to be tackled together with its context, its impact and the overall motivation for the research overall.
-\item[\textbf{Chapter 3}] gives the new research, its methodology, the algorithms involved, the new solution, the new work done. Formal proofs and arguments are made here. This is the first of the two contributions expected in a thesis for a graduate degree.
-\item[\textbf{Chapter 4}] is where the experiments and the methodology for them is fully described. The first part includes all details of how the empirical side of the research has been conducted. Note that not every thesis has this empirical portion.
-\item[\textbf{Chapter 5}] includes the evaluation of the data presented above and the comparisons with the work of others, to show how much better the new approach is. This is the second of the two contributions expected in a thesis for a graduate degree. Note that this part could be consolidated into the chapter above.
-\item[\textbf{Chapter 6}] contains a restatement of the claims and results of the dissertation. It also enumerates avenues of future work for further development of the concept and its applications.
-\end{description}
-
-The list above is not complete. Chapter 3 actually includes a lot more, as I could not resist placing in it a few \LaTeX examples to help you along. This document is not a primer for \LaTeX, but there is no harm done in giving a little help.
