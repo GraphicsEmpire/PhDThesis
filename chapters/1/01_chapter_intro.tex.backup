@@ -241,14 +241,14 @@ The main contributions are as the following:
  affine tranformations and constructive solid geometry operators in the compact \blob structure.
  \item An algorithm for interactive polygonization of implicit surfaces on multi-core architectures with SIMD instructions.
  \item An optimized GPU-assisted algorithm for high-performance polygonization of implicit surfaces on many-core architectures.
- \item A high-performance algorithm for volume discretization of \blob models which can generate tetrahedral mesh elements with respect to a triangular 
- surface mesh for finite element formulation.
+ \item A high-performance algorithm for volume discretization of \blob models and generating tetrahedral meshes for finite element formulation.
  \item A non-linear finite element formulation of deformations and a GPU-assisted algorithm for fast numerical approximations.
  \item A high-performance cutting algorithm to support topogical modifications while under deformation.
 \end{itemize}
 
+rendering algorithm for real-time \blob rendering on multi-core and many-core architectures
 
-\section{Overview}
+
 
 
 

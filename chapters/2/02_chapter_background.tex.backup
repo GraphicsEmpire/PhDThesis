@@ -1,55 +1,27 @@
-\startfirstchapter{Introduction}
-\label{chapter:introduction}
-\section{General aim of this Research}
-The goal of this thesis is to develop a framework for physically based animation of soft tissues which are increasingly used in
-games, movies and simulation systems. Although at this stage this physically-based model is a goal in itself, it is hoped that
-it will eventually be used for clinical predictions and for research on the influence of deformations on the functional properties 
-of deformable tissues. In order to demonstrate this potential, preliminary studies in that direction are reported in the final chapter
-of this thesis. To that end, a brain biopsy simulation scenerio is created where the operator can interact with the brain tissue and 
-cut small samples of a tumor. 
+\startchapter{Background Material}
+\label{chapter:background}
 
-In this research we tackled three main problems found in the domain of soft tissue simulation and has been the topic of interest for many
-researchers in the field. First, our proposed modeling solution captures the key advantages found in volumetric modeling approaches using 
-implicit surfaces \cite{Bloomenthal1997, Wyvill1986, Wyvill1999, Wyvill1996, Wyvill1997, Schmidt2006, Bernhardt2010a}. Automatic blending and compact 
-representation are the major benefits of using implicit surfaces for modeling. In addition, the ability to perform inside-outside tests 
-easily is an inherent advantage in implicit models when implementing physically based simulations requiring collision tests. 
-The \blob \cite{Wyvill1999} combined blending, affine transformations and constructive solid geometry (CSG) operators in a 
-comprehensive and compact scene graph data-structure. \blob provides the ability to create complex models incrementally \cite{Schmidt2006}. 
-However, volumetric models in general are often several orders of magnitude slower during visualization \cite{Bloomenthal1990a, Bloomenthal1997}.
-We proposed a data-driven algorithm for rendering complex implicit models in realtime on multi-core processors \cite{Shirazian2012}, later, we 
-fine tuned that algorithm for running on many core architectures such as the ones in high-end graphical processing units (GPUs). 
-
-In traditional animation systems based on key-framing, specifying the motion and the successive shapes of objects interacting with a simulated 
-world requires a great amount of specialized knowledge and intuition from the animator. Models based on simplified physical laws have been 
-proposed for automating these tasks. They generate motion and deformation from initial conditions and from a set of externally applied forces 
-over time, and automatically detect and respond to collisions. These models are particularly appropriate for facilitating the animation of 
-deformable objects. They can either be used alone for the simulation of inanimate bodies, or be combined with user-controlled structures as 
-has been done for instance in character animation \cite{chadwick1989layered,miller1988motion}. We show that a number of problems that are difficult
-to solve with previous models can be easily handled by combining them with an external layer based on implicit surfaces. The implicit formulation
-defines a smooth surface around the object that can be used to perform efficient collision detection, to enable exact contact modeling, and to ease
-volume preservation. The second contribution of our research is the high performance volume discretization technique and non-linear finite element 
-formulation to support the elastic deformations of the created models \cite{Shirazian2013}. 
-
-In modern interactive simulation and modeling enviroments the ability to cut 3-dimensional geometry in realtime is of fundamental importance. 
-This creates the need for efficient cutting algorithms that process the underlying representation. Such methods can be utilized in a wide spectrum 
-of applications including surgical interventions, free form modeling, or scientific visualization. In surgery simulation, for instance, interactive 
-cutting algorithms enable the dynamic simulation of scalpel intersections that open immediately behind the scalpel \cite{Nienhuys2001}. In the 
-case of free-form modeling or sculpting, dynamic cutting supports a precise positioning and guidance of a cutting tool. In scientific visualization, 
-real-time cutting algorithms create new opportunities for the interactive analysis of volume data sets. Seismic data sets, as an example, can be 
-cut arbitrarily along interesting strata. The third main contribution of our research is our GPU-assisted interactive cutting algorithm that allows
-arbitrary cuts in the model and can enable many scenarios for tissue manipulation and sensing. 
-
-In what follows, the implicit modeling approach to deformable tissue modeling will be studied. To achieve the initial goal of this research, a
-computational framework for designing, rendering and animating deformable tissues has been developed which has the potential to be used in any 
-simulation system requiring deformable tissues with some level of interaction and topolgy modification. The final chapter of this thesis is dedicated
-for the evaluation of our system and analysis of some example scenarios in which our system might be a good fit for. 
+\newlength{\savedunitlength}
+\setlength{\unitlength}{2em}
+This chapter provides a short summary of the material which is relevant to the subject of this research. Starting with the concepts underlying 
+implicit and deformable tissue modeling and an outline of continuum mechanics and finite element concepts, the chapter will conclude by reviewing closely related 
+deformable models presented in the litrature. 
 
 \section{Implicit Modeling}
 Implicit surfaces are two-dimensional, geometric shapes that exist in three-dimentional space; they can be defined based on discrete data, 
 radial basis functions, offset surfaces, algebraic surfaces, level sets or distance fields to skeletal geometric primitives \cite{Bloomenthal1997}.
 Independently of its origin, an implicit surface can be defined as a level-set function $F:\mathbb{R}^3 \rightarrow \mathbb{R}$ where the surface 
-can be defined for instance as the set of points $\left\{M(x,y,z) \in \mathbb{R}^3 | F(x,y,x) = c\right\}$. $c$ is a constant and is called 
-the \textit{iso-value} which is set to $0.5$ in our system. For each point in space if the field is greater than
+and the volume can be defined as following:
+
+\begin{equation}
+S = \left\{M = (x,y,z) \in \mathbb{R}^3 | F(x,y,x) = c\right\}
+\end{equation}
+
+\begin{equation}
+V = \left\{M = (x,y,z) \in \mathbb{R}^3 | F(x,y,x) \geq c\right\}
+\end{equation}
+
+$c$ is a constant and is called the \textit{iso-value} which is set to $0.5$ in our system. For each point in space if the field is greater than
 $c$ the point is considered inside the model otherwise outside. 
 
 Most of the primitives used in the \blob are built from geometric skeletons, which are incorporated in many implicit modeling software packages 
@@ -160,28 +132,14 @@ These sketched objects can then be used in the same way as the standard skeletal
 unique shapes were not possible to create in previous collaborative environments, especially given this technique’s small memory footprint 
 needed to transfer the information.
 
+\section{Continuum Mechanics Concepts}
+Continuum biomechanics for soft tissue simulation deals with the movement of soft materials when subjected to applied forces. 
+The motion of a continuous and deformable solid can be described by a continuous displacement field resulting from a set of 
+forces acting on the solid body. A displacement \textit{field} implies a continuous variation of displacement with position. 
+The continuous displacement field can be time-independent or time-dependent. The initial unloaded state of material is referred to 
+as the \textit{reference} or \textit{undeformed} state as the displacements are zero everywhere. The material then reconfigures due to 
+applied loads and reaches an equilibrium state referred to as \textit{deformed} state. The concepts of \textit{strain}, a measure of length
+change or displacemen
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+\setlength{\unitlength}{\savedunitlength}
