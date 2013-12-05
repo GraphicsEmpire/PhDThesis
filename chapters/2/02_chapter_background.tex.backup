@@ -132,14 +132,112 @@ These sketched objects can then be used in the same way as the standard skeletal
 unique shapes were not possible to create in previous collaborative environments, especially given this technique’s small memory footprint 
 needed to transfer the information.
 
-\section{Continuum Mechanics Concepts}
-Continuum biomechanics for soft tissue simulation deals with the movement of soft materials when subjected to applied forces. 
+\section{Continuum Mechanics Concepts} 
+Continuum biomechanics for soft tissue simulation deals with the movement of soft materials when subjected to applied forces \cite{Sifakis2012}. 
 The motion of a continuous and deformable solid can be described by a continuous displacement field resulting from a set of 
 forces acting on the solid body. A displacement \textit{field} implies a continuous variation of displacement with position. 
 The continuous displacement field can be time-independent or time-dependent. The initial unloaded state of material is referred to 
 as the \textit{reference} or \textit{undeformed} state as the displacements are zero everywhere. The material then reconfigures due to 
 applied loads and reaches an equilibrium state referred to as \textit{deformed} state. The concepts of \textit{strain}, a measure of length
-change or displacemen
+change or displacement gradient, and \textit{stress}, the force per unit area on an infinitesimally small plane surface within the material, 
+are of fundamental importance for continuum biomechanics of soft tissues. 
+
+The formulation of models in continuum mechanics consists of three parts:
+
+\begin{enumerate}
+ \item Kinematics: Geometric description of the deformation
+ \item Dynamics: A formulation of the equations of motion
+ \item Constituitive formulation: Description of the material properties
+\end{enumerate}
+
+\section{Deformation map and deformation gradient}
+Our initial objective is to provide a concise mathematical description of the deformation that an elastic body has sustained. This formulation will 
+lay the foundation for appropriate representations of other physical properties such as force and energy. We begin by placing the undeformed elastic 
+object in a coordinate system, and denote by $\Omega$ the volumetric domain occupied by the object. This domain will be referred to as the reference 
+(or undeformed) configuration, and we follow the convention that capital letters $\vec{X} \in \Omega$ are used when referring to individual material
+points in this undeformed shape. Note that the precise position and orientation of the undeformed elastic body within the reference space is not important 
+and can be chosen at will, as long as the shape of the object corresponds to a rest configuration
+
+When the object undergoes deformation, every material point $\vec{X}$ is being displaced to a new deformed location as seen in figure 2.1 (top) which is, 
+by convention, denoted by a lowercase variable $\vec{x}$. The relation between each material point and its respective deformed location is captured by 
+the deformation function $\vec{\phi} : \mathbf{R}^3 \rightarrow \mathbf{R}^3$ which maps every material point $\vec{X}$ to its respective deformed 
+location $\vec{x}=\vec{\phi}(\vec{X})$.
+
+An important physical quantity derived directly from $\vec{phi}(\vec{X})$, whose utility will become apparent in the next sections, is the deformation 
+gradient tensor $\mathbf{F} \in \mathbf{R}^{3 \times 3}$. If we write $\vec{X} =(X_1,X_2,X_3)^T $ and 
+$\vec{\phi}(\vec{X})=(\phi_1(\vec{X}), \phi_2(\vec{X}), \phi_3(\vec{X}))^T$ for the three components of the vector-valued function $\vec{\phi}$,
+the deformation gradient is written as: 
+
+\begin{equation}
+ \mathbf{F} := \frac{\partial(\phi_1, \phi_2, \phi_3)}{\partial (X_1, X_2, X_3)}= 
+ \left(\begin{array}{ccc} 
+      \partial \phi_1/\partial X_1 & \phi_1/\partial X_2 & \phi_1/\partial X_3 \\
+      \partial \phi_2/\partial X_1 & \phi_2/\partial X_2 & \phi_2/\partial X_3 \\
+      \partial \phi_3/\partial X_1 & \phi_3/\partial X_2 & \phi_3/\partial X_3 
+      \end{array} \right)
+\end{equation}
+
+
+
+or, in index notation $F_{ij} = \phi_{i,j}$. That is, F is the Jacobian matrix of the deformation map. Note that, in general, $F$ will be spatially varying 
+across $\Omega$; in the next sections we will use the notation $F(\vec{X})$ if such dependence needs to be made explicit.
+
+\section{Strain energy}
+When a deformable tissue undergoes some deformation the energy will be accumulated in the object which is called \textit{strain energy}: $E[\phi]$ (We 
+follow the same notation given in \cite{Sifakis2012}) The \textit{strain energy} is fully determined by the deformation map of a given configuration.
+One of the characteristics of \textit{hyperelastic} materials is that their \textit{strain energy} is independent of the prior deformation history 
+of the object. This property is closely related to the fact that the elastic forces of the \textit{hyperelastic} materials are \textit{conservative}.
+The total work done by the internal elastic forces in a deformation path depends solely on the initial and final configurations and not the path itself.
+
+When applying forces on a deformable tissue, different regions of the tissue will undergo shape changes of different severity. Thus, in order to compute the 
+strain energy we start from a local view of the deformations. An \textit{energy density} function $\Psi[\phi; \vec{X}]$ measures the strain energy 
+\textit{per unit of undeformed volume} on an infinitesimal domain $dV$ around the material point $\vec{X}$. The total energy of the deforming body is then 
+computed by integrating the energy density function over the entire domain $\Omega$:
+
+\begin{equation}
+  E[\phi]=\int_\Omega\Psi[\phi;\vec{X}]d\vec{X}
+\end{equation}
+
+%todo: Add some examples for the strain energy formula
+
+We survey a number of different simulated materials and describe how their physical properties are encoded in their respective governing equations. The 
+\textit{constitutive model} is the mathematical description of the physical characteristics of a given material and includes the equations that relate
+stimuli (e.g. deformations) to the material response which can be the force, stress or energy they trigger. 
+
+\section{Strain Computation}
+In principle, an explicit formula that relates $\Psi$ and $\vec{F}$ would be perfectly adequate as a constitutive equation. The challenge, with designing
+constitutive models in this fashion is that using the raw elements of the matrix $F$ can be a very unintuitive way to argue about the flavor and severity
+of a given deformation. It is possible that a certain material's response is dominated by its affinity for volume conservation, while a different material
+might prioriatize resistance to shear. Metrics such as ``The ratio of the volumetric expansion'' or ``the shear angle'' would be much more effective in 
+expressing the severity of the types of deformation that are most relevant to such materials. As a consequence, it is common for the design process for 
+constitutive models to define certain intermediate quantities such as strain measures and invariants which are derived from F, yet capture the specific 
+traits of the deformation that the energy or stress values depend on more concisely than the deformation gradient itself.
+
+
+A strain measure is intended to be a quantitative descriptor for the severity of a given deformation, i.e. a way to gauge how far this configuration is 
+from a rest configuration. For this reason, although strain measures are derived from the deformation gradient, they strive to retain as much information 
+from it that is relevant to assessing deformation magnitude while disregarding any information contained in it that is unrelated to shape change. 
+The deformation gradient contains all the information necessary to determine how a small neighborhood of a material point deforms. One would like, 
+however, to distinguish between two important cases, namely, those in which the neighborhood of a point has just undergone a rigid motion and, on the other 
+hand, those in which the neighborhood has undergone a true change of shape or of size. In the first case, the deformation gradient would correspond to a 
+pure rotation. Mathematically, this phenomenon manifests itself in the fact that the matrix representing the deformation gradient $\mathbf{F}$ is a so called
+\textit{orthogonal} matrix. An orthogonal matrix $\mathbf{R}$ is characterized by the property that its inverse, $\mathbf{R}^{-1}$, is equal to its transpose,
+$\mathbf{R}^T$. For a pure rotation (as opposed to a reflection) the determinant of an orthogonal matrix is equal to +1 (instead of -1 for a combined rotation
+and reflection). The question is: given an arbitrary $\mathbf{F}$, is it possible to separate the part that corresponds to a pure rotation from the part 
+representing a true change of shape and/or of size? The answer to this question is given by a remarkable theorem in algebra known as the 
+\textit{polar decomposition theorem}. It asserts that every non-singular matrix $\mathbf{F}$ can be uniquely decomposed into the product of an orthogonal 
+matrix $R$ and a positive definite symmetric matrix $U$, as follows:
+
+Consider 
+the Green strain tensor $\mathbf{E} \in \mathbf{R}^{3\times 3}$, defined as:
+
+\begin{equation}
+\mathbf{E} = \frac{1}{2}(\mathbf{F}^T\mathbf{F}-\mathbf{I}).
+\end{equation}
+
+
+
+
 
 
 \setlength{\unitlength}{\savedunitlength}
