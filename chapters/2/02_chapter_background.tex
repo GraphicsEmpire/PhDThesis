@@ -235,12 +235,74 @@ matrix $R$ and a positive definite symmetric matrix $U$, as follows:
 A positive definite symmetric matrix (namely, one with all positive eigenvalues) can be shown to represent pure elongations or contractions along three 
 mutually perpendicular axes (the so-called \textit{principal axes}) \cite{fung2001classical}.
 
-Consider 
-the Green strain tensor $\mathbf{E} \in \mathbf{R}^{3\times 3}$, defined as:
+Consider the Green strain tensor $\mathbf{E} \in \mathbf{R}^{3\times 3}$, defined as:
 
 \begin{equation}
 \mathbf{E} = \frac{1}{2}(\mathbf{F}^T\mathbf{F}-\mathbf{I}).
 \end{equation}
+
+These axes, defined in the point at the reference configuration, are the \textit{eigenvectors} of the symmetric matrix:
+
+\begin{equation}
+\mathbf{C} =  \mathbf{F}^T\mathbf{F}
+\end{equation}
+
+known as the \textit{right Cauchy-Green tensor}. It is related to $\textbf{U}$ by the equation $\mathbf{C}=\mathbf{U}^2$.
+From the preceding considerations, it follows that the neighborhood of a material point will undergo a pure rotation if, 
+and only if, $\mathbf{C}=\mathbf{U}=\mathbf{I}$. Otherwise, there willl be a genuine change of size and/or shape. 
+
+
+It is convenient, therefore, to introduce the following measure of \textit{strain}, sometimes called the \textit{Lagrangian 
+strain tensor}: 
+
+
+\begin{equation}
+\mathbf{E} = \frac{1}{2}(\mathbf{C} - \mathbf{I})
+\end{equation}
+
+This tensor has the property of vanishing if, and only if, there is no strain (change of shape and/or size) at the points in question.
+Again there are no limitations whatsoever to the magnitude of the derivatives of the displacements used to calculate the Lagrangian
+strain tensor. 
+
+
+\section{Linear Elasticity}
+The simplest practical constitutive model is linear elasticity, defined in terms of the strain energy density as:
+
+\begin{equation}
+ \Psi(\mathbf{F}) = \mu\boldsymbol{\epsilon}:\boldsymbol{\epsilon} + \frac{\lambda}{2}tr^2(\boldsymbol{\epsilon})
+\end{equation}
+
+where $\mathbf{\epsilon}$ is the small strain tensor and $\mu$, $\lambda$ are the \textit{Lame coefficients}, which are related to
+the material properties of \textit{Young's modulus k} (a measure of stretch resistance) and \textit{Poisson's ratio} $\nu$ (a 
+measure of incompressibility) as:
+
+\begin{align*}
+\mu=\frac{k}{2(1+\nu)} \hspace{10 mm} \lambda=\frac{k\nu}{(1+\nu)(1-2\nu)}
+\end{align*}
+
+The relation between the Piola stress $\mathbf{P}$ and $\mathbf{F}$ can be derived as follows:
+
+\begin{align*}
+\delta \boldsymbol{\epsilon} =\frac{1}{2}(\delta\mathbf{F} + \delta\mathbf{F}^T)=Sym\left\{\delta\mathbf{F}\right\}  
+\end{align*}
+
+
+\begin{align*}
+\boldsymbol{\epsilon}:\delta\boldsymbol{\epsilon}=\boldsymbol{\epsilon}:Sym\left\{\delta\boldsymbol{F}\right\}=\epsilon:\delta\boldsymbol{F} \hspace{10 mm}
+tr(\delta\boldsymbol{\epsilon})=\boldsymbol{I}:Sym\left\{\delta\boldsymbol{F}\right\}=\boldsymbol{I}:\delta\boldsymbol{F}
+\end{align*}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
