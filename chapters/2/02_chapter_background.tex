@@ -269,10 +269,11 @@ strain tensor.
 The simplest practical constitutive model is linear elasticity, defined in terms of the strain energy density as:
 
 \begin{equation}
+\label{eq:linearelasticity}
  \Psi(\mathbf{F}) = \mu\boldsymbol{\epsilon}:\boldsymbol{\epsilon} + \frac{\lambda}{2}tr^2(\boldsymbol{\epsilon})
 \end{equation}
 
-where $\mathbf{\epsilon}$ is the small strain tensor and $\mu$, $\lambda$ are the \textit{Lame coefficients}, which are related to
+where $\boldsymbol{\epsilon}$ is the small strain tensor and $\mu$, $\lambda$ are the \textit{Lame coefficients}, which are related to
 the material properties of \textit{Young's modulus k} (a measure of stretch resistance) and \textit{Poisson's ratio} $\nu$ (a 
 measure of incompressibility) as:
 
@@ -292,18 +293,71 @@ The relation between the Piola stress $\mathbf{P}$ and $\mathbf{F}$ can be deriv
 tr(\delta\boldsymbol{\epsilon})=\boldsymbol{I}:Sym\left\{\delta\boldsymbol{F}\right\}=\boldsymbol{I}:\delta\boldsymbol{F}
 \end{align*}
 
+\begin{align*}
+\delta\Psi=2\mu\boldsymbol{\epsilon}:\delta\boldsymbol{\epsilon}+\lambda tr(\boldsymbol{\epsilon})  tr(\delta\boldsymbol{\epsilon})=[2\mu\boldsymbol{\epsilon}+\lambda tr(\boldsymbol{\epsilon})]\boldsymbol{I}:\delta\boldsymbol{F}\\
+Thus \hspace{10 mm} \boldsymbol{P}=2\mu\boldsymbol{\epsilon}+\lambda tr(\boldsymbol{\epsilon})\boldsymbol{I}
+\end{align*}
+
+after one final substitution for $\boldsymbol{\epsilon}$ and a few algebraic reductions:
+
+\begin{align*}
+  \boldsymbol{P}(\boldsymbol{F})=\mu(\boldsymbol{F} + \boldsymbol{F}^T-2\boldsymbol{I})+\lambda tr(\boldsymbol{F} - \boldsymbol{I})\boldsymbol{I}
+\end{align*}
+
+These expressions allow us to make the following observations:
+
+\begin{itemize}
+ \item The stress $\boldsymbol{P}$ is a \textit{linear} function of the deformation gradient. As a result, this constitutive model is characterized by a significantly
+lower computational cost that other, nonlinear materials. 
+
+\item Since the small strain tensor was designed to be accurate exclusively in a small deformation scenario, it is more appropriate to use linear elasticity when the magnitude
+of motion is small. For example, a rigid motion $\vec{\phi}(\vec{X})=\boldsymbol{R}\vec{X}+\vec{t}$ would generally produce a non-zero strain 
+$\epsilon = \frac{1}{2}(\boldsymbol{R}+\boldsymbol{R}^T)-\boldsymbol{I}$ and ultimately a non-zero stress, even though no shape change has taken place. 
+\end{itemize}
+
+\section{St. Venant-Kirchhoff model}
+With the understanding that the small strain tensor is a mere approximation of the rotationally invariant Green strain $\boldsymbol{E}$, it 
+makes sense to attempt an improvement of the linear elasticity model by using $\boldsymbol{E}$ in the place of $\boldsymbol{\epsilon}$ is equation
+ (\ref{eq:linearelasticity}):
+
+ \begin{equation}
+ \Psi(\mathbf{F}) = \mu\boldsymbol{E}:\boldsymbol{E} + \frac{\lambda}{2}tr^2(\boldsymbol{E})
+ \end{equation}
+
+This constitutive model is recognized as \textit{St. Venant-Kirchhoff} material, and is the first truely nonlinear material we will examine. The first
+Piola-Kirchhoff stress tensor can be computed via a process similar to the one followed for linear elasticity:
+
+\begin{gather*}
+  \delta\boldsymbol{E}=\frac{1}{2} (\delta\boldsymbol{F}^T\boldsymbol{F}+ \boldsymbol{F}^T\delta\boldsymbol{F})=Sym\left\{\boldsymbol{F}^T\delta\boldsymbol{F}\right\}\\
+  \boldsymbol{E}:\delta\boldsymbol{E}=\boldsymbol{E}:\left\{\boldsymbol{F}^T\delta\boldsymbol{F}\right\}=\left\{\boldsymbol{FE}\right\}:\delta\boldsymbol{F}
+  \hspace{10 mm} tr(\delta\boldsymbol{E})=\boldsymbol{I}:\left\{\boldsymbol{F}^T\delta\boldsymbol{F} \right\}=\boldsymbol{F}:\delta\boldsymbol{F}\\
+  \delta\Psi=2\mu\boldsymbol{E}:\delta\boldsymbol{E}+\lambda tr(\boldsymbol{E})tr(\delta\boldsymbol{E})=\boldsymbol{F}\left[2\mu\boldsymbol{E}+\lambda tr(\boldsymbol{E}) \boldsymbol{I} \right]:\delta\boldsymbol{F}
+\end{gather*}
 
 
+\begin{equation}
+\label{eq:venantkirchhoff}
+Thus \hspace{10 mm} \boldsymbol{P}(\boldsymbol{F})=\boldsymbol{F}\left[2\mu\boldsymbol{E}+\lambda tr(\boldsymbol{E})\boldsymbol{I}\right]. 
+\end{equation}
 
+This is a rotationally invariant model; deformations that differ by a rigid body transformation are guaranteed to have the same strain energy. As a 
+consequence a St. Venant-Kirchhoff material exhibits plausible material response in many large deformation scenarios where linear elasticity would 
+not be applicable. Equation (\ref{eq:venantkirchhoff}) indicates that stress is a 3rd degree polynomial function of the components of $\boldsymbol{F}$; 
+after discretization, nodal forces will likewise be expressed as cubic polynomials of nodal positions.
+Although the St. Venant-Kirchhoff model offers significant benefits over a linear elastic model, its scope is limited to a certain degree due to its 
+poor resistance to forceful compression: as a St. Venant-Kirchhoff elastic body is compressed, starting from its undeformed configuration, it reacts 
+with a restorative force which initially grows with the degree of compression. However, once a critical compression threshold is reached 
+($\approx 58\%$ of undeformed dimensions, when compression occurs along a single axis) the strength of the restorative force reaches a maximum. Further
+compression will be met with decreasing resistance, in fact the restorative force will vanish as the object is compressed all the way down to zero volume 
+(an indication of this is that when F = 0 we also have P = 0). Continued compression past the point of zero volume (forcing the material to invert) will 
+then create a restorative force that pushes the body towards complete inversion (reflection) along one or more axes. In practical computer simulation 
+examples this behavior often manifests itself as a tendency of the material to locally tangle and invert itself when subjected to strong compressive forces 
+or kinematic constraints.
 
-
-
-
-
-
-
-
-
+ 
+ 
+ 
+ 
 
 
 
