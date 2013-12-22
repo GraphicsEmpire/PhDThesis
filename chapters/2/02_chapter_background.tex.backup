@@ -358,16 +358,18 @@ the rotational component of $\boldsymbol{F}$. Replacing the small strain tensor 
 elasticity:
 
 \begin{equation}
+\label{eq:CorotatedEnergyDensity}
   \Psi(\boldsymbol{F})=\mu\boldsymbol{\epsilon}_c:\boldsymbol{\epsilon}_c+\frac{\lambda}{2} tr^2(\boldsymbol{\epsilon}_c)=
   \mu\|\boldsymbol{S} - \boldsymbol{I} \|^2_F+(\lambda/2)tr^2(\boldsymbol{S}-\boldsymbol{I})
 \end{equation}
 
 which can be equivalently written in any of the following ways:
 
-\begin{gather*}
-\Psi(\boldsymbol{F})=\mu\|\boldsymbol{F} - \boldsymbol{R}\|^2_F+(\lambda/2) tr^2(\boldsymbol{R}^T\boldsymbol{F}-\boldsymbol{I})\\
+\begin{align}
+\label{eq:CorotatedEnergyDensitySVD}
+\Psi(\boldsymbol{F})=\mu\|\boldsymbol{F} - \boldsymbol{R}\|^2_F+(\lambda/2) tr^2(\boldsymbol{R}^T\boldsymbol{F}-\boldsymbol{I}) \nonumber \\
 \Psi(\boldsymbol{F})=\mu\|\boldsymbol{\Sigma} - \boldsymbol{I} \|^2_F+(\lambda/2) tr^2(\boldsymbol{\Sigma} - \boldsymbol{I})
-\end{gather*}
+\end{align}
 
 where $\Sigma$ is the diagonal matrix with the singular values of $\boldsymbol{F}$, from the Singular Value Decomposition 
 $\boldsymbol{F} = \boldsymbol{U\Sigma V}^T$. We can show that the 1st Piola-Kirchhoff stress tensor for corotated linear elasticity is given by:
@@ -409,6 +411,121 @@ leading to the following equivalant definition of rotational invariance:\\
 \end{gather*}
 
 for any value of the deformation gradient $\boldsymbol{F}$ and any $3 \times 3 $ rotation matrix $\boldsymbol{R}$.
+One of the consequences of this definition is that the strain energy in rotationally invariant models can be written
+as a function of the symmetric factor $\boldsymbol{S}$ from the polar decomposition of $\boldsymbol{F} = \boldsymbol{RS}$, since:
+
+\begin{gather*}
+  \Psi(\boldsymbol{F}) = \Psi(\boldsymbol{RS}) = \Psi(\boldsymbol{S})
+\end{gather*}
+
+Corotated elasticity defined $Psi$ as a direct function of $\boldsymbol{S}$ (see equation \ref{eq:CorotatedEnergyDensity}). 
+The need to compute polar decomposition may be avoided if we are able to express $\Psi$ as a function of some other intermediate
+quantity, which is also a function of $\boldsymbol{S}$, yet also computable without an explicit polar decomposition. For instance, 
+St. Venant-Kirchhoff materials defined the energy density as a function of the Green strain 
+$\boldsymbol{E} = \frac{1}{2}(\boldsymbol{S}^2 - \boldsymbol{I})$, which although fully determined by $S$ can also br computed without 
+an explicit polar decomposition as $\boldsymbol{E} = \frac{1}{2}(\boldsymbol{F}^T\boldsymbol{F} - \boldsymbol{I})$.
+
+One of the distinct properties of constitutive models such as St.Venant-Kirchhoff and Corotated Linear elasticity is their \textit{isotropy}.
+In simple terms, a material is isotropic if its resistance to deformation is the same along all possible orientations that such deformation 
+may be applied. Rubber and metal would be examples of isotropic materials, as they do not exhibit any particular direction/orientation along
+which are softer or stiffer. Steel-reinforced concrete would be an example of an anisotropic material, as its resistance to deformation is 
+notably different along the direction of the steel supports, compared to a direction perpendicular to them. Human muscles are also quoted 
+as an anisotropic structure, as a distinct material response is observed along the direction aligned with muscle fibers.
+
+Isotropy is a property that is assessed on a local scale, as it is always possible to generate directional features in larger structures by 
+arranging material in specific ways. In terms of quantitative criterion for isotropy, we can think of an infinitesimal \textit{spherical} 
+volume of material $dV$, and consider the strain energy resulting from a prescribed deformation. Now, consider the scenario where we first 
+transform the sphere $dV$ by \textit{rotating it about its center} and then apply the same deformation. In an isotropic material both
+scenarios would lead to the same strain energy. This is concretely expressed using the strain energy function as follow:\\
+
+\textbf{Definition:}A hyperelastic constitutive model is \textit{isotropic} if and only if the strain energy density satisfies
+
+\begin{gather*}
+ \Psi(\boldsymbol{FQ}) = \Psi(\boldsymbol{F})
+\end{gather*}
+
+for any value of the deformation gradient $\boldsymbol{F}$ and any $3 \times 3$ rotation matrix $\boldsymbol{Q}$. A material that is both 
+rotationally invariant and isotropic would satisfy
+
+\begin{gather*}
+ \Psi(\boldsymbol{RFQ})=\Psi(\boldsymbol{F})
+\end{gather*}
+
+for arbitrary rotations $\boldsymbol{R}$ and $\boldsymbol{Q}$.\\
+
+Using the Singular Value Decomposition $\boldsymbol{F} = \boldsymbol{U\Sigma V^T}$ we conclude that rotationlly invariant, isotropic materials satisfy:
+
+\begin{gather*}
+ \Psi(\boldsymbol{F})=\Psi(\boldsymbol{U\Sigma V^T}) = \Psi(\boldsymbol{\Sigma}).
+\end{gather*}
+
+While the strain energy for rotationally invariant materials was a function only of 6 out of 9 degrees of freedom in $\boldsymbol{F}$ (those 
+captured in the symmetric $\boldsymbol{S}$), for materials that are also isotropic the energy density is actually only a function of the three 
+singular values of $\boldsymbol{F}$. Equation (\ref{eq:CorotatedEnergyDensitySVD}) shows that this is certainly the case for corotated linear 
+elasticity. St. Venant-Kirchhoff can also be shown to satisfy all criteria for isotropy, after some simple algebraic manipulations. An example 
+of a material that is rotationally invariant but \textit{not} isotropic is described by the energy:
+
+\begin{gather*}
+ \Psi(\boldsymbol{F}) = \frac{k}{2}\vec{w}^T\boldsymbol{F}T\boldsymbol{F}\vec{w}
+\end{gather*}
+
+where $\vec{w}$ is a given constant vector. This material behaves like a zero restlength spring along the direction $\vec{w}$, while it does
+not have any resistance to deformation along directions perpendicular to $\vec{w}$.
+
+It is possible to define an isotropic material as a function of $\Psi$ and $\boldsymbol{\Sigma}$ which encodes the only 3 relevant degrees of freedom
+in $\boldsymbol{F}$, this is not necessarily the preferred approach, since the overhead of an SVD decomposition would be necessary when evaluating 
+any of these quantities. St. Venant-Kirchhoff materials avoided the need for an explicit polar decomposition, by using the Green strain $E$
+to convey (qualitatively) the same information as $S$, while using a computationally inexpensive formula. For isotropic materials, the purpose is served 
+by the three isotropic invariants of the deformation gradient, which are equally expressive as the singular values, but can be computed inexpensively. 
+Invariants are denoted by $I1$, $I2$, $I3$ (or $I_1(\boldsymbol{F})$, etc., to emphasize the dependence on $\boldsymbol{F}$) and defined as:
+
+\begin{gather*}
+I_1(\boldsymbol{F})=tr(\boldsymbol{F}^T\boldsymbol{F}), \hspace{10mm}I_2(\boldsymbol{F})=tr\left[(\boldsymbol{F}^T\boldsymbol{F})^2\right], 
+\hspace{10mm}I_3(\boldsymbol{F})=det(\boldsymbol{F}^T\boldsymbol{F})=(det\boldsymbol{F})^2
+\end{gather*}
+
+Their relation to $\Sigma$ is revealed by replacing $\boldsymbol{F}$ with its SVD in the previous expressions after cancellation we obtain:
+
+\begin{gather*}
+I_1 = tr(\boldsymbol{\Sigma}^2)=\sum_{i=1}^3\sigma_i^2, \hspace{10mm}I_2=tr(\boldsymbol{\Sigma}^4)=\sum_{i=1}^3\sigma_i^4, 
+\hspace{10mm}I_3=det(\Sigma^2)=\prod_{i=1}^3\sigma_i^2
+\end{gather*}
+
+After computing the derivatives of the invariants with respect to the $F$:
+\begin{gather*}
+ \delta I_1= \delta\left[tr(\boldsymbol{F}^T\boldsymbol{F})\right]=2tr(\boldsymbol{F}^T\delta\boldsymbol{F})=(2\boldsymbol{F}):\delta\boldsymbol{F}\Rightarrow
+ \frac{\partial I_1}{\partial\boldsymbol{F}}=2\boldsymbol{F}\\
+ \delta I_2 = \delta \left[ tr(\boldsymbol{F}^T\boldsymbol{F}\boldsymbol{F}^T\boldsymbol{F}\right)]=4tr(\boldsymbol{F}^F\boldsymbol{F}\boldsymbol{F}^T\delta\boldsymbol{F})=
+ (4\boldsymbol{F}\boldsymbol{F}^T\boldsymbol{F}):\delta\boldsymbol{F} \Rightarrow \frac{\partial I_2}{\partial \boldsymbol{F}}=4\boldsymbol{F}\boldsymbol{F}^T\boldsymbol{F} \\
+ \delta I_3=\delta \left[(det \boldsymbol{F})^2\right] = 2det\boldsymbol{F}.\delta\left[det \boldsymbol{F} \right] = 2(det \boldsymbol{F})^2\boldsymbol{F}^{-T}:\delta\boldsymbol{F} \Rightarrow
+ \frac{\partial I_3}{\partial \boldsymbol{F}}=2I_3\boldsymbol{F}^{-T}
+\end{gather*}
+
+With these derivatives at hand, the strain energy density is provided as a function $\Psi(I_1, I_2, I_3)$. Using the chain rule we can compute the stress as:
+
+\begin{align}
+ \boldsymbol{P}=\frac{\partial \Psi(I_1, I_2, I_3)}{\partial\boldsymbol{F}}=
+ \frac{\partial \Psi}{\partial I_1}\frac{\partial I_1}{\partial \boldsymbol{F}}+
+ \frac{\partial \Psi}{\partial I_2}\frac{\partial I_2}{\partial \boldsymbol{F}}+
+ \frac{\partial \Psi}{\partial I_3}\frac{\partial I_3}{\partial \boldsymbol{F}},
+ \hspace{10mm}\text{or, after substitution:}\nonumber
+\end{align}
+
+\begin{equation}
+ \boldsymbol{P}(\boldsymbol{F})=\frac{\partial \Psi}{\partial I_1}.2\boldsymbol{F} + 
+ \frac{\partial \Psi}{\partial I_2}.4\boldsymbol{F}\boldsymbol{F}^T\boldsymbol{F} +
+ \frac{\partial \Psi}{\partial I_3}.2 I_3\boldsymbol{F}^{-T}
+\end{equation}
+
+We note the additional invariant $J=det \boldsymbol{F}=\sqrt{I_3}$ that is often used in replacement of $I_3$ while defining certain constitutive models.
+This quantity has an important physical interpretation as it represents the \textit{fraction of volume change} due to deformation:
+a value of $J=1$ implies that volume is preserved exactly while, while $J=2$ would indicate an expansion to twice the undeformed volume and $J=0.2$
+would be a compression down to $20\%$ of the rest volume.
+
+\section{Neohookean elasticity}
+An isotropic constitutive model defined via isotropic invariants is \textit{Neohookean elasticity}:
+
+
 
 
 \setlength{\unitlength}{\savedunitlength}
