@@ -81,19 +81,18 @@ are outside the box. The bounding box of the entire model is computed as the uni
 nodes bounding boxes.
 
 For evaluating the field  at a point $P$ in a \blob model such as the one shown in figure (\ref{fig:CoffeeMugBlobTree}), 
-the tree structure should be traversed from root to leaves recursively. 
-Each operator combines the values of its children according to its type.
-For example, for a simple blend the values are summed. A leaf node represents
-a primitive,  and returns the value by applying equation~\ref{eq:WyvillFunc} to 
-  the distance of $P$ from the primitive.
+the tree structure should be traversed from root to leaves recursively. Each operator combines the values of its children 
+according to its type. For example, for a simple blend the values are summed. A leaf node represents a primitive,  and 
+returns the value by applying equation~\ref{eq:WyvillFunc} to the distance of $P$ from the primitive.
 
-\begin{figure}[htb]
-  \centering
+%The right way for inserting figures
+\begin{figure}[H]
+\centering
   % the following command controls the width of the embedded PS file
   % (relative to the width of the current column)
   \includegraphics[width=1.0\linewidth]{figures/CoffeeMugBlobTree}
-  \caption{\label{fig:CoffeeMugBlobTree}
-           \blob structure of a coffee mug created with CSG and skeletal implicit primitives.}
+  \caption{\blob structure of a coffee mug created with CSG and skeletal implicit primitives.}
+  \label{fig:CoffeeMugBlobTree}
 \end{figure}
 
 %As the tree gets deeper and the number of primitives increase the computation 
@@ -283,20 +282,13 @@ measure of incompressibility) as:
 
 The relation between the Piola stress $\mathbf{P}$ and $\mathbf{F}$ can be derived as follows:
 
-\begin{align*}
-\delta \boldsymbol{\epsilon} =\frac{1}{2}(\delta\mathbf{F} + \delta\mathbf{F}^T)=Sym\left\{\delta\mathbf{F}\right\}  
-\end{align*}
-
-
-\begin{align*}
+\begin{gather*}
+\delta \boldsymbol{\epsilon} =\frac{1}{2}(\delta\mathbf{F} + \delta\mathbf{F}^T)=Sym\left\{\delta\mathbf{F}\right\}  \\
 \boldsymbol{\epsilon}:\delta\boldsymbol{\epsilon}=\boldsymbol{\epsilon}:Sym\left\{\delta\boldsymbol{F}\right\}=\epsilon:\delta\boldsymbol{F} \hspace{10 mm}
-tr(\delta\boldsymbol{\epsilon})=\boldsymbol{I}:Sym\left\{\delta\boldsymbol{F}\right\}=\boldsymbol{I}:\delta\boldsymbol{F}
-\end{align*}
-
-\begin{align*}
+tr(\delta\boldsymbol{\epsilon})=\boldsymbol{I}:Sym\left\{\delta\boldsymbol{F}\right\}=\boldsymbol{I}:\delta\boldsymbol{F} \\
 \delta\Psi=2\mu\boldsymbol{\epsilon}:\delta\boldsymbol{\epsilon}+\lambda tr(\boldsymbol{\epsilon})  tr(\delta\boldsymbol{\epsilon})=[2\mu\boldsymbol{\epsilon}+\lambda tr(\boldsymbol{\epsilon})]\boldsymbol{I}:\delta\boldsymbol{F}\\
 Thus \hspace{10 mm} \boldsymbol{P}=2\mu\boldsymbol{\epsilon}+\lambda tr(\boldsymbol{\epsilon})\boldsymbol{I}
-\end{align*}
+\end{gather*}
 
 after one final substitution for $\boldsymbol{\epsilon}$ and a few algebraic reductions:
 
@@ -327,26 +319,96 @@ makes sense to attempt an improvement of the linear elasticity model by using $\
 This constitutive model is recognized as \textit{St. Venant-Kirchhoff} material, and is the first truely nonlinear material we will examine. The first
 Piola-Kirchhoff stress tensor can be computed via a process similar to the one followed for linear elasticity:
 
-\begin{align*}
-  \delta\boldsymbol{E}=\frac{1}{2} (\delta\boldsymbol{F}^T\boldsymbol{F}+ \boldsymbol{F}^T\delta\boldsymbol{F})=Sym\left\{\boldsymbol{F}^T\delta\boldsymbol{F}\right\}
-\end{align*}
-
-\begin{align*}
+\begin{gather*}
+  \delta\boldsymbol{E}=\frac{1}{2} (\delta\boldsymbol{F}^T\boldsymbol{F}+ \boldsymbol{F}^T\delta\boldsymbol{F})=Sym\left\{\boldsymbol{F}^T\delta\boldsymbol{F}\right\}\\
   \boldsymbol{E}:\delta\boldsymbol{E}=\boldsymbol{E}:\left\{\boldsymbol{F}^T\delta\boldsymbol{F}\right\}=\left\{\boldsymbol{FE}\right\}:\delta\boldsymbol{F}
-  \hspace{10 mm} tr(\delta\boldsymbol{E})=\boldsymbol{I}:\left\{\boldsymbol{F}^T\delta\boldsymbol{F} \right\}=\boldsymbol{F}:\delta\boldsymbol{F}
-\end{align*}
-
-\begin{align*}
+  \hspace{10 mm} tr(\delta\boldsymbol{E})=\boldsymbol{I}:\left\{\boldsymbol{F}^T\delta\boldsymbol{F} \right\}=\boldsymbol{F}:\delta\boldsymbol{F}\\
   \delta\Psi=2\mu\boldsymbol{E}:\delta\boldsymbol{E}+\lambda tr(\boldsymbol{E})tr(\delta\boldsymbol{E})=\boldsymbol{F}\left[2\mu\boldsymbol{E}+\lambda tr(\boldsymbol{E}) \boldsymbol{I} \right]:\delta\boldsymbol{F}
-\end{align*}
-
- 
- 
- 
- 
+\end{gather*}
 
 
+\begin{equation}
+\label{eq:venantkirchhoff}
+Thus \hspace{10 mm} \boldsymbol{P}(\boldsymbol{F})=\boldsymbol{F}\left[2\mu\boldsymbol{E}+\lambda tr(\boldsymbol{E})\boldsymbol{I}\right]. 
+\end{equation}
 
+This is a rotationally invariant model; deformations that differ by a rigid body transformation are guaranteed to have the same strain energy. As a 
+consequence a St. Venant-Kirchhoff material exhibits plausible material response in many large deformation scenarios where linear elasticity would 
+not be applicable. Equation (\ref{eq:venantkirchhoff}) indicates that stress is a 3rd degree polynomial function of the components of $\boldsymbol{F}$; 
+after discretization, nodal forces will likewise be expressed as cubic polynomials of nodal positions.
+Although the St. Venant-Kirchhoff model offers significant benefits over a linear elastic model, its scope is limited to a certain degree due to its 
+poor resistance to forceful compression: as a St. Venant-Kirchhoff elastic body is compressed, starting from its undeformed configuration, it reacts 
+with a restorative force which initially grows with the degree of compression. However, once a critical compression threshold is reached 
+($\approx 58\%$ of undeformed dimensions, when compression occurs along a single axis) the strength of the restorative force reaches a maximum. Further
+compression will be met with decreasing resistance, in fact the restorative force will vanish as the object is compressed all the way down to zero volume 
+(an indication of this is that when $\boldsymbol{F} = 0$ we also have $\boldsymbol{P} = 0$). Continued compression past the point of zero volume (forcing the material to invert) will 
+then create a restorative force that pushes the body towards complete inversion (reflection) along one or more axes. In practical computer simulation 
+examples this behavior often manifests itself as a tendency of the material to locally tangle and invert itself when subjected to strong compressive forces 
+or kinematic constraints.
+
+ 
+\section{Corotated linear elasticity}
+The use of the quadratic Green strain in the St. Venant-Kirchhoff guaranteed the rotational invariance of the constitutive model. At the same time, 
+the increased complexity inherent in highly nonlinear materials leads to unintended side effects, such as the non-physical zero stress configurations 
+of St. Venant-Kirchhoff materials under extreme compression. Corotated linear elasticity is a constitutive model that attempts to combine the simplicity 
+of the stress-deformation relationship in a linear material with just enough nonlinear characteristics to secure rotational invariance.
+Using the polar decomposition $\boldsymbol{F} = \boldsymbol{R}\boldsymbol{S}$ we construct a new strain measure as
+$\boldsymbol{\epsilon}_c = \boldsymbol{S} − \boldsymbol{I}$, which is linear on the symmetric tensor $\boldsymbol{S}$ obtained by factoring away
+the rotational component of $\boldsymbol{F}$. Replacing the small strain tensor in equation (\ref{eq:linearelasticity}) we obtain the energy for corotational 
+elasticity:
+
+\begin{equation}
+  \Psi(\boldsymbol{F})=\mu\boldsymbol{\epsilon}_c:\boldsymbol{\epsilon}_c+\frac{\lambda}{2} tr^2(\boldsymbol{\epsilon}_c)=
+  \mu\|\boldsymbol{S} - \boldsymbol{I} \|^2_F+(\lambda/2)tr^2(\boldsymbol{S}-\boldsymbol{I})
+\end{equation}
+
+which can be equivalently written in any of the following ways:
+
+\begin{gather*}
+\Psi(\boldsymbol{F})=\mu\|\boldsymbol{F} - \boldsymbol{R}\|^2_F+(\lambda/2) tr^2(\boldsymbol{R}^T\boldsymbol{F}-\boldsymbol{I})\\
+\Psi(\boldsymbol{F})=\mu\|\boldsymbol{\Sigma} - \boldsymbol{I} \|^2_F+(\lambda/2) tr^2(\boldsymbol{\Sigma} - \boldsymbol{I})
+\end{gather*}
+
+where $\Sigma$ is the diagonal matrix with the singular values of $\boldsymbol{F}$, from the Singular Value Decomposition 
+$\boldsymbol{F} = \boldsymbol{U\Sigma V}^T$. We can show that the 1st Piola-Kirchhoff stress tensor for corotated linear elasticity is given by:
+ 
+%(\boldsymbol{F})=
+%\boldsymbol{R} \left[ 2\mu\boldsymbol{\epsilon}_c \right]
+ 
+\begin{gather*}
+\boldsymbol{P}(\boldsymbol{F})=\boldsymbol{R} \left[ 2\mu \boldsymbol{\epsilon}_c + \lambda tr(\boldsymbol{\epsilon_c}) \boldsymbol{I} \right]=
+\boldsymbol{R} \left[ 2\mu (\boldsymbol{S - I}) + \lambda tr(\boldsymbol{S - I}) \boldsymbol{I} \right] \\
+= 2 \mu (\boldsymbol{F-R}) + \lambda tr(\boldsymbol{R}^T\boldsymbol{F} - \boldsymbol{I})\boldsymbol{R}
+\end{gather*}
+
+The motivation behind corotational elasticity is to mimic what linear elasticity would have been, if the undeformed configuration had been rotated in the same way
+as encoded in the rotational factor $\boldsymbol{R}$ from the polar decomposition. In situations where the value of $\boldsymbol{R}$ varies across the domain, 
+making the transition from linear to corotated elasticity is more complex than a change of variables due to a constant rotation of the undeformed configuration. 
+From a computational cost perspective, the overhead of corotated vs. linear elasticity includes the cost of the polar decomposition, and the need to employ nonlinear
+solvers for certain types of simulation. 
+
+\section{Isotropic Materials}
+The two mentioned constitutive material models so far have been constructed to be rotationally invariant. This property can be formally defined using a pair of 
+deformation maps $\vec{\phi_1}(\vec{X})$ and $\vec{\phi_2}(\vec{X})$, that differ only by a rigid transform, specifically:
+
+\begin{equation}
+\label{eq:rigidbodytransform}
+ \vec{\phi_2}(\vec{X}) = \boldsymbol{R} \vec{\phi_1}(\vec{X}) + \vec{t}, \hspace{5mm} \text{where $\boldsymbol{R}$ is a $3\times 3$ rotation matrix}
+\end{equation}
+
+A constitutive model is rotationally invariant if and only if it guarantees that the strain energy will satisfy $E\left[ \phi_1 \right] = E\left[ \phi_2 \right]$
+for any such deformation pair. An equivalant definition can be provided for the hyperelastic materials based on the strain energy density function. 
+After computing the gradients we can see that any two deformations that satisfy equation (\ref{eq:rigidbodytransform}) will have deformation gradient related as
+$\boldsymbol{F}_2=\boldsymbol{R}\boldsymbol{F}_1$. The energy density associated with these deformations must satisfy $\Psi(\boldsymbol{F}_1)=\Psi(\boldsymbol{F}_2)$,
+leading to the following equivalant definition of rotational invariance:\\
+
+\textbf{Definition:} A hyperelastic constitutive model is \textit{rotationally invariant} if and only if the energy density satisfies
+
+\begin{gather*}
+  \Psi(\boldsymbol{RF})=\Psi(\boldsymbol{F})
+\end{gather*}
+
+for any value of the deformation gradient $\boldsymbol{F}$ and any $3 \times 3 $ rotation matrix $\boldsymbol{R}$.
 
 
 \setlength{\unitlength}{\savedunitlength}
