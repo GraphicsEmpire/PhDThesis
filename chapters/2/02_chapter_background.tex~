@@ -512,6 +512,7 @@ With these derivatives at hand, the strain energy density is provided as a funct
 \end{align}
 
 \begin{equation}
+\label{eq:stresspBasedOnInvariants}
  \boldsymbol{P}(\boldsymbol{F})=\frac{\partial \Psi}{\partial I_1}.2\boldsymbol{F} + 
  \frac{\partial \Psi}{\partial I_2}.4\boldsymbol{F}\boldsymbol{F}^T\boldsymbol{F} +
  \frac{\partial \Psi}{\partial I_3}.2 I_3\boldsymbol{F}^{-T}
@@ -523,7 +524,72 @@ a value of $J=1$ implies that volume is preserved exactly while, while $J=2$ wou
 would be a compression down to $20\%$ of the rest volume.
 
 \section{Neohookean elasticity}
-An isotropic constitutive model defined via isotropic invariants is \textit{Neohookean elasticity}:
+One isotropic constitutive model which is defined via isotropic invariants is \textit{Neohookean elasticity}:
+\begin{align}
+\label{eq:NeohookeanStrainEnergy}
+ \Psi(I_1, J) = \frac{\mu}{2}(I_1-3)-\mu \log(J)+ \frac{\lambda}{2} \log^2(J), \text{or equivalently}\nonumber\\
+ \Psi(I_1, I_3)=\frac{\mu}{2}(I_1-\log(I_3)-3)+\frac{\lambda}{8}\log^2(I_3)
+\end{align}
+
+From this definition the following derivatives can be computed easily:
+
+\begin{gather*}
+ \frac{\partial \Psi}{\partial I_1}=\frac{\mu}{2}\hspace{10mm}\text{and}\hspace{10mm}\frac{\partial \Psi}{\partial I_3}=-\frac{\mu}{2I_3}+\frac{\lambda \log(I_3)}{4 I_3}
+\end{gather*}
+
+By substituting into equation (\ref{eq:stresspBasedOnInvariants}) we get:
+\begin{align}
+\label{eq:NeohookeanStress}
+ P(\boldsymbol{F})=\mu\boldsymbol{F}-\mu\boldsymbol{F}^{-T}+\frac{\lambda \log (I_3) }{2}\boldsymbol{F}^{-T}\hspace{10mm}\text{by some factorization}\nonumber\\
+ P(\boldsymbol{F})=\mu(\boldsymbol{F}-\boldsymbol{F}^{-T})+\lambda\log(J)\boldsymbol{F}^{-T}
+\end{align}
+
+The Neohookean model has the following properties:
+
+\begin{enumerate}
+ \item The material exhibits a very strong reaction to extreme compression. The logarithmic term in the energy: $\log^2(J)$ will approach 
+ to $\infty$ as $J \rightarrow 0$ hence we will have $\Psi \rightarrow \infty$. This constructs a powerful energy barrier that strongly
+ resists extreme compression. This is the only constitutive model we have seen so far that has this property, other models we discussed here
+ will allow the material to compress to zero volume or even invert. While only absorbing a finite amount of energy.
+ 
+ \item In order to make incompressible materials the second Lam\'e coefficients ($\lambda$) should be set to very large value. By setting 
+ $\boldsymbol{J}=1$ in the energy term of the Neohookean elasticity, a volume-preserving formulation will be produced. Incidentally, setting a
+ high value for $\lambda$ in the earlier constitutive models does not quite have the desired effect, as their respective terms scaled by $\lambda$
+ do not correspond to true volume change. Setting a high value for linear elasticity would enforce:
+\begin{gather*}
+  tr(\boldsymbol{F}-\boldsymbol{I})=0 \Rightarrow div\left[\vec{\phi}(\vec{X})-\vec{X}\right] = 0
+\end{gather*}
+
+this will ensure that displacement field $\vec{x}(\vec{X})-\vec{X}$ is divergence free. This condition approximates volume preservation only
+for small deformations.
+
+\item If the simulated model is accidentally forced into an inverted configuration, there is no mechanism for handling that situation.  
+In such cases, energy and stress are undefined, since $J <0$ (See equations \ref{eq:NeohookeanStrainEnergy} and \ref{eq:NeohookeanStress}).
+Such inversions can easily occur in practice, as a result of nonphysical kinematic constraints, instability of time integration techniques,
+or inadequate convergence of numerical solvers. In these situations the deformation gradient $F$ can be temporarily replaced by the nearest
+physically plausible value $\boldsymbol{F'}$ with $det\boldsymbol{F~} > \epsilon$
+\end{enumerate}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
