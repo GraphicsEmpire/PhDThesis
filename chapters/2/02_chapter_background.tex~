@@ -90,7 +90,7 @@ returns the value by applying equation~\ref{eq:WyvillFunc} to the distance of $P
 \centering
   % the following command controls the width of the embedded PS file
   % (relative to the width of the current column)
-  \includegraphics[width=1.0\linewidth]{figures/CoffeeMugBlobTree}
+  \includegraphics[width=1.0\linewidth]{figures/intro/CoffeeMugBlobTree}
   \caption{\blob structure of a coffee mug created with CSG and skeletal implicit primitives.}
   \label{fig:CoffeeMugBlobTree}
 \end{figure}
@@ -567,31 +567,7 @@ for small deformations.
 In such cases, energy and stress are undefined, since $J <0$ (See equations \ref{eq:NeohookeanStrainEnergy} and \ref{eq:NeohookeanStress}).
 Such inversions can easily occur in practice, as a result of nonphysical kinematic constraints, instability of time integration techniques,
 or inadequate convergence of numerical solvers. In these situations the deformation gradient $F$ can be temporarily replaced by the nearest
-physically plausible value $\boldsymbol{F'}$ with $det\boldsymbol{F~} > \epsilon$
+physically plausible value $\boldsymbol{F'}$ with $det\boldsymbol{F'} > \epsilon$
 \end{enumerate}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 \setlength{\unitlength}{\savedunitlength}

@@ -8,6 +8,7 @@ implicit and deformable tissue modeling and an outline of continuum mechanics an
 deformable models presented in the litrature. 
 
 \section{Implicit Modeling}
+\label{sec:implicitmodelingintro}
 Implicit surfaces are two-dimensional, geometric shapes that exist in three-dimentional space; they can be defined based on discrete data, 
 radial basis functions, offset surfaces, algebraic surfaces, level sets or distance fields to skeletal geometric primitives \cite{Bloomenthal1997}.
 Independently of its origin, an implicit surface can be defined as a level-set function $F:\mathbb{R}^3 \rightarrow \mathbb{R}$ where the surface 
@@ -90,7 +91,7 @@ returns the value by applying equation~\ref{eq:WyvillFunc} to the distance of $P
 \centering
   % the following command controls the width of the embedded PS file
   % (relative to the width of the current column)
-  \includegraphics[width=1.0\linewidth]{figures/CoffeeMugBlobTree}
+  \includegraphics[width=1.0\linewidth]{figures/intro/CoffeeMugBlobTree}
   \caption{\blob structure of a coffee mug created with CSG and skeletal implicit primitives.}
   \label{fig:CoffeeMugBlobTree}
 \end{figure}
@@ -569,29 +570,5 @@ Such inversions can easily occur in practice, as a result of nonphysical kinemat
 or inadequate convergence of numerical solvers. In these situations the deformation gradient $F$ can be temporarily replaced by the nearest
 physically plausible value $\boldsymbol{F'}$ with $det\boldsymbol{F'} > \epsilon$
 \end{enumerate}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 \setlength{\unitlength}{\savedunitlength}
