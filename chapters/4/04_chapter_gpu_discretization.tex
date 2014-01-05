@@ -1,35 +1,81 @@
 \startchapter{GPU discretization}
-\label{chapter:Exp}
+\label{chapter:GPUDiscretization}
+In the previous chapter we presented an algorithm for fast triangle mesh extraction from \blob scene graphs. The output of that 
+algorithm is a list of vertices with their associated attributes such as position, color and normal and a list of triangles that
+defines the connectivity of the surface mesh. While the surface mesh is used for rasterization it can also facilitate  
+collision detection and contact modeling algorithms as we will see in the following chapters.  In this chapter we propose an improved 
+version of that algorithm that can take advantage of the processing capabilities of the GPU and provides real-time \blob rendering performance. 
 
-For future work we are interested in improving the performance of our system on Many Integrated Cores architecture (MIC) 
-such as the one shown in Larrabee \cite{Seiler2008}. We are also interested in testing our algorithm for precise contact modeling, where the \blob 
-model is deformed over time while a collision detection algorithm is being evaluated. Finally, we are also interested in improving the 
-visualization of a haptics enabled simulator \cite{Laycock2007}, based on an implicit surface.
 
-Assuming you have some experimental results to support your claims this is where all the data is reported. There are a few issues you should consider before dumping a lot of stuff here, or it will lose its effectiveness.
 
-First of all you must describe precisely the experimental setup and the benchmarks you used. In any scientific discipline an experimental result is only good if it is reproducible. To be reproducible then somebody else must have sufficient details of the setup to be able to obtain the same data. Thus the first section in this chapter is a super precise history of the decisions made towards experimentation, including mentions of the paths which became infeasible. The setup must be valid and thus your description of it must prove that it is indeed sound. At times, terrifying times, when writing this section, both supervisor and student realize belatedly that something is missing and more work needs to be done!
+One of the primary objectives in our modeling framework was to be able to shift from sketching mode into live interactive animation mode
+which can enable further enhancements; such as assignment of elastic parameters to the model in an incremental process, e.g. the
+modeler can interactively make certain parts of the object stiffer and check out the results by haptically interacting with it or
+visually examining the contacts between colliding bodies and with avatar. To make the modelled object amenable to this type of analysis, it has 
+to be decomposed into simple shapes called \textit{elements}, which commonly are tetrahedra \cite{Labelle2007}. 
+The success of the finite element method depends on the shapes of these tetrahedra, i.e. large dihedral angles cause large interpolation 
+and discretization errors and will degrade the accuracy of the numerical simulation, small dihedral angles on the other hand will 
+lead to incorrect stiffness matrices associated with the finite element method \cite{Shewchuk}. 
 
-The second portion of this chapter is dedicated the the actual results. At least two issues arise here:
-\begin{enumerate}
-\item {Should all the data be reported here or should some be placed in the Appendix?}
-\item {Should this be an exposition of the raw facts and data or should it include its analysis and evaluation?}
-\end{enumerate}
 
-There are no definite answers here, but I follow a few rules.
+In order to address the tetrahedra extraction stage of the process we propose a GPU accelerated volume tetrahedralization algorithm based on the work of
+Labelle \etal \cite{Labelle2007} that produces a smooth tetrahedral mesh. As opposed to their work our algorithm is scalable to number of processors 
+available on the graphics processing units and delivers real-time results to support our modeling system.
 
-\textit{Should all the data be reported here or should some be placed in the Appendix?}
-    \begin{itemize}
-    \item{If there is a large number of tables of data, it might be better to present here only a handful of the most significant ("best") results, leaving all the rest of the data in the Appendix with proper linkages, as it would make the chapter so much more easily readable (not to mention limiting the struggle with a word processor for the proper placement of tables and text).}
-    \item{Use an example throughout, call it a "case study" to make it sound better, so that all the data and results are somehow linked in their logic, and even better if this is one of the examples you used in Chapter 2 to describe the original problem.}
-    \item{Highlight in some manner the important new data, for example the column of your execution speed where all the numbers are much smaller. Make the results highly easy to read!}
-    \item{It is normally expected that data should be presented only in one form and not duplicated, that is, you are not supposed to include both a table of raw numbers and also its graphical representation from some wonderful Excel wizard. I tend to disagree. I would not wish to see every results repeated in this manner, but some crucial ones need to be seen in different manners, even with the same information content, in order to show their impact. One good trick is to place the more boring tables in the Appendix and use wonderful graphs in this chapter.}
-    \item{This is the one chapter where I would splurge and use colour printing where necessary, as it makes an \textit{enourmous} difference.}
-    \end{itemize}
+The contributions in this chapter are as following:
 
-\textit{Should this be an exposition of the raw facts and data or should it include its analysis and evaluation?}
-     \begin{itemize}
-    \item{Is the evaluation of the data really obvious? For example you have 10 tables to show that your chemical process is faster in development and gives purer material - you may simply need to highlight one column in each table and state the obvious.}
-    \item{Most results are not that obvious even if they appear so. Moreover this is where you are comparing your \textit{new} results to data from other people. I usually describe other people's work at this point and make comparisons. That is why I prefer to talk about the analysis and evaluation of the results in a separate chapter.}
-    \item{There is absolutely no clear structure here which is best.}
-    \end{itemize}
+\begin{itemize}
+ \item A GPU accelerated polygonization algorithm for rendering complex \blob models. The algorithm scales with the number of stream cores available
+ on modern GPU and can be easily extended to support various geometric primitives.
+ 
+ \item A Tetrahedralization algorithm that leverages GPU for high performance volume discretization from \blob models. The output tetrahedral mesh is
+ readily available for further physically-based simulations.
+\end{itemize}
+
+
+\section{Related Work}
+GPU accelerated rendering techniques has been the topic of interest for the graphics community in the past two decades.
+Several GPU-accelerated algorithms have been proposed for fast triangulation and rendering of iso-surfaces that are defined by
+volume data-sets, algebraic surfaces and radial-basis functions. In this section we will review the most related works.
+
+Chochl{\'i}k \etal proposed a GPU accelerated polygonization algorithm for dynamically changing implicit surfaces \cite{chochlik2012gpu}. 
+Their method is based on the marching tetrahedra (MT) algorithm. The model is partitioned into cubic cells first and then each cell is 
+subdivided into 6 tetrahedra to be further processed using the GPU geometry shading stage. The vertices are marked inside if their 
+associated field is above zero and outside otherwise. A configuration index is computed per each tetrahedra based on the inside/outside 
+vertices. The triangle mesh is produced which is shaded using the fragment shader stage. No further analysis has been made on the performance 
+of their algorithm and the input models are limited to time varying simple algebraic surfaces. 
+
+Buatois \etal proposed a GPU accelerated isosurface extraction method based on MT, similar to Chochl{\'i}k \etal \cite{Buatois2006}. The 
+texture memory to transfer the position and field values of the grid vertices. They presented an analysis of the performance of their algorithm
+using a fluid simulation volume data-set. They reported that excessive texture fetches can be a bottleneck in the performance of their method.
+
+
+
+
+
+
+%Another requirement for the tetrahedral mesh generation is that the triangular surface mesh should be the boundary surface of the tetrahedral mesh. This is needed since 
+%after applying the displacements to the volumetric tetrahedral elements the surface vertices should be displaced as well.
+\section{Many-cores architectures}
+Shrinking of CMOS circuitry has allowed distances between transistors to scale fairly consistently for an extended period of time. The shrinking 
+of distances and reduction in size of capacitors allowed hardware architects to clock circuits at a higher rate. This led to Gordon Moore's
+famous self-fullfilling prophecy about transistor density and its misinterpretations into the realm of execution frequency and overall performance.
+
+Certainly, increasing frequency allowed the performance of nonparallel code to increase consistently during that time, such that it became an 
+expectation for software developers until the early 21st century. During the past decade, it has become obvious the continued scaling of clock 
+frequencies of CPUs is not practical, largely due to power and heat dissipation constraints. The reason for this is that power consumption is 
+dependent on frequency in a nonlinear manner \cite{gaster2012heterogeneous}. As a second problem, increasing clock frequency on-chip requires 
+either increasing off-chip memory bandwidth to provide data fast enough to not stall the linear workload running through the processor or increasing
+the amount of caching in the system. 
+
+Due to those reasons the computational hardware available in high-performance workstations shifted from increasingly efficient but complex sequential 
+computational units, to smaller units which are not faster than previous generations but the cores are duplicated to be able to execute more threads 
+in parallel. This new trend in design can be found in modern CPUs and recent Graphics Processing Units (GPUs). The latest generation of GPUs contains 
+hundreds of computation units (4096 in AMD Radeon 7990, 2496 in NVIDIA Tesla K20. For a brief discussion on how to count GPU cores refer to \cite{Fatahalian2008})
+
+This radical architectural change has important consequences on the type of algorithms which are applicable in interactive simulations. In terms of 
+programming, general purpose computations on GPUs initially required the use of graphics oriented libraries. The two major GPU vendors released general
+programming APIs, CUDA \cite{Nickolls2008} and CTM \cite{peercy2006performance} which provide direct access to the underlying parallel processors of the
+GPU, as well as full instruction sets, such as double precision computations and write operations at arbitrary locations. OpenCL which is a multi-vendor
+standard was released in 2009, with a programming model very similar to CUDA \cite{gaster2012heterogeneous}. The presented algorithms in this chapter
+have been implemented in OpenCL. 
