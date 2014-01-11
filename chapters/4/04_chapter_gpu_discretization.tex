@@ -154,4 +154,59 @@ Each input data-structure is numbered in figure (\ref{fig:datastructure}) for fu
  weight. 
 \end{enumerate}
 
+\section{Memory foot prints}
+In OpenCL and CUDA threads may access data from multiple memory spaces during their execution \cite{Nickolls2008}. Each thread has a private \textit{local} memory. 
+OpenCL uses this memory for thread-private variables that do not fit in the thread's registers, as well as for stack frames and register spilling. Each thread block 
+has a shared memory visible to all threads of the block that has the same lifetime as the block. Finally, all threads have access to the same \textit{global} memory. 
+Programs declare variables in shared and global memory with the \texttt{\_\_local} and \texttt{\_\_global} type qualifier. On a Tesla-architecture GPU, these memory spaces correspond to 
+physically separate memories: per-block shared memory is a low-latency on-chip RAM, while global memory resides in the fast DRAM on the graphics board. 
+
+Shared memory is expected to be a low-latency memory near each processor, much like an L1 cache. It can therefore, provide for high-performance communication and
+data sharing among the threads of a thread block. Since it has the same lifetime as its corresponding thread block, kernel code will typically initialize data in shared
+variables, compute using shared variables, and copy shared memory results to global memory. Thread blocks of sequentially dependent grids communicate via global
+memory, using it to read input and write results. 
+
+%Register spilling can increase the number of instructions required to generate prefetch addresses. Ideally only a single instruction would be needed for each prefetch,
+% i.e. the prefetch instruction itself. In some cases, as many as 20 extra instructions were added for each prefetch. 
+Register spilling occurs whenever the register allocator runs out of registers, and therefore must ``spill'' values by saving and restoring them from memory. Once 
+register spilling occurs, the instruction count within a loop body can increase dramatically. 
+ 
+A potential cause of register spilling is the loop unrolling. Once a loop is unrolled, the compiler can optimize across the several replicated copies of the loop 
+body. In most cases this allows the compiler to reduce the overall instruction count for the following reasons:
+ 
+ \begin{enumerate}
+  \item branch instructions can be eliminated between unrolled iterations
+  \item it is more likely that ``hazard'' slots after multi-cycle operations can be filled with independent instructions. 
+  \item register allocations can be optimized across the unrolled iterations, possibly eliminating loads and stores.
+ \end{enumerate}
+
+On the other hand the potential downside of the loop unrolling is creating too many intermediate values for the register allocator to handle, thus resulting in 
+register spilling. One way for the compiler to avoid those register-spilling problems is to perform loop unrolling with a greater awareness of its effect on register 
+pressure. 
+
+After analyzing the performance of our OpenCL kernels, register spilling often found to be the major cause for many latencies. Resorting to shared memory spaces, reducing 
+number of intermediate variable in field-evaluation kernels and avoiding loop unrolling in some cases helped to optimize the performance. Upon every
+change in the input \blob the scenegraph is compacted and transferred from main memory to the GPU. Currently the maximum number of nodes is set at 64K which covers
+all of the complex cases we modelled for this thesis. However, for larger \blob models  we can easily increase this amount to support them. The memory footprint of 
+our current \blob representation is summarized in the table below:
+
+\begin{table}[H]
+\begin{center}
+	 \caption{\label{table:memfootprint}
+  {Memory footprint of the input \blob in our GPU polygonization algorithm in bytes.}
+}
+  \begin{tabular}{ | c | c | c | c | c | c | c | c |}
+    \hline    
+    Nodes & Header & Primitives & Operators & Prim Mtx & Box Mtx & Ctrl Points & Total \\ \hline \hline
+    1 & 48 & 96/Prim & 64/Op & 48/Prim & 64/Prim & 16/Point & 320 \\ \hline
+    1K & 48K & 96K & 64K & 48K & 64K & 16K & 320K \\ \hline
+    64K & 3072K & 6144K & 4096K & 3072K & 4096K & 1024K & 20M \\ \hline
+    1M & 48M & 96M & 64M & 48M & 64M & 16M & 320M \\ 
+    \hline
+  	\end{tabular}
+\end{center}
+\end{table}
+
+
+\section{Stackless \blob traversal}
 
