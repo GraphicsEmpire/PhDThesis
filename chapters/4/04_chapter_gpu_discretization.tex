@@ -68,9 +68,13 @@ Our method also employs this feature to reduce the overhead. They also use featu
 numerical computations and memory access operations. They used a span-space data-structure to avoid processing non surface intersecting elements.
 
 Kanai \etal \cite{Kanai2006a} proposed a rendering method for sparse low-degree implicit surfaces (SLIM) using ray casting approach. The ray and IS intersection
-test has been carried out on the fragment processing stage. The employed level of detail rendering and view frustum culling to speedup the rendering. 
+test has been carried out on the fragment processing stage. They employed level of detail rendering and view frustum culling to speedup the rendering. 
 The coefficients for the IS are passed in using textures. They reported high quality and interactive rates for several models. The large number of processed
 fragments is the bottleneck in this process and models with lower number of nodes could be rendered slower than more complex models that cover less fragments.
+Although Kanai \etal's work is data-driven but the increasing cost of fragment processing is the main bottleneck in their system. Also since they are not
+producing any mesh the computations will be lost after rendering.
+
+
 
 %Another requirement for the tetrahedral mesh generation is that the triangular surface mesh should be the boundary surface of the tetrahedral mesh. This is needed since 
 %after applying the displacements to the volumetric tetrahedral elements the surface vertices should be displaced as well.
@@ -97,3 +101,57 @@ programming APIs, CUDA \cite{Nickolls2008} and CTM \cite{peercy2006performance} 
 GPU, as well as full instruction sets, such as double precision computations and write operations at arbitrary locations. OpenCL which is a multi-vendor
 standard was released in 2009, with a programming model very similar to CUDA \cite{gaster2012heterogeneous}. The presented algorithms in this chapter
 have been implemented in OpenCL. 
+
+\section{Data Structures}
+\label{sec:datastructure}
+The \blob linearization step introduced in (section \ref{sec:linearization}) is modified to create a compact representation of the input model in our 
+GPU polygonization algorithm. Figure (\ref{fig:datastructure}) depicts this pointerless representation in details.
+
+\begin{figure}[H]
+  \centering
+  % the following command controls the width of the embedded PS file
+  % (relative to the width of the current column)
+  \includegraphics[width=1.0\linewidth]{figures/gpupoly/lineartree.pdf}
+  \caption{\label{fig:datastructure}
+  {The compact \blob scenegraph representation for GPU polygonization and tetrahedralization algorithms. The structure is aligned at 16 bytes (4 floats). 
+  1- The header. 2- Skeletal implicit primitives. 3- Operators. 4- Affine transformation nodes. 5- Control points for sketched objects. Refer to section 
+  \ref{sec:datastructure} for details.}
+}
+\end{figure}
+
+All the structures are aligned at 16 bytes (four floating points) memory addresses (This is similar to the texture accessing techniques in graphical 
+shader programming languages such as (GLSL or Cg) where four floats represent the RGBA values of a texel accordingly.) If a primitive node has an associated 
+transformation node with a non-identity transformation matrix, that matrix will be stored in the primitive matrices section of the input structure and an associated 
+id will be provided to the primitive. The default id is 0 which points to an identity transformation matrix. The inverse of the primitive matrix is 
+computed and the first three rows of it will be stored for further field computations. To transform the axis-aligned bounding boxes of the primitives the full forward 
+transformation matrix will be stored in the box matrices section of the structure and it can be accessed using the same id provided for the primitive matrix.
+Each input data-structure is numbered in figure (\ref{fig:datastructure}) for further reference. We review the details in the following:
+\begin{enumerate}
+ \item The header section defines the lower and upper corner of the axis-aligned bounding box enclosing the entire model, i.e. the convex hull of the 
+ input \blob. The header also contains the count of primitives, operators and transformation nodes. The id associated with the root operator of the 
+ tree is also defined in the header.
+ \item The primitive section defines the type of skeleton. MX, PR and SB fields are the ids associated with the inverse transformation matrix, the parent and the
+ sibling of the node respectively. The following texels define the position, direction, skeleton-specific parameters and the color of the primitive node in 
+ that order. For the primitives that are computed from sketched control points (Thin-plate spline \cite{Turk1999, Grasberger} primitives.) the interval of the 
+ associated stored control points are provided.
+
+ \item This section defines the operators in the \blob. The type of each operator is the first field defined in the structure. The following fields define the 
+ left and right children, in case all the children are primitives and their indices are in a consecutive order (range); LC defines the first child and RC the last child
+ included in that closed range of children. The NX field is related to our stackless \blob traversal algorithm which is explained in the following sections and 
+ points to the next operator node in the \blob traversal route. The operator-specific parameters and its axis-aligned bounding box are stored next. The F* flag 
+ provides more control over the operator and the definition of the bit flags is explained at the bottom of section 3 in the figure. 
+ Bits 1 and 0 are set in case the left child or the right child of the current node are operators as well. Bit 2 is set if the LC and RC indices are actually defining 
+ a range of skeletal primitives. This situation can happen if a high-level op contains many children such as a global union operator in this case the first two fields
+ will be zero as well. If the unary flag is set this operator has only one left child.  Bit 4 is set when the current operator appears as a right node for its parent.
+ Bit 5 is the break route flag and is discussed further in our stackless \blob routing algorithm. The rest of the bits are reserved for future use. 
+ 
+ 
+ \item As mentioned above the inverse of the transformation matrices are computed and the first three rows are stored in our input structure for field computation
+ purposes. The elements are depicted in the format of [row][column]. The forward transformation is stored as a 4x4 matrix in a separate input structure for performance
+ reasons. 
+ 
+ \item The control points associated with the sketched primitives are all stored in this section. Each control point is defined with their XYZ coordinate and an associated 
+ weight. 
+\end{enumerate}
+
+
