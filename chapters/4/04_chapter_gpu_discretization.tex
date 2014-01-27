@@ -154,7 +154,7 @@ Each input data-structure is numbered in figure (\ref{fig:datastructure}) for fu
  weight. 
 \end{enumerate}
 
-\section{Memory foot prints}
+\section{Memory foot prints}\label{sec:memory}
 In OpenCL and CUDA threads may access data from multiple memory spaces during their execution \cite{Nickolls2008}. Each thread has a private \textit{local} memory. 
 OpenCL uses this memory for thread-private variables that do not fit in the thread's registers, as well as for stack frames and register spilling. Each thread block 
 has a shared memory visible to all threads of the block that has the same lifetime as the block. Finally, all threads have access to the same \textit{global} memory. 
@@ -188,12 +188,13 @@ After analyzing the performance of our OpenCL kernels, register spilling often f
 number of intermediate variable in field-evaluation kernels and avoiding loop unrolling in some cases helped to optimize the performance. Upon every
 change in the input \blob the scenegraph is compacted and transferred from main memory to the GPU. Currently the maximum number of nodes is set at 64K which covers
 all of the complex cases we modelled for this thesis. However, for larger \blob models  we can easily increase this amount to support them. The memory footprint of 
-our current \blob representation is summarized in the table below:
+our current \blob representation is summarized in table \ref{table:memfootprint}).
 
 \begin{table}[H]
 \begin{center}
 	 \caption{\label{table:memfootprint}
-  {Memory footprint of the input \blob in our GPU polygonization algorithm in bytes.}
+  {Memory footprint of the input \blob in our GPU polygonization algorithm in bytes. The entire \blob for a model with 64K nodes (primitives and operators) 
+  takes about 20MB in our current system.}
 }
   \begin{tabular}{ | c | c | c | c | c | c | c | c |}
     \hline    
@@ -209,4 +210,185 @@ our current \blob representation is summarized in the table below:
 
 
 \section{Stackless \blob traversal}
+In this section we describe our novel stackless \blob traversal algorithm that completely eliminates the need to maintain a stack during a \blob
+traversal and that reduces the number of traversal steps per fieldvalue evaluation. While our multicore algorithm presented in the previous chapter 
+benefit moderately from the stackless approach, it improves GPU performance significantly. In high performance rendering algorithms the use of 
+hierarchical spatial data structures for acceleration reasons is common. Vising nodes in such structures requires stack-based traversal 
+algorithms. Unfortunately, even the latest GPU architectures are poorly suited for implementing such algorithms. 
+
+
+A complex \blob scenegraph data structure may contain thousands of primitives and operators which can lead to deep tree structures. The fieldvalue 
+evaluation process has two stages: ``down traversal'' and an ``up traversal''. During the down traversal stage all operators starting from the root node 
+are visited and pushed onto an operators stack until a leaf node (primitive) is reached at which point the field due to the primitive is computed and 
+pushed onto a separate fields stack and the next stage which is the up traversal begins. During the up traversal stage the operators are popped out of 
+the stack and per each child an associated field is popped from the fields stack for the operator to combine them in its own specific way. The resulting 
+field is again pushed back on the fields stack.  This process continues until the operators stack get emptied and the final fieldvalue due to the root node is 
+computed and returned.
+
+This naive algorithm requires many push and pop operations which will limit the performance of the traversal process. The other issue relates to the 
+inherently dynamic storage requirement for the stack itself. Although, creating a fixed-size stack is possible but since the stack size is a function of
+the count of nodes in the input \blob, this will ultimately limit the maximum number of nodes in a complex scene. If $N$ is the maximum number of nodes 
+(primitives plus operators) allowed in a \blob model then the minimum number of elements to be stored in the stack during the traversal process 
+is given by: $M=\log(N)$ or the depth of the binary tree created by $N$ nodes. Recalling from section \ref{sec:memory} there is very limited amount of
+local memory available per each thread executing on the GPU. Keeping the stack in the shared memory will also complicate the implementation and
+the access patterns from other threads in the current thread block may impact the performance. Needless to say a stack in global memory will require very expensive 
+memory transfers and is not an option for a realtime rendering algorithm. 
+
+Our algorithm is based on the neighbor cell-links concept in the stackless traversal of spatial subdivision trees which is first introduced by Samet \etal 
+\cite{Samet1984,Samet1990}. Using a similar technique Popov \etal presented a stackless KD-Tree Traversal for high performance GPU ray tracing algorithm \cite{Popov2007}.
+
+\begin{figure}[H]
+  \centering
+  % the following command controls the width of the embedded PS file
+  % (relative to the width of the current column)
+  \includegraphics[width=1.0\linewidth]{figures/gpupoly/stackless.pdf}
+  \caption{\label{fig:stackless}
+  {Stackless \blob traversal algorithm performs faster on deep tree traversals. The route is computed once and encoded into the tree upon transferring the input 
+  data structures to the GPU.}
+}
+\end{figure}
+
+We start by computing a route to visit all nodes in the \blob. This process is done once and is not a bottleneck in the system.
+Using the naive \blob traversal algorithm the nodes are visited from root to leaves. Two stacks are used in this process, an
+operators stack $S1$ and a \text{break} nodes stack $S2$. The latter is defined in the following:
+
+\begin{enumerate}
+ \item If one of the children is an operator and the other is a primitive. Let $A$ be the name of that child operator. The parent for $A$ is set 
+ to the current node and then it is pushed onto $S1$.
+ 
+ \item If both children are operators. The right child is set as a \textit{break} node (The route at break nodes will be flipped to 
+ the left branch of the tree, see figure \ref{fig:stackless}) then it is pushed on to $S2$.
+ 
+ \item If the two children are both primitives: First the root of the \blob is set to the current node if it hasn't been set before.
+  (Refer to the \blob header format in figure \ref{fig:datastructure} for the location of the root field $RT$) 
+  A rope is created between the two primitives, linking the two nodes and a break node $B$ is popped from $S2$. 
+  The next node for $B$ is set to the current node.
+ 
+  
+ \item The process is continued until $S1$ is emptied.
+\end{enumerate}
+
+
+Figure \ref{fig:stackless}, shows the final route for a sample \blob. The benefits of this type of routing encoded into the tree
+is that there is no need for storing a deep stack for tree traversals. The kernel functions written in OpenCL to compute the field
+has the following prototypes. The structure of the input blobtree are as following:
+arrHeader4: Defines the header of the linear blobtree.
+arrOps4: The operators structure for the compact blobtree.
+arrPrims4: The compact structure for the primitives.
+arrMtxNodes4: The input transformation matrices associated with primitives.
+
+
+\begin{lstlisting}[frame=single]
+//Computes the field at point v due to a skeletal primitive. 
+float PrimitiveField(unsigned int idxPrimitive, float4 v,			
+		     __global float4* arrOps4,
+		     __global float4* arrPrims4, 
+		     __global float4* arrMtxNodes4);
+
+//Computes the field at point v due to an operator.
+float OpField(unsigned int idxPrimitive, float4 v,			
+	      __global float4* arrOps4,
+	      __global float4* arrPrims4, 
+              __global float4* arrMtxNodes4);
+
+/*A Range is an operator with all primitive children. Left child field 
+in this operator defines the index of the first primitive child and 
+right child is the index of the last primitive.*/
+float RangeField(float4 v, unsigned int idxOp, 						
+		 __global float4* arrOps4,
+		 __global float4* arrPrims4, 
+		 __global float4* arrMtxNodes4);
+
+/*The field due to a branch of the tree until a break node is reached. 
+lf and rf are the fields previously computed for the left and right branches 
+of the tree (initially zero)*/
+float BranchField(unsigned int idxBranchOp, unsigned int* lpNextOp, 
+		  bool* lpIsBreakOp, float4 v, 
+		  float lf, float rf,
+		  __global float4* arrHeader4,
+		  __global float4* arrOps4,
+		  __global float4* arrPrims4, 
+		  __global float4* arrMtxNodes4);
+		  
+/*The main field evaluation function which will call the other four functions accordingly.*/
+float Field(float4 v,			
+	    __global float4* arrHeader4,
+            __global float4* arrOps4,
+	    __global float4* arrPrims4, 
+	    __global float4* arrMtxNodes4);
+\end{lstlisting}
+
+
+\section{GPU Surface Extraction}
+In this section we present our GPU polygonization algorithm which is based on our novel field value evaluation technique described
+in the previous section. Since the following steps are implemented using OpenCL on the GPU we will use the term \textit{kernel} which 
+refers to the single thread of execution on the GPU. Please refer to section \ref{sec:memory} for a description of the memory model for
+general purpose GPU (\textit{GPGPU}) programming.
+
+We start by computing the axis-aligned bounding box of the model by traversing the tree from root to leaves 
+and applying the transformation matrices at leaf nodes (primitives). Using the \textit{cellsize} parameter supplied by the user the 
+bounding box is divided into a grid of voxels. The kernel function \textit{ComputeAllFields} will compute a fieldvalue per each
+vertex of this voxel grid and store that value in the format of \textit{XYZF} where \text{XYZ} denotes the vertex position and 
+\textit{F} is the so-called field at that position. 
+
+
+After computing all the fields, the grid edges are processed in the following order. 
+Each vertex in the grid can be connected to upto 6 other adjacent vertices. Starting from the lower corner of the voxel grid 
+the kernel function \textit{ProcessEdges} visits the corresponding vertex in the grid and examines only the edges that start 
+from that vertex and connect to the adjacent vertices in the next index step. This way all edges in the voxel grid are checked 
+and redudant traversals can be avoided. Needless to say that at boundary vertices it may process less than 3 edges per each 
+vertex (i.e. the ones that are within the convex-hull of the model). Upon each kernel run at this stage the index address to 
+the corresponding vertex and it 3 other adjacent vertices is computed as shown in the algorithm \ref{alg:processedgeskernel}. Per each vertex
+an inclusion query is performed (i.e. The fieldvalue at that vertex is compared against the isovalue. If it is greater than or equal 
+the isovalue the vertex is considered inside otherwise outside the model). Two values are stored before completion of this kernel call. 
+The first value is the count of crossed edges at that vertex and the second one is a 3 bits flag which basically locates the intersected 
+edges along x, y or z axes.
+
+
+\begin{algorithm}[H]
+\caption{\textit{ProcessEdges} kernel function counts the number of intersected edges and their corresponding axes.}
+\label{alg:processedgeskernel}
+\begin{algorithmic}[1]	
+  \STATE $v = queryVertexInclusion(i, j, k)$
+  \STATE $vx = queryVertexInclusion(i+1, j, k)$
+  \STATE $vy = queryVertexInclusion(i, j+1, k)$
+  \STATE $vz = queryVertexInclusion(i, j, k+1)$
+  \STATE $count = (v \xor vx) + (v \xor vy) + (v \xor vz)$
+  \STATE $flag = (((v \xor vx) << 2) or ((v \xor vy) << 1) or (v \xor vz))$
+\end{algorithmic}
+\end{algorithm}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
