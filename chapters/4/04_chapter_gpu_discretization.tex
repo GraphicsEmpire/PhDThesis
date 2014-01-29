@@ -341,12 +341,13 @@ vertex (i.e. the ones that are within the convex-hull of the model). Upon each k
 the corresponding vertex and it 3 other adjacent vertices is computed as shown in the algorithm \ref{alg:processedgeskernel}. Per each vertex
 an inclusion query is performed (i.e. The fieldvalue at that vertex is compared against the isovalue. If it is greater than or equal 
 the isovalue the vertex is considered inside otherwise outside the model). Two values are stored before completion of this kernel call. 
-The first value is the count of crossed edges at that vertex and the second one is a 3 bits flag which basically locates the intersected 
+The first is the count of crossed edges at that vertex and the second one is a 3 bits flag which basically locates the intersected 
 edges along x, y or z axes.
 
 
 \begin{algorithm}[H]
-\caption{\textit{ProcessEdges} kernel function counts the number of intersected edges and their corresponding axes.}
+\caption{\textit{ProcessEdges} kernel function counts the number of intersected edges and their corresponding axes. This kernel runs per each
+vertex of the voxel grid.}
 \label{alg:processedgeskernel}
 \begin{algorithmic}[1]	
   \STATE $v = queryVertexInclusion(i, j, k)$
@@ -359,7 +360,30 @@ edges along x, y or z axes.
 \end{algorithm}
 
 
+After processing all edges with the kernel given in listing \ref{alg:processedgeskernel}, the \textit{EdgeBuffer} 
+contains the count of intersected edges per each vertex in the voxel grid. In order to compute the total number of 
+output vertices in the triangle mesh the prefix-sum (\cite{Sengupta2007}) of \textit{EdgeBuffer} is computed and
+stored in a separate gpu memory buffer called \textit{ScannedEdges}. The total number of vertices is the sum of the
+last element in both the \textit{EdgeBuffer} and \text{ScannedEdges}. 
 
+After this stage the vertex attributes of the mesh can be computed by executing a root finding method on the intersected 
+edges and storing the output vertices in their appropriate buffer locations using the offsets in \textit{ScannedEdges}.
+We used a Newton-Raphson root finding method which converges to the iso-surface using the gradient of the field \cite{Matthews1987}.
+At each iteration the root is displaced closer to the surface according to the method given by Overveld \etal (\cite{VanOverveld2004}):
+
+\begin{equation}
+ r = r + \frac{\left(iso - f(r)\right)}{\nabla V(r).\nabla V(r)}
+\end{equation}
+
+Where $r$ is the root, $f(r)$ is the field at $r$ and $\nabla V(r)$ is the gradient of the field at $r$.
+A maximum iterations of 4 is sufficient to provide smooth results in our tests. 
+After computing the root position other attributes such as the color and normal at that vertex are also computed and stored in their 
+designated buffers. The next step is to process the cells in the voxel grid in parallel and compute a configuration index per each cell
+for extracting the topology of the triangles. There is no \blob traversal at this stage since the computed fields will be provided
+to the kernel function. The configuration table is passed in as a texture image and being accessed using texture sampler for 
+fast access. The number of triangles that are output per each cell is stored in a buffer called \textit{FaceBuffer}.
+
+In order to compute the triangle elements a prefix-sum scan is applied to the \textit{FaceBuffer}
 
 
 
