@@ -319,7 +319,7 @@ float Field(float4 v,
 \end{lstlisting}
 
 
-\section{GPU Surface Extraction}
+\section{GPU Surface Extraction Algorithm}
 In this section we present our GPU polygonization algorithm which is based on our novel field value evaluation technique described
 in the previous section. Since the following steps are implemented using OpenCL on the GPU we will use the term \textit{kernel} which 
 refers to the single thread of execution on the GPU. Please refer to section \ref{sec:memory} for a description of the memory model for
@@ -364,7 +364,9 @@ After processing all edges with the kernel given in listing \ref{alg:processedge
 contains the count of intersected edges per each vertex in the voxel grid. In order to compute the total number of 
 output vertices in the triangle mesh the prefix-sum (\cite{Sengupta2007}) of \textit{EdgeBuffer} is computed and
 stored in a separate gpu memory buffer called \textit{ScannedEdges}. The total number of vertices is the sum of the
-last element in both the \textit{EdgeBuffer} and \text{ScannedEdges}. 
+last element in both the \textit{EdgeBuffer} and \text{ScannedEdges}. Before computing the vertex 
+attributes (position, color and normal) the GPU memory buffers are allocated on the device global memory using the total number 
+of vertices computed in the previous step. 
 
 After this stage the vertex attributes of the mesh can be computed by executing a root finding method on the intersected 
 edges and storing the output vertices in their appropriate buffer locations using the offsets in \textit{ScannedEdges}.
@@ -383,9 +385,51 @@ for extracting the topology of the triangles. There is no \blob traversal at thi
 to the kernel function. The configuration table is passed in as a texture image and being accessed using texture sampler for 
 fast access. The number of triangles that are output per each cell is stored in a buffer called \textit{FaceBuffer}.
 
-In order to compute the triangle elements a prefix-sum scan is applied to the \textit{FaceBuffer}
+In order to find the total number of triangle elements a prefix-sum scan is applied to the \textit{FaceBuffer} array 
+in the same way that total number of vertices is computed previously. The buffer \textit{ScannedFaces} will be used to hold the 
+offset values per each cell. 
+
+The final stage in our GPU polygonizer is producing the triangles. For this purpose the kernel function \textit{GenerateFaces} 
+is called per each cell in the voxel grid. No \blob traversal is required for this stage. Only the cells which intersect with the 
+iso-surface will be further processed. Upon each kernel run the indices for the eight vertices of the current cell is computed. 
+
+To process cell configurations we used the improved marching cubes table by Dietrich \etal 
+\cite{Dietrich2009}, which avoids most of the small and badly shaped triangles. The table is supplied to the kernel as 
+a texture of size 256 rows by 16 columns. To access the entries in the table the texture sampler on the hardware 
+can be used. Per each cell the configuration index is computed using the previously stored fields. Each entry in the table is the 
+index of an edge in the cell (There are 12 edges per each cell). Algorithm \ref{alg:generatefaceskernel} shows how the 
+triangle elements are computed at this stage.
+
+\begin{algorithm}[H]
+\caption{\textit{GenerateFaces} kernel function computes the triangle indices per each cell and outputs them directly into an
+OpenGL index buffer for rasterization. All the buffers can be read back later from the GPU and stored.}
+\label{alg:generatefaceskernel}
+\begin{algorithmic}[1]	 
+  \STATE $index = globalCellIndex(i, j, k, dim)$
+  \STATE $config = cellconfig(i, j, k)$
+  	  \IF{$config == 0$ or $config == 255 $}
+	  \STATE return;
+	  \ENDIF	
+   \STATE $cellcorners = cellCornerIndices(i, j, k, dim)$
+   \STATE $offset = ScannedFaces[index]$
+   \STATE $count = FaceBuffer[index]$
+   \FOR{$i=1 \to $count}
+	 \STATE $edge = sample($configtable$, int2(edge, index))$
+	 \STATE $start = EdgeStartIndex[edge]$
+	 \STATE $axis = EdgeAxis[edge]$
+	 \STATE $elements[offset + i] = ScannedEdges[cellcorners[start]] + axis$
+   \ENDFOR				
+
+\end{algorithmic}
+\end{algorithm}
 
 
+Each cell may contribute up to 5 triangles. Line 11 and 12 in the algorithm \ref{alg:generatefaceskernel} 
+assigns the start index of an edge and its associated axis using two constant buffers supplied to the kernel for this purpose. 
+The element entry is computed as an index to the global vertex buffer. The \textit{ScannedEdges} 
+buffer holds the global offset for all the intersected edges as discussed previously. 
+
+\section{Analysis and Results}
 
 
 
