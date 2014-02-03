@@ -472,7 +472,7 @@ the OpenCL framework once with the stack and the other time with the stackless m
 When using stacks register spilling mentioned previously will degrade the performance due to the higher cost of accessing shared memory. 
 Conditional push and pops in stack-based method also stalls the performance of the kernels.  
 
-Faster field evaluations using the stackless algorithm also boosts the performance of our root-finding method and the overall
+Faster field evaluations using the stackless algorithm also improved the performance of our root-finding method and the overall
 polygonization time. In the following we review per kernel time break-time which provides a close look at hotspots (most time-consuming 
 locations) in our implementation. 
 
@@ -487,14 +487,24 @@ locations) in our implementation.
   \includegraphics[width=1.0\linewidth]{figures/gpupoly/breakdownpoly.pdf}
   \caption{\label{fig:breakdownpoly}
   {Polygonization time breakdown in milliseconds for the three models shown in the previous section. Vertex processing is the most compute-intensive
-  stage due to the gradient-based Newthon-Raphson root finding method employed and the evaluation of colors and normals which require additional traversals.
+  stage due to the Newthon-Raphson root finding method employed and the evaluation of colors and normals which require additional traversals.
   }
 }
 \end{figure}
 
+As it can be seen computing vertices is still the most time-consuming stage due to the extra tree traversals required for high quality 
+gradiant-based Newthon-Raphson method for root-finding. Computing other attributes such as colors and normals would also need 1 and 4 
+traversals respectively. The prefix-sum scan operator employed here uses multi-pass computing. The extra cost of kernel invokations
+increased the cost of using these operators. Several optimizations can be performed to benefit the overall performance. By 
+vectorizing all kernels the core SIMD units can be used more efficiently. 
+In Nvidia and AMD GPUs the local memory is divided into memory banks. Each bank can only address one dataset at a time, so if a halfwarp (16 threads)
+tries to load/store data from/to the same bank the access has to be serialized (this is called a bank conflict). 
+For NVidia GT200 GPUs there are 16 banks and in Fermi card this number is 32. If each thread in a halfwarp accesses successive 32bit values
+there are no bank conflicts. An exception from this rule are broadcasts: If all threads access the same address, the value is only read once and
+broadcasted to all threads (e.g. For GT200 it has to be all threads in the halfwarp accessing the same address).
 
-
-
+The prefix-sum scan operator can also be implemented in such a way that the memory-bank conflicts be avoided and the data-access
+be performed in parallel.
 
 
 
