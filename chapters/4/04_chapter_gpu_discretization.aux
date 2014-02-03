@@ -32,6 +32,7 @@
 \@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces  {Memory footprint of the input \textit  {BlobTree }in our GPU polygonization algorithm in bytes. The entire \textit  {BlobTree }for a model with 64K nodes (primitives and operators) takes about 20MB in our current system.} }}{54}}
 \newlabel{table:memfootprint}{{4.1}{54}}
 \@writefile{toc}{\contentsline {section}{\numberline {4.5}Stackless \textit  {BlobTree }traversal}{54}}
+\newlabel{sec:stackless}{{4.5}{54}}
 \citation{Samet1984}
 \citation{Samet1990}
 \citation{Popov2007}
@@ -47,8 +48,14 @@
 \@writefile{loa}{\contentsline {algorithm}{\numberline {4}{\ignorespaces \textit  {GenerateFaces} kernel function computes the triangle indices per each cell and outputs them directly into an OpenGL index buffer for rasterization. All the buffers can be read back later from the GPU and stored.}}{61}}
 \newlabel{alg:generatefaceskernel}{{4}{61}}
 \@writefile{toc}{\contentsline {section}{\numberline {4.7}Analysis and Results}{61}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.2}{\ignorespaces  {Stackless \textit  {BlobTree }traversal improved the performance of our \textit  {BlobTree }traversal significantly. Here is the comparison of fieldvalue evaluation on the GPU comparing stackless approach to a stack-based implementation for some models. Timings are average of 100 runs.} }}{62}}
+\newlabel{table:stackless}{{4.2}{62}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces  {Sample models for testing our GPU polygonization method. From left to right: Cake, tumor and 3slabs.} }}{62}}
+\newlabel{fig:combinedmodels}{{4.3}{62}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces  {Polygonization time breakdown in milliseconds for the three models shown in the previous section. Vertex processing is the most compute-intensive stage due to the gradient-based Newthon-Raphson root finding method employed and the evaluation of colors and normals which require additional traversals. } }}{63}}
+\newlabel{fig:breakdownpoly}{{4.4}{63}}
 \@setckpt{chapters/4/04_chapter_gpu_discretization}{
-\setcounter{page}{62}
+\setcounter{page}{64}
 \setcounter{equation}{1}
 \setcounter{enumi}{4}
 \setcounter{enumii}{0}
@@ -63,8 +70,8 @@
 \setcounter{subsubsection}{0}
 \setcounter{paragraph}{0}
 \setcounter{subparagraph}{0}
-\setcounter{figure}{2}
-\setcounter{table}{1}
+\setcounter{figure}{4}
+\setcounter{table}{2}
 \setcounter{lofdepth}{2}
 \setcounter{lotdepth}{1}
 \setcounter{LT@tables}{0}

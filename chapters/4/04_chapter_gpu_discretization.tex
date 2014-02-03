@@ -210,11 +210,13 @@ our current \blob representation is summarized in table \ref{table:memfootprint}
 
 
 \section{Stackless \blob traversal}
+\label{sec:stackless}
 In this section we describe our novel stackless \blob traversal algorithm that completely eliminates the need to maintain a stack during a \blob
 traversal and that reduces the number of traversal steps per fieldvalue evaluation. While our multicore algorithm presented in the previous chapter 
 benefit moderately from the stackless approach, it improves GPU performance significantly. In high performance rendering algorithms the use of 
 hierarchical spatial data structures for acceleration reasons is common. Vising nodes in such structures requires stack-based traversal 
 algorithms. Unfortunately, even the latest GPU architectures are poorly suited for implementing such algorithms. 
+
 
 
 A complex \blob scenegraph data structure may contain thousands of primitives and operators which can lead to deep tree structures. The fieldvalue 
@@ -424,20 +426,71 @@ OpenGL index buffer for rasterization. All the buffers can be read back later fr
 \end{algorithm}
 
 
-Each cell may contribute up to 5 triangles. Line 11 and 12 in the algorithm \ref{alg:generatefaceskernel} 
+Each cell may contribute up to 5 triangles. Line 11 and 12 in algorithm \ref{alg:generatefaceskernel} 
 assigns the start index of an edge and its associated axis using two constant buffers supplied to the kernel for this purpose. 
 The element entry is computed as an index to the global vertex buffer. The \textit{ScannedEdges} 
 buffer holds the global offset for all the intersected edges as discussed previously. 
 
 \section{Analysis and Results}
+In this section we review the effects of the previous optimizations on the overall performance of the system.
+In our experiments we tested the effect of the stackless \blob traversal algorithm using a set of models created 
+using our incremental modeling enviroment. To make a fair comparison the same algorithm implemented on the GPU using
+the OpenCL framework once with the stack and the other time with the stackless method presented in section 
+\ref{sec:stackless}. The results are shown in the following table:
 
 
 
+\begin{table}[H]
+\begin{center}
+	 \caption{\label{table:stackless}
+  {Stackless \blob traversal improved the performance of our \blob traversal significantly.
+  Here is the comparison of fieldvalue evaluation on the GPU comparing stackless approach to a stack-based implementation for 
+  some models. Timings are average of 100 runs.}
+}
+  \begin{tabular}{ | c | c | c | c | c | c |}
+    \hline    
+    Model Name & Field Queries & Grid & Stack-based (ms) & Stack-less (ms) & Speedup \\ \hline \hline
+    Tumor & 16240 & 29*20*28 & 21 & 0.8 & 26x\\ \hline
+    cake & 18975 & 33*23*25 & 17 & 1 & 17x\\ \hline
+    3slabs & 28750 & 46*25*25 & 30 & 2 & 15x \\ \hline
+    \hline
+  \end{tabular}
+\end{center}
+\end{table}
 
 
+\begin{figure}[H]
+  \centering
+  % the following command controls the width of the embedded PS file
+  % (relative to the width of the current column)
+  \includegraphics[width=1.0\linewidth]{figures/gpupoly/combined_models.png}
+  \caption{\label{fig:combinedmodels}
+  {Sample models for testing our GPU polygonization method. From left to right: Cake, tumor and 3slabs.}
+}
+\end{figure}
 
+When using stacks register spilling mentioned previously will degrade the performance due to the higher cost of accessing shared memory. 
+Conditional push and pops in stack-based method also stalls the performance of the kernels.  
 
+Faster field evaluations using the stackless algorithm also boosts the performance of our root-finding method and the overall
+polygonization time. In the following we review per kernel time break-time which provides a close look at hotspots (most time-consuming 
+locations) in our implementation. 
 
+%Tumor: Fields: 2, Edge: 1, EdgeBufferScan: 22, Vertex: 44, Cell: 1, FaceBufferScan: 18, Faces: 17, Total: 105
+%Cake: Fields: 1, Edge: 1, EdgeBufferScan: 19, Vertex: 58, Cell: 2, FaceBufferScan: 17, Faces: 10, Total: 108
+%3Slabs: Fields: 1, Edge: 1, EdgeBufferScan: 18, Vertex: 40, Cell: 1, FaceBufferScan: 17, Faces: 1, Total: 79
+
+\begin{figure}[H]
+  \centering
+  % the following command controls the width of the embedded PS file
+  % (relative to the width of the current column)
+  \includegraphics[width=1.0\linewidth]{figures/gpupoly/breakdownpoly.pdf}
+  \caption{\label{fig:breakdownpoly}
+  {Polygonization time breakdown in milliseconds for the three models shown in the previous section. Vertex processing is the most compute-intensive
+  stage due to the gradient-based Newthon-Raphson root finding method employed and the evaluation of colors and normals which require additional traversals.
+  }
+}
+\end{figure}
 
 
 
