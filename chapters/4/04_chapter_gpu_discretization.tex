@@ -434,7 +434,7 @@ buffer holds the global offset for all the intersected edges as discussed previo
 \section{Analysis and Results}
 In this section we review the effects of the previous optimizations on the overall performance of the system.
 In our experiments we tested the effect of the stackless \blob traversal algorithm using a set of models created 
-using our incremental modeling enviroment. To make a fair comparison the same algorithm implemented on the GPU using
+with our incremental modeling system. To make a fair comparison the same algorithm implemented on the GPU using
 the OpenCL framework once with the stack and the other time with the stackless method presented in section 
 \ref{sec:stackless}. The results are shown in the following table:
 
@@ -469,8 +469,8 @@ the OpenCL framework once with the stack and the other time with the stackless m
 }
 \end{figure}
 
-When using stacks register spilling mentioned previously will degrade the performance due to the higher cost of accessing shared memory. 
-Conditional push and pops in stack-based method also stalls the performance of the kernels.  
+When using stacks, the register spilling phenomenon mentioned previously will degrade the performance due to the higher cost of accessing 
+shared memory. Conditional push and pops in stack-based method also stalls the performance of the kernels.  
 
 Faster field evaluations using the stackless algorithm also improved the performance of our root-finding method and the overall
 polygonization time. In the following we review per kernel time break-time which provides a close look at hotspots (most time-consuming 
@@ -505,6 +505,9 @@ broadcasted to all threads (e.g. For GT200 it has to be all threads in the halfw
 
 The prefix-sum scan operator can also be implemented in such a way that the memory-bank conflicts be avoided and the data-access
 be performed in parallel.
+
+
+\section{GPU Tetrahedralization}
 
 
 

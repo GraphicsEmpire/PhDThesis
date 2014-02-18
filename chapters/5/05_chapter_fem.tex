@@ -1,30 +1,116 @@
-\startchapter{Experiments}
-\label{chapter:Exp}
+\startchapter{GPU-Accelerated Finite Element Framework}
+\label{chapter:finiteelementmethod}
+During the past decade a new thrust has appeared with the development of deformable tissue modeling techniques which could make it
+possible to develop patient-specific simulations. Whenever the best surgical strategy is unclear or the patient presents a rare
+pathology such simulations could be beneficial. Other use-cases for such systems is in surgical skill training which is a long 
+and tedius process of acquiring fine motor skills. In all those scenarios physically-based animation of soft tissues is challenging and 
+has lots of room for improvement. Based on the foundation developed in the previous chapters here we present a flexible framework for 
+real-time soft tissue simulation. In this chaper we present our contribution in modeling and animating soft body deformations using 
+our GPU accelerated computational framework and a robust finite element solver. To begin with we review the related works in this
+fields and then we present our framework and important design decisions. Finally we present some models animated using our system. 
+The materials presented in the following chapters rely on the computational framework that we built here so we strongly suggest
+not to skip this chapter.
 
-Assuming you have some experimental results to support your claims this is where all the data is reported. There are a few issues you should consider before dumping a lot of stuff here, or it will lose its effectiveness.
+Surgical simulation systems can benefit from fast computational algorithms that provide visual and haptic feedback to the surgeon. 
+Various haptic interfaces for medical simulation are specially useful for training surgeons for minimally invasive procedures e.g.
+laparascopy or interventional radiology and remote surgery using tele-operators. The hard requirement for these type of systems is
+that the force interaction between the robotic tool and the tissue should be computed as speeds of at least 500 Hz to provide the 
+continuous force-feedback to the surgeon \cite{dimaio2005interactive, Otaduy2005}.
 
-First of all you must describe precisely the experimental setup and the benchmarks you used. In any scientific discipline an experimental result is only good if it is reproducible. To be reproducible then somebody else must have sufficient details of the setup to be able to obtain the same data. Thus the first section in this chapter is a super precise history of the decisions made towards experimentation, including mentions of the paths which became infeasible. The setup must be valid and thus your description of it must prove that it is indeed sound. At times, terrifying times, when writing this section, both supervisor and student realize belatedly that something is missing and more work needs to be done!
+There are difference strategies to reduce the computation time:
 
-The second portion of this chapter is dedicated the the actual results. At least two issues arise here:
 \begin{enumerate}
-\item {Should all the data be reported here or should some be placed in the Appendix?}
-\item {Should this be an exposition of the raw facts and data or should it include its analysis and evaluation?}
+ \item Improving the algorithms involved in soft tissue simulation (new force models)
+ \item Leveraging faster hardware (Higher computational powe)
+ \item Using parallel computing techniques (Multicore and Manycore optimizations)
 \end{enumerate}
 
-There are no definite answers here, but I follow a few rules.
+We considered all these options but the use of faster hardware in our case is limited by the existing technology but appropriate 
+use of parallel computing techniques helped us in providing scalable solution at the expense of more expensive hardware and more 
+complex implementations.
 
-\textit{Should all the data be reported here or should some be placed in the Appendix?}
-    \begin{itemize}
-    \item{If there is a large number of tables of data, it might be better to present here only a handful of the most significant ("best") results, leaving all the rest of the data in the Appendix with proper linkages, as it would make the chapter so much more easily readable (not to mention limiting the struggle with a word processor for the proper placement of tables and text).}
-    \item{Use an example throughout, call it a "case study" to make it sound better, so that all the data and results are somehow linked in their logic, and even better if this is one of the examples you used in Chapter 2 to describe the original problem.}
-    \item{Highlight in some manner the important new data, for example the column of your execution speed where all the numbers are much smaller. Make the results highly easy to read!}
-    \item{It is normally expected that data should be presented only in one form and not duplicated, that is, you are not supposed to include both a table of raw numbers and also its graphical representation from some wonderful Excel wizard. I tend to disagree. I would not wish to see every results repeated in this manner, but some crucial ones need to be seen in different manners, even with the same information content, in order to show their impact. One good trick is to place the more boring tables in the Appendix and use wonderful graphs in this chapter.}
-    \item{This is the one chapter where I would splurge and use colour printing where necessary, as it makes an \textit{enourmous} difference.}
-    \end{itemize}
 
-\textit{Should this be an exposition of the raw facts and data or should it include its analysis and evaluation?}
-     \begin{itemize}
-    \item{Is the evaluation of the data really obvious? For example you have 10 tables to show that your chemical process is faster in development and gives purer material - you may simply need to highlight one column in each table and state the obvious.}
-    \item{Most results are not that obvious even if they appear so. Moreover this is where you are comparing your \textit{new} results to data from other people. I usually describe other people's work at this point and make comparisons. That is why I prefer to talk about the analysis and evaluation of the results in a separate chapter.}
-    \item{There is absolutely no clear structure here which is best.}
-    \end{itemize}
+In designing a finite element solution there are many aspects that must be considered such as the type of formulation used e.g.
+Total or updated Lagrangian, time integration scheme e.g. explicit or implicit and the type of elements used for discretization:
+e.g. hexahedral (uniform cubic voxel grid or non-uniform octree based grid) or n-simplices such as tetrahedral elements. 
+These design choices will impact the performance and the range of applications that can benefit from this formulation.
+We will discuss these aspects in greater detail in this chapter. 
+
+
+\section{Related Work}
+In their survey paper Meier \etal \cite{Meier2005} presented a classification of the deformable models available for surgery 
+simulation based on their applications. The main classifications are heuristic, hybric and continuum mechanical approaches.
+Examples of heuristic models are: deformable splines, spring-mass models, linked volumes and tensor-mass models. 
+
+With deformable splines, classical splines are employed to model a 3D object. They define a potential energy which is proportional
+to the degree of elastic deformation. By using the lagrange method, this energy is finally minimized with respect to the displacements
+enforced in some control points to obtain the corresponding deformation state. The increased number of parameters required to control
+the shape and the physical properties of the models will become the bottleneck and are difficult to determine empirically. A post processing
+step is also required to convert the smooth spline surface to discretized polygons for rendering. Even without this post processing stage
+they are computationally very expensive. E.g. solid objects have to be modelled as hollow shells which is not lending itself very well for
+volume preservation applications.
+
+\subsection{Mass-Spring Models}
+Mass spring models (MSM) are the most intuitive and most common method used in deformable object modeling.
+Terzopoulos \etal \cite{terzopoulos1988modeling, terzopoulos1987elastically} was the first who introduced mass-spring systems in 
+computer graphics animation systems. Provot \etal showed applications of this technique in cloth simulation \cite{provot1995deformation}
+as did Baraff \etal \cite{baraff1998large}. Kahel \etal used in facial animation \cite{kahler2001geometry}. 
+Gibson \etal survey reviewed many examples of mass-spring system applications \cite{Gibson1997a}. In this system the deformable object
+is discretized into a network of point masses which are connected with massless springs and dampers. By adding weights and considering
+constant coefficient $k_s$ the elastic force is obtained by:
+
+\begin{equation}
+ \boldsymbol{f}^s_i = \sum_{j \in N(\boldsymbol{x}_i)} k_s w_{ij}(\boldsymbol{x}_{ij})(1-\frac{l^0_{ij}}{\| \boldsymbol{x}_{ij} \|})
+\end{equation}
+
+In this setup:
+
+\begin{itemize}
+ \item $\boldsymbol{x_{ij}} = \boldsymbol{x}_j - \boldsymbol{x}_i$ where $\boldsymbol{x}_i$ is the position of node $i$, 
+ \item $l^0_{ij}$ is the initial spring length between node $i$ and node $j$,
+ \item $N(\boldsymbol{x_i})$ is the set of neighbors of node $i$ and $w_{ij}$ is the weight of $j$th neighbor of node $i$.
+\end{itemize}
+
+The damping force in this setup is given by:
+
+\begin{equation}
+ \boldsymbol{f}^d_i = \sum_{j \in N(\boldsymbol{x}_i)} k_d w_{ij} \frac{\boldsymbol{v}^\tau_{ij} \boldsymbol{x}_{ij} }{\|\boldsymbol{x}_{ij} \|} \boldsymbol{x}_{ij}
+\end{equation}
+where $\boldsymbol{v}_i$ is the velocity of node $i$ and $\boldsymbol{v}_{ij} = \boldsymbol{v}_j - \boldsymbol{v}_i$.
+
+\subsection{Linked Volumes}
+The ideas in MSM can be extended to volumetric modeling by discretizing the entire volume of a deformable model into evenly spaced cubic elements.
+The total mass of the model is distributed at the centers of these cubes. The cubes are interconnected with their neighbors using springs and dampers
+\cite{gibson1997simulating}. One of the disadvantages of this approach is its increased computational cost due to the higher number of nodes and
+their increased connectivity. In order to control the computational cost for large models the resolution of the discretization should be lowered 
+which will lead to unrealistic deformations. For rendering purposes auxilary surface representations should be used such as surface maps. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
