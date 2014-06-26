@@ -79,18 +79,25 @@ The damping force in this setup is given by:
 where $\boldsymbol{v}_i$ is the velocity of node $i$ and $\boldsymbol{v}_{ij} = \boldsymbol{v}_j - \boldsymbol{v}_i$.
 
 \subsection{Linked Volumes}
+\label{sec:linkedvolumes}
 The ideas in MSM can be extended to volumetric modeling by discretizing the entire volume of a deformable model into evenly spaced cubic elements.
 The total mass of the model is distributed at the centers of these cubes. The cubes are interconnected with their neighbors using springs and dampers
 \cite{gibson1997simulating}. One of the disadvantages of this approach is its increased computational cost due to the higher number of nodes and
 their increased connectivity. In order to control the computational cost for large models the resolution of the discretization should be lowered 
 which will lead to unrealistic deformations. For rendering purposes auxilary surface representations should be used such as surface maps. 
+Increasing the number of elements slows down the propagation of deformations. The benefit of this approach is that complex interactions such as
+cutting, carving, joining, or tearing can easily be represented by simply eliminating or adding links between elements.
 
 
+\subsection{Mass Tensor Model}
+Using this technique the entire interior of the model is discretized into tetrahedrons. Points masses and springs are 
+being placed at the respective tetrahedral vertices and edges \cite{de1999modeling}. The performance of this model is comparable to that if the 
+linked volumes describe earlier in section \ref{sec:linkedvolumes}. Cutting models created with this techniques is a challenge since even when
+minimizing the number of newly created tetrahedrons in such a situation the corresponding increase of nodes in significant and directly hits the
+performance of the system. The performance of the model depends on the resolution of the mesh in this case . 
 
 
-
-
-
+\cite{picinbono2000real}
 
 
 
