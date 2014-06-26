@@ -1,4 +1,26 @@
-PhDThesis
-=========
+High Performance Animation of Soft Tissues
+=============================================
 
-Backup of my thesis tex files.
+
+PhD Thesis Submitted to department of 
+Computer Science at University of Victoria
+
+=============================================
+
+Modelling deformable tissues has applications in many interesting areas of research including visual effects in the movies, games and
+surgical simulation systems. Modelling such objects requires mastering several complex software packages.  Designers often take an incremental 
+fine-tuning approach, i.e. a process which is based on many small modifications to the original design. The result of such 
+changes are required to be seen in real-time. Creating life-like animations is far more complicated and requires certain skills and experience. 
+
+In a surgical simulation system for example the ability to interact with the models requires accuracy and high performance rendering. 
+Cutting and poking the models also impose many challenges. Prototyping models for surgical scenes requires lots of post-processing steps 
+in order to bring those models to life.
+
+In this research we propose a comprehensive framework for high-performance rendering and physically-based animation of deformble tissues
+using implicit surfaces. Our system provides interactive cutting ability using smooth intersection surfaces. 
+Complex models can be created with implicit primitives, blending operators, affine transformations and constructive solid geometry 
+in a design environment that organizes all these in a scene graph data structure called BlobTree. We show that the BlobTree modelling approach
+provides a very compact data structure which supports incremental changes and network-based cooperative design. 
+
+Using a finite element approach we discetize BlobTree models with a GPU-Assisted algorithm for accurate physically-based animation. Interactions with the
+model are supported through smooth progressive cut surfaces. We show an application of our system in a brain biopsy simulation.

@@ -1,3 +1,49 @@
 \startchapter{Real-time Cutting}
 \label{chapter:Cutting}
-One of the main objectives of virtual reality based surgical simulation systems is the removal of pathologic tissue. 
+One of the main objectives of virtual reality based surgical simulation systems is the removal of pathologic tissue 
+\cite{Steinemann, Nienhuys2001a}. Cutting imposes many challenges in the development of a robust, interactive surgery 
+simulation, not only because of the nonlinear geometric and material behavior exhibited by soft tissue but also due to the
+complexity of introducing the cutting-induced discontinuity. In most publications, the progressive surgical cutting is modelled
+by conventional finite element (FE) method, in which the high computational cost and error accumulation due to remeshing constrain 
+the computational efficiency and accuracy. 
+
+We developed our new cutting approach in the context of brain biopsy simulation. When an abnormality of the brain is suspected, 
+Stereotactic (probing in three dimensions) brain needle biopsy is performed and guided precisely by a computer system to avoid 
+serious complications. A small hole is drilled into the skull, and a needle is inserted into the brain tissue guided by computer-assisted 
+imaging techniques (CT or MRI scans). Due to this, the actual cutting process can not be seen by the surgeon. For this reason,
+non-progressive cutting, where a tetrahedral element is decomposed only once is has been completely traversed, is a reasonable
+approximation for our application area, and so we define the cut only once the instrument has traversed the pathology. 
+Moreover, there is little, if at all, resistance to the cut tool movement through the tissue. Therefore, in the current stage, we do 
+not model any interaction of the cutting tool with the deformable object during a cut. 
+
+The deformable tissues in our framework are represented by tetrahedral meshes and simulated using nonlinear finite element methods. 
+
+\section{Related Work}
+A number of approaches has been proposed by the computer graphics community to enable cutting deformable models. 
+Except for a few methods most of them used tetrahedral meshes for the volumetric mesh representation. 
+Bielser \etal performed an adaptive refinement of the tetrahedral elements cut by a virtual scalpel \cite{Bielser1999}.
+
+Mor \etal tried to reduce the number of sub-elements created while cutting tetrahedral meshes \cite{Mor2000}.
+One of the major issues in cutting tetrahedral meshes is the creation of ill-shaped elements which can adversely affect the
+performance and stability of the system solver. Some works attempted to avoid such elements via mesh alignment techniques 
+\cite{Nienhuys2001a, Steinemann2006}. Other methods tried to solve the issue by removing the ill-shaped elements completely.
+
+
+
+
+Jin \etal proposed a meshless total Lagrangian adaptive dynamic relaxation cutting algorithm to predict the steady-state 
+responses of soft tissue at any stage of surgical cutting in 3D \cite{Jin2013}. A cloud of points is used for discretization
+and approximation of the deformation field within the continuum without generation of finite element meshes. They didn't report 
+any performance measurements and the quality of the cuts could not be verified with the simple truth cube model they reported in their paper.
+
+
+Wu \etal \cite{Wu2011} proposed an algorithm for 3D mesh cutting using a combination of the adaptive octree refinement with iterative composite
+element hierarchy to enable simulating high-resolution cuts with a small number of degrees of freedom (DOFs). 
+They used the dual contouring method \cite{Ju2002} to keep the sharp creases along the cut. Due to the high computational cost and naive implementation 
+their method is not scalable and has yet to become an interactive cutting approach.
+
+
+
+%Most of these challenges are due to the contradictory requirements of speed versus the fidelity of the cutting surfaces. 
+%%In our experience the following major points required extra effort and validation:
+
