@@ -86,9 +86,9 @@ hoffman1998commercially}, or hepatic laparoscopy \cite{cotin1999real}. The defor
 \section{Motivation}
 One of the most important changes in the past decade has been the laparoscopic surgery which brought new technologies into the operating room and created a 
 distance between the surgeon and the patient. More recently, other minimally invasive techniques have been proposed, such as natural orifice transluminal 
-endoscopic surgery, which can be considered as an evolution of laparoscopic surgery. As a new surgical technique, laparoscopy requires surgeons to acquire 
+endoscopic surgery, which can be considered as an evolution of the laparoscopic surgery. As a new surgical technique, laparoscopy requires surgeons to acquire 
 new skills, and adapt to changes from conventional open surgery (e.g. amplified tremor, diminished tactile sensation, loss of depth perception). This has been 
-a motivation for a number of works in the field of surgery simulation, real-time deformable models, or haptic rendering [?]. The following benefits are reported
+a motivation for a number of works in the field of surgery simulation, real-time deformable models, or haptic rendering \cite{Lin2004}. The following benefits are reported
 from using the surgical simulation systems:
 
 \begin{itemize}
@@ -106,12 +106,27 @@ The development of fast algorithms to compute the deformation, contact response,
 aforementioned applications.
 
 More specifically, when considering requirements for realistic interactive simulations of medical procedures, several elements seem mandatory: anatomical 
-models and tissue properties need be patient-specific and obtained without complex additional procedure; soft tissue behaviour needs to be realistic and 
+models and tissue properties need to be patient-specific and obtained without complex additional procedure; soft tissue behaviour needs to be realistic and 
 demonstrate a predictive capability, yet it should be compatible with real-time computation; interactions with the surrounding anatomy and with medical 
 devices need to involve advanced contact models that can be computed in real-time; the different types of dissection performed on soft tissues should be 
 simulated; and finally realistic visual and haptic feedback should be provided to create a higher level of immersion, in particular during training sessions.
 
 \section{Limitation of Current Models}
+%%Chapter \ref{chapter:background} will provide more details on the state of the art techniques in soft tissue modelling. 
+Among the numerous publications in the field of biomechanics, realtime deformable models, collision detection, contact modelling or haptics, 
+few methods have been proposed to address at least a majority of the requirements listed above. Among the existing approaches which at least 
+partially aim at this objective, we can cite methods based on spring-mass networks, methods based on linear elasticity, and explicit finite element models 
+for non-linear materials \cite{Gibson1997a,Meier2005}. 
+
+Mass-spring networks are quite simple to implement and very fast to compute, but they fail to properly characterize soft tissues deformation as they 
+introduce artificial anisotropy through the choice of the mesh, and make it difficult to relate spring stiffness to material properties such as Young modulus 
+\cite{Courtecuisse2010}.
+
+Most methods based on the Linear elasticity made the assumption of small displacements and relied on pre-computed response in order to accelerate the 
+computations. The small strain assuption is very restrictive. In addition,
+during any topogical modifications e.g. in cutting, the pre-computed values has to be recalculated which masks their effectiveness in the overall 
+performance of the system.
+
 
 
 \section{Contributions}
