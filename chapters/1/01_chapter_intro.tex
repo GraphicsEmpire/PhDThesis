@@ -116,17 +116,20 @@ simulated; and finally realistic visual and haptic feedback should be provided t
 Among the numerous publications in the field of biomechanics, realtime deformable models, collision detection, contact modelling or haptics, 
 few methods have been proposed to address at least a majority of the requirements listed above. Among the existing approaches which at least 
 partially aim at this objective, we can cite methods based on spring-mass networks, methods based on linear elasticity, and explicit finite element models 
-for non-linear materials \cite{Gibson1997a,Meier2005}. 
+for non-linear materials \cite{Gibson1997a,Meier2005}. In chapter \ref{chapter:background} we discuss these methods in detail.  
 
 Mass-spring networks are quite simple to implement and very fast to compute, but they fail to properly characterize soft tissues deformation as they 
 introduce artificial anisotropy through the choice of the mesh, and make it difficult to relate spring stiffness to material properties such as Young modulus 
 \cite{Courtecuisse2010}.
 
 Most methods based on the Linear elasticity made the assumption of small displacements and relied on pre-computed response in order to accelerate the 
-computations. The small strain assuption is very restrictive. In addition,
-during any topogical modifications e.g. in cutting, the pre-computed values has to be recalculated which masks their effectiveness in the overall 
-performance of the system.
+computations. The small strain assumption is very restrictive. In addition, during any topogical modifications e.g. in cutting, the pre-computed values 
+has to be recalculated which masks their effectiveness in the overall performance of the system.
 
+Cutting deformable tissues is one of the most sought after features in a surgical simulator. In interactive system with high expectations of realism and 
+performance the implementation of topogical modifications can become very complex. The proposed solutions suffer from smoothness of the cutting plane or slower
+solve time due to lots of extra nodes added to the system. In chapter \ref{chapter:Cutting} we review all the related work in this topic and present our
+high performance cutting algorith which is built into our physically-based simulation system.
 
 
 \section{Contributions}
@@ -144,12 +147,25 @@ The main contributions are as the following:
  \item A high-performance algorithm for volume discretization of \blob models which can generate tetrahedral mesh elements with respect to a triangular 
  surface mesh for finite element formulation.
  \item A non-linear finite element formulation of deformations and a GPU-assisted algorithm for fast numerical approximations.
- \item A high-performance cutting algorithm to support topogical modifications while under deformation.
+ \item A high-performance algorithm for cutting the tissues interactively. 
 \end{itemize}
 
 
 \section{Overview}
+In the next chapter we start by providing background material on implicit modelling technique, the \blob scenegraph and the concept of sketch-based, incremental modelling.
+We continue by reviewing the physics properties of the deformable tissues and cover some topics on continuum mechanics concepts and force models used in
+our system to achieve non-linear deformations. Chapter \ref{chapter:cpuPoly} presents our rendering framework to visualize complex \blob models using multi-core 
+architectures. Building on the outcomes of chapter \ref{chapter:cpuPoly}, the improved results are reviewed in chapter \ref{chapter:GPUDiscretization}. 
+The discretization technique to convert a \blob model to a physical system is also given in this chapter. Chapter \ref{chapter:finiteelementmethod} is 
+where we discuss our accelerated finite element implementation on the GPU side. Previous attempts in modeling deformable tissues are reviewed in this chapter and
+the benefits and drawbacked of all the methods are discussed. 
 
+Chapter \ref{chapter:Cutting} presents of our main contributions in this thesis which is the high performance soft tissue cutting. After a brief overview of the related work
+we present our novel technique in cutting complex soft tissues interactively. Chapter \ref{chapter:evaluation} showcases a brain biopsy simulation 
+scenario and provides comments on the operation itself and the achieved results.
+
+Chapter \ref{chapter:conclusion} provides a summary of the results in the previous chapters and reviews the limitations of the current system
+and some discussions on the future work in this research topic.
 
 
 
