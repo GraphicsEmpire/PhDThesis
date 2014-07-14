@@ -288,20 +288,24 @@ Since the intersection of a triangle and a line segment is faster to compute tha
 use two intersection tests per each edge to figure out wether the segment is splitted or not. The implementation
 of our edge triangle intersection follows the Ray-Triangle intersection test given in \cite{RTR3}.
 
-Listing below shows the prototype of the kernel function in OpenCL:
+
+Similar to our GPU polygonization method in section \ref{sec:surfextraction}, a prefix-sum operator counts the number
+of intersections and also compacts the resulting array of intersection points. The final output of this stage is a list
+of intersection points and the associated edge indices. Listing below shows the prototype of the kernel function in 
+OpenCL:
 
 \begin{lstlisting}[frame=single]
 //Computes the intersection of edges and sweepsurface
 float sweepSurfEdgeIntersections(unsigned int countEdges,
 			         __global float4* edgeBuffer,
 				 __global float4 sweepSurface[4],
-				 __global float4* outIntersections,
-				 __global unsigned int* outIndices,
-				 __global unsigned int* outSplitted);
+				 __global float4* scanIntersections,
+				 __global unsigned int* scanIndices,
+				 __global unsigned int* scanFlags);
 \end{lstlisting}
 		     
 \begin{algorithm}[H]
-\caption{\textit{EdgeIntersections}: The kernel function that computes intersections of edges 
+\caption{\textit{EdgeIntersections} The kernel function that computes intersections of edges 
 and the sweep-surface. The prototype of the kernel follows the listing above and the algorithm here represents one 
 thread of the execution. }
 \label{alg:edgeIntersections}
@@ -309,7 +313,7 @@ thread of the execution. }
   \IF{$dim.x \geq countEdges$}
   \STATE return
   \ENDIF
-  \STATE $outSplitted[dim.x] \gets 0$
+  \STATE $scanFlags[dim.x] \gets 0$
   \STATE $tri0 \gets triangle(0, 1, 2, sweepSurface)$
   \STATE $tri1 \gets triangle(0, 2, 3, sweepSurface)$
   \STATE $edge0 \gets edgeBuffer[dim.x * 2]$
@@ -319,58 +323,13 @@ thread of the execution. }
   \STATE $res = IntersectSegmentTri(edge0, edge1, tri1, p)$
   \ENDIF
   \IF{$res \neq 0$}
-  \STATE $outIntersections[dim.x] \gets p$
-  \STATE $outIndices[dim.x] \gets dim.x$
-  \STATE $outSplitted[dim.x] \gets 1$
+  \STATE $scanIntersections[dim.x] \gets p$
+  \STATE $scanIndices[dim.x] \gets dim.x$
+  \STATE $scanFlags[dim.x] \gets 1$
   \ENDIF
   
 \end{algorithmic}
 \end{algorithm}
-
-Similar to our GPU polygonization method in section \ref{sec:surfextraction}, a prefix-sum operator is applied to 
-the $outSplitted$ array to identify the offsets within the output to store the intersection points. 
-The final output of this stage is a list of intersection points and the associated edge indices:
-
-\begin{algorithm}[H]
-\caption{\textit{ScanEdgeIntersections}: Counts and compacts edge-intersections using
-prefix-sum scan primitives. The inputs to this stage are the outputs of algorithm \ref{alg:edgeIntersections} }
-
-\label{alg:compactEdgeIntersections}
-\begin{algorithmic}[1]	
-  \STATE $scannedSplitted \gets prefixSumScan(outSplitted)$
-  \STATE $total \gets scannedSplitted[countEdges-1]$
-  \STATE $compactedIndices.allocateGPUMemory(total, sizeof(uint))$
-  \STATE $compactedIntersections.allocateGPUMemory(total, sizeof(float4))$
-  \STATE $compactedIndices \gets compactScan(outSplitted, scannedSplitted, outIndices)$
-  \STATE $compactedIntersections \gets compactScan(outSplitted, scannedSplitted, outIntersections)$
-\end{algorithmic}
-\end{algorithm}
-
-The results stored in $outIntersections$ and $outIndices$ arrays are compacted and stored into separate arrays.
-
-\subsection{GPU Compaction}
-Dynamic arrays residing in the GPU memory can be compacted to produce the final output.
-As depicted in figure \ref{fig:compactkernel} an active array is supplied to the compaction kernel 
-to identify the valid slots in the input. The process starts by performing a sum-scan operator over the active array
-to produce the offsets that basically guide the location in the output array to store valid elements from the input. 
-
-Upon each thread of execution, the validity of the current array element is checked against the \textit{active} array 
-and the final location to store the element is determined by the \textit{offset} array. The final output is the 
-compacted version of the input array.
-
-
-\begin{figure}[H]
-  \centering
-  % the following command controls the width of the embedded PS file
-  % (relative to the width of the current column)
-  \includegraphics[width=0.8\linewidth]{figures/cutting/compactkernel.png}
-  \caption{\label{fig:compactkernel}
-  {The array compaction process: Inputs are active, scanned active or offset arrays and the input array of elements to be compacted.
-  Output is the single compacted array of elements.}
-}
-\end{figure}
-
-\subsection{Preserve existing faces}
 
 
 %The main contribution of our cutting method is the GPU-accelerations applied to the cutting process to support interactive topological 
