@@ -60,11 +60,11 @@ fragments will not allow the material to separate within that embedding tetrahed
 
 Steinemann \etal \cite{Steinemann} created a hysteroscopy simulator and minimized the number of added elements 
 after a tetrahedral subdivision by cutting along existing edges and faces. The problem with their system is that
-they model the result of the cut only after it has been completed and this leads to felt lag in the response
-of the system. Unfortunately they didn't report any performance statistics of their system. 
+the result of the cutting is being produced only after it has been completed and this leads to felt lag in the system. 
+Unfortunately they didn't report any performance statistics of their algorithm. 
 
-In the following sections we provide an overview of the system, the data structures involved in the process 
-and our cutting algorithm. The chapter is concluded by analysis of some simulation results.
+In the following sections we provide an overview of the system and the data structures involved in the process 
+and our cutting algorithm. The chapter is concluded by the analysis of the simulation results.
 
 \section{Overview}
 We present a GPU-assisted approach in cutting tetrahedral meshes in real-time. 
