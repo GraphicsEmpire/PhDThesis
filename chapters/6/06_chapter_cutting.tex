@@ -41,7 +41,7 @@ their method is not scalable and has yet to become an interactive cutting approa
 In a closely related work Courtecuisse \etal presented a soft-tissue cutting system with haptic 
 feedback \cite{Courtecuisse2010a}. Their cutting strategy follows Mor \etal  \cite{Mor2000} work and 
 suffers from jaggy lines along the cut surface as shown in their examples of a laparoscopic hepatecotomy.
-The progressive is not supported in their system and as most of the other works in this area they produce too many
+The progressive cutting is not supported in their system and as most of the other works in this area they produce too many
 new nodes when subdividing cut elements.
 
 Jerabkova \etal proposed a solution to ill-shaped elements problem by using hexahedral elements instead of 
@@ -68,7 +68,7 @@ and our cutting algorithm. The chapter is concluded by the analysis of the simul
 
 \section{Overview}
 We present a GPU-assisted approach in cutting tetrahedral meshes in real-time. 
-The input to our system is a cut trajectory and a half-edge data structure representing the tetrahedral mesh. 
+The input to our system is a cut trajectory and an edge-based data structure representing the tetrahedral mesh. 
 The following steps are carried to complete the cut induced by the scalpel on the mesh:
 
 \begin{enumerate}
@@ -78,7 +78,7 @@ The following steps are carried to complete the cut induced by the scalpel on th
  are computed. The output of this stage is a list of cut-edges and their associated intersection points. 
  
  \item A GPU kernel function is used to compute the distance of the nodes in the cut-edges and the end points of 
- the cut tool. This way the nodes that are close to the sweep-surface are identified and a different configuration 
+ the cut tool. This way the nodes that are too close to the sweep-surface are identified and a different configuration 
  is used to produce subdivided elements in the next stage to avoid ill-shaped elements. The output of this stage is an
  associated list of cut nodes.
  
@@ -94,8 +94,9 @@ The following steps are carried to complete the cut induced by the scalpel on th
 \section{Data structure}
 The tetrahedron is the three-dimensional case of the more general concept of a Euclidean simplex. 
 Figure \ref{fig:tetconfig3} shows the structure of a tetrahedral element and the order we chose to 
-name the nodes, edges and vertices in its canonical orientation. In this figure $P_0$ to $P_3$ are
-the vertices, $e_0$ to $e_5$ the edges and $F_0$ to $F_3$ are the faces of the element.
+name the nodes, edges and faces in its canonical orientation. In this figure $P_0$ to $P_3$ are
+the nodes (i.e. degrees of freedom in the context of system deformation computation), $e_0$ to $e_5$ the edges 
+and $F_0$ to $F_3$ are the faces of the element.
 
 \begin{figure}[H]
   \centering
@@ -104,117 +105,84 @@ the vertices, $e_0$ to $e_5$ the edges and $F_0$ to $F_3$ are the faces of the e
   \includegraphics[width=1.0\linewidth]{figures/cutting/tetconfig3.png}
   \caption{\label{fig:tetconfig3}
   {A tetrahedral element in its canonical view. Iterating over nodes, edges and faces of each element is
-  one of the primary operations in a geometric algorithm that manipulates such elements.}
+  one of the primary operations in a geometric algorithm that manipulates such elements. The order we chose here is not the
+  only possible one but it simplifies the cutting algorithm and element subdivision process as we will see later.}
 }
 \end{figure}
 
 
 In a complex mesh of tetrahedral elements accessing each of these components is a necessary requirement for 
-implementing any geometrical algorithm. Therefore the main module in our cutting algorithm is a half-edge 
-data structure that maps tetrahedral elements to their associated faces and the faces to their associated half-edges and nodes. 
+implementing any topological modifications. Therefore the main module in our cutting algorithm is an edge-based
+data structure that maps tetrahedral elements to their associated faces and the faces to their associated edges and
+finally the edges to their nodes. 
 
 The minimal set of operations frequently used by most algorithms are as following \cite{Mario2010PolygonMesh}:
 
 \begin{itemize}
  \item Access to individual vertices, edges, faces and tetrahedral elements. This includes the enumeration of 
  all elements in unspecified order.
- \item Oriented traversal of the edges of a face, which refers to finding the next edge (or previous edge) in a face.
- With additional access to vertices, for example for rendering of faces if enabled.
- \item Access to the incident faces of an edge. Depending on the orientation, this is either the left or right face in the manifold case.
- This also enables access to neighboring faces.
  
- \item Given an edge access to its two endpoint vertices.
+ \item Access to the so-called one-ring neighborhood of the nodes. A typical use-case for this operation is the uniform 
+ distribution of the external forces applied to the mesh. Also many mesh simplification algorithms predicate on such operators.
  
- \item Given a vertex, at least one incident face or edge must be accessible. 
+ \item Top-down and bottom-up hierarchical access to the mesh entities. Top-down access is inherently provided in the structure of the
+ mesh entities e.g. elements are comprised of faces and faces are made up of set of edges etc. In case of the bottom up access some algorithms 
+ will benefit to have the incident edges of a certain node, or in case of edges all the incident faces of a given edge and for a given face
+ all the incident elements to a particular face in the mesh. This type of access patterns are particularly useful for topological modification 
+ scenarios and the required book-keeping operations.
  
- \item All incident face and edges in the so-called one-ring-neighborhood of a vertex can be enumerated.
+ \item Insertion and removal operations for nodes, edges, faces and elements. These operations require extra care in order to keep
+ the top-down and bottom-up links up-to-date. As we will see in our cutting algorithm deferred removal operations can make matters alot simpler by
+ delaying the actual removal until after all the identified entities are being visited and the new entities inserted to the structure.
+ This is due to the fact that removal operations will update the internal links between mesh entities therefore two consecutive access operations
+ might find the mesh at different states which is not intended in the original proposed algorithm.
+ 
+ \item Update operations for nodes, edges, faces and elements. What is important here is to keep the top-down and bottom-up links up-to-date. 
+ For-instance in case of an edge update as soon as the two endpoints of the edge is modified all the incident faces (higher level entity) 
+ of that edge and also all the incident edges of the end points of the edge (lower level entity) should be updated.
 \end{itemize}
 
-
-\begin{figure}[H]
-  \centering
-  % the following command controls the width of the embedded PS file
-  % (relative to the width of the current column)
-  \includegraphics[width=0.8\linewidth]{figures/cutting/halfedge.png}
-  \caption{\label{fig:halfedge}
-  {Half-edge data structure to store mesh information. Each half-edge holds references to its previous and next half-edges,
-  left and right faces and the two end points. It may also store a pointer to its opposite half-edge.}
-}
-\end{figure}
-
 Per each node we also store the rest position of it, this is used to update the physics model and to interpolate the position 
-of newly added nodes in case of cutting. To make the matters simple the two half-edges between a pair of nodes are stored 
-consecutively in the mesh storage. This way the index of an edge is simply half of the index of one of its incident half-edges. 
-To provide convenient access to half-edges and faces using their incident nodes, we used a hash map structure
-which maps a pair of node indices to their associated half-edge index. For faces since needed to have unique faces between 
-any given combination of three nodes we compute the hash key as following:
-
-\begin{algorithm}[H]
-\caption{Unique face key computation.}
-\label{alg:facekey}
-\begin{algorithmic}[1]	
-  \STATE $nodes = fetchNodes(face)$ 
-  \STATE $nodes = sort(nodes)$
-  \STATE $bitmask = 0x001FFFFF$
-  \STATE $key64 = nodes\left[ 0 \right] \And bitmask$
-  \STATE $key64 += (nodes\left[ 1 \right] << 21) \And bitmask$
-  \STATE $key64 += (nodes\left[ 2 \right] << 42) \And bitmask$
-  
-\end{algorithmic}
-\end{algorithm}
-
-Using the technique shown above we can address up to $2^{63}$ faces uniquely. The half-edge keys are computed using the indices to
-the two endpoints of a half-edge:
+of newly added nodes in case of cutting. Accessing edges using the bottom-up structure is expensive: First the list of incident 
+edges to one of the endpoints of the edge is accessed and then a serial search on that list is done to find an edge with the matching 
+end points. This has logarithmic complexity with respect to the number of edges in the structure. Instead we chose to use a hash-table
+to access edges using a key derived from the two end-points of the edge. Below is how this key is computed for a given edge:
 
 \begin{equation}
  key64 = (nodes\left[ 1 \right] << 32) \And nodes\left[ 0 \right]
 \end{equation}
 
-Which can produce keys for $2^{64}$ half-edges uniquely. Upon cutting the newly created faces and half-edges are registered in the maps
-using the computed unique keys. Nothing is removed directly from the our mesh storage buffers but rather upon cutting the elements
+This computation is performed when a new edge in inserted into the structure and can produce keys for $2^{64}$ edges uniquely. 
+The hash-map then associates this key to its corresponding edge index thereby providing constant-time access. 
+Using this technique the faces can also be accessed though their associated node indices which can be convenient for some applications. 
+
+In the case of triangle faces in our tetrahedral volume mesh. After finding the edge indices for all the three edges of the given 
+face using the described method above, the sublist containing the incident faces of the first edge is fetched. Using a linear search 
+in that sublist the queried face can be identified. 
+
+Nothing is removed directly from the our mesh storage buffers but rather upon cutting the elements
 are marked as to\_be\_deleted and later the garbage collection removes all unreferenced items from the mesh storage buffers. 
 
-When cutting an edge, the associated half-edges between the two endpoints are updated and a second pair of half-edges added to
-the mesh. The update process basically splits the original half-edges in two. Algorithm \ref{alg:edgesplit} describes this process
+When cutting an edge, an edge-update process is performed followed by a new edge insertion. 
+The update process basically splits the original edge in two. Algorithm \ref{alg:edgesplit} describes this process
 in detail which is also depicted in figure \ref{fig:splitedge}:
 
 \begin{algorithm}[H]
-\caption{Splitting an edge in our half-edge data structure. The input to this algorithm is the index of the edge to be splitted
+\caption{Splitting an edge in our volumetric mesh data structure. The input to this algorithm is the index of the edge to be splitted
 and the distance $t$ along the edge where the intersection happens. Figure \ref{fig:splitedge} shows this operation in detail. }
 \label{alg:edgesplit}
 \begin{algorithmic}[1]	
-  \STATE $he0, he1 \gets fetchHalfEdges(edge)$
-
-  \STATE $removeHalfEdgeToMap(he0)$
-  \STATE $removeHalfEdgeToMap(he1)$
-
-  \STATE $n0, n1 \gets fetchNodes(edge)$
-  \STATE $np.rest = n0.rest + (n1.rest - n0.rest) * t$
-  \STATE $np.pos = n0.pos + (n1.pos - n0.pos) * t$
-  \STATE $addNewPoint(np)$
-  \STATE $he2.from \gets np$
-  \STATE $he2.to \gets n1$
-  \STATE $he2.prev \gets he0$
-  \STATE $he2.next \gets he0.next$
-
-  \STATE $he3.from \gets n1$
-  \STATE $he3.to \gets np$
-  \STATE $he3.prev \gets he1.prev$
-  \STATE $he3.next \gets he1$
-
-  \STATE $he2.opposite = he3$
-  \STATE $he3.opposite = he2$
-
-  \STATE $insertHalfEdgeToMap(he2)$
-  \STATE $insertHalfEdgeToMap(he3)$
-
-  \STATE $he0.from \gets n0$
-  \STATE $he0.to \gets np$
-  \STATE $he1.prev \gets np$
-  \STATE $he1.next \gets n1$
-  \STATE $insertHalfEdgeToMap(he0)$
-  \STATE $insertHalfEdgeToMap(he1)$
-
+  \STATE $edge \gets fetchEdge(index)$
+  \STATE $n0 \gets fetchNode(edge.from)$
+  \STATE $n1 \gets fetchNode(edge.to)$
+  \STATE $newp0.rest = n0.rest + (n1.rest - n0.rest) * t$
+  \STATE $newp0.pos = n0.pos + (n1.pos - n0.pos) * t$
+  \STATE $idxNewP0 \gets addNewPoint(newp0)$
+  \STATE $newp1 \gets newp0$
+  \STATE $idxNewP1 \gets addNewPoint(newp1)$
+  
+  \STATE $setEdge(index, edge.from, idxNewP0)$
+  \STATE $insertEdge(idxNewP1, edge.to)$
 
 \end{algorithmic}
 \end{algorithm}
@@ -227,39 +195,39 @@ and the distance $t$ along the edge where the intersection happens. Figure \ref{
   % (relative to the width of the current column)
   \includegraphics[width=0.8\linewidth]{figures/cutting/splitedge.png}
   \caption{\label{fig:splitedge}
-  {Top: The edge to be splitted before the splitting operation described in algorithm \ref{alg:edgesplit}. 
-  Bottom: Splitting an edge produces a pair of new half-edges $he2$ and $he3$ which connect to the original half-edges $he0$ and $he1$
-  at the point of intersection.}
+  {Left: The edge to be splitted before the splitting operation described in algorithm \ref{alg:edgesplit}. 
+  Right: Splitting an edge produces a new edge from the point of intersection to the original endpoint. New points $np_0$ and $np_1$ are
+  initially co-located.}
 }
 \end{figure}
 
-Iterating over all incoming half-edges can also be easily done using our structure as shown in \ref{alg:incomingHalfEdges}:
+
+Iterating over the one-ring neighborhood nodes to a given node is performed using the following algorithm \ref{alg:oneRingNbors}:
 
 \begin{algorithm}[H]
-\caption{Iterating over incoming half-edges. Input to this algorithm is an index to a node, output is a list
-of half-edges.}
-\label{alg:incomingHalfEdges}
+\caption{Iterating over one-ring neighborhood nodes of a given node.}
+\label{alg:oneRingNbors}
 \begin{algorithmic}[1]	
-  \STATE $outHE \gets outgoingHalfEdge(node)$
-  \STATE $first \gets oppositeHalfEdge(outHE)$
-  \STATE $current \gets first$
+  \STATE $incidentEdges \gets incident_edges_to_node(node)$
   
-  \REPEAT
-    \STATE $incomingHE.append(current)$
-    \STATE $current = oppositeHalfEdge(nextHalfEdge(current))$
-  \UNTIL{$current == first$}
-  
-  \RETURN $incomingHE$
+  \FOR{$i = 0$ \TO $incidentEdges.count - 1$} 
+  \STATE $edge \gets incidentEdges\left[i\right]$
+  \IF{$edge.from \neq node$}
+  \STATE $nbors.insert(edge.from)$
+  \ELSE
+  \STATE $nbors.insert(edge.to)$
+  \ENDIF
+  \ENDFOR
+  \RETURN $nbors$
 \end{algorithmic}
 \end{algorithm}
 
-A similar algorithm can be written to iterate over outgoing half-edges. Upon topological modification, events are generated to 
-notify cutting algorithms of the internal changes in the mesh structure. This is also useful for debugging and evaluation purposes and
-can be logged for accounting the sequence of changes made to the original mesh. The events include removal and/or insertions of edges,
- faces and elements.
+Upon topological modification, events are generated to notify cutting algorithms of the internal changes in the mesh structure. 
+This is also useful for debugging and evaluation purposes and can be logged for accounting the sequence of changes made to the 
+original mesh. The events include update, insertion and removal of nodes, edges, faces and elements.
 
 
-In the next section we describe the cutting algorithm which is based on the halfedge data structure presented in this section.
+In the next section we describe the cutting algorithm which is based on the edge-based data structure presented in this section.
 
 \section{Cutting Algorithm}
 Our cutting algorithm follows the same strategy presented by Ganovelli \etal \cite{Ganovelli2000} which suggests use of lookup tables to 

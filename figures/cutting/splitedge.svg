@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="744.09448819"
-   height="1052.3622047"
+   width="640.55542"
+   height="239.58553"
    id="svg3997"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="splitedge.svg">
+   sodipodi:docname="splitedge.png">
   <defs
      id="defs3999">
     <inkscape:path-effect
@@ -193,20 +193,30 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2"
-     inkscape:cx="333.17955"
-     inkscape:cy="320.27643"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="505.44234"
+     inkscape:cy="68.048039"
      inkscape:document-units="px"
-     inkscape:current-layer="g4302"
+     inkscape:current-layer="g3281"
      showgrid="true"
-     inkscape:window-width="1615"
-     inkscape:window-height="1026"
-     inkscape:window-x="65"
-     inkscape:window-y="24"
-     inkscape:window-maximized="1">
+     inkscape:window-width="1600"
+     inkscape:window-height="800"
+     inkscape:window-x="0"
+     inkscape:window-y="28"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0">
     <inkscape:grid
        type="xygrid"
-       id="grid4218" />
+       id="grid4218"
+       empspacing="5"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true"
+       originx="-23.035654px"
+       originy="-791.90933px" />
   </sodipodi:namedview>
   <metadata
      id="metadata4002">
@@ -223,12 +233,13 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(-23.035654,-20.867321)">
     <g
        id="g4302">
       <g
          id="g4374"
-         transform="translate(20,-300)">
+         transform="matrix(0.60994011,0,0,0.5774217,-27.379637,-209.6806)">
         <path
            inkscape:connector-curvature="0"
            id="path3588"
@@ -254,16 +265,9 @@
            transform="matrix(1.0257214,0,0,1.0182644,79.7216,119.16396)">
           <path
              inkscape:connector-curvature="0"
-             inkscape:original-d="m 301.02415,334.47897 12.47265,-24.5048"
-             inkscape:path-effect="#path-effect3759"
-             id="path3757"
-             d="m 296.56815,332.21092 8.912,4.5361 8.01665,-26.77285 z"
-             style="fill:#0000ff;fill-rule:evenodd;stroke:none" />
-          <path
-             inkscape:connector-curvature="0"
              id="path3030"
-             d="M 157.35641,640.86574 302.90611,330.15865"
-             style="fill:none;stroke:#0000e5;stroke-width:3.91394758;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:100;stroke-opacity:1;stroke-dasharray:none" />
+             d="M 157.50665,640.7144 316.88806,311.56056"
+             style="fill:none;stroke:#0000e5;stroke-width:4.21552896;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:100;stroke-opacity:1;stroke-dasharray:none" />
           <flowRoot
              xml:space="preserve"
              id="flowRoot3931"
@@ -275,64 +279,11 @@
                  height="42.426407"
                  x="139.40105"
                  y="199.79344" /></flowRegion><flowPara
-               id="flowPara3937">nex</flowPara></flowRoot>          <text
-             xml:space="preserve"
-             style="font-size:39.13947678px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-             x="143.68053"
-             y="297.01416"
-             id="text3939"
-             sodipodi:linespacing="125%"
-             transform="scale(0.99635839,1.0036549)"><tspan
-               sodipodi:role="line"
-               id="tspan3941"
-               x="143.68053"
-               y="297.01416"
-               style="font-size:27.3976326px;fill:#0000ff">next</tspan></text>
-          <text
-             xml:space="preserve"
-             style="font-size:39.13947678px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-             x="422.95166"
-             y="167.74648"
-             id="text3939-2"
-             sodipodi:linespacing="125%"
-             transform="matrix(0.43954965,0.90071045,-0.89416221,0.44276854,0,0)"><tspan
-               sodipodi:role="line"
-               id="tspan3941-6"
-               x="422.95166"
-               y="167.74648"
-               style="font-size:27.3976326px;fill:#0000ff">previous</tspan></text>
-        </g>
-        <path
-           style="fill:#0000f7;fill-opacity:1;fill-rule:evenodd;stroke:none"
-           d="m 81.510334,434.52045 23.538086,5 0,-10 z"
-           id="path3866"
-           inkscape:path-effect="#path-effect3868"
-           inkscape:original-d="m 81.510334,434.52045 23.538086,0"
-           inkscape:connector-curvature="0" />
-        <path
-           style="fill:#0000ff;fill-rule:evenodd;stroke:none"
-           d="m 236.08176,746.7096 -8.7513,4.83888 17.41338,21.15982 z"
-           id="path3878"
-           inkscape:path-effect="#path-effect3880"
-           inkscape:original-d="m 231.70611,749.12904 13.03773,23.57926"
-           inkscape:connector-curvature="0" />
+               id="flowPara3937">nex</flowPara></flowRoot>        </g>
         <g
            id="g3800-1"
            transform="matrix(-1.0125769,0,0,-0.99984257,569.42208,1082.8113)"
-           style="fill:#f30000;fill-opacity:1">
-          <path
-             inkscape:connector-curvature="0"
-             inkscape:original-d="m 301.02415,334.47897 12.47265,-24.5048"
-             inkscape:path-effect="#path-effect3759-8"
-             id="path3757-5"
-             d="m 296.56815,332.21092 8.912,4.5361 8.01665,-26.77285 z"
-             style="fill:#f30000;fill-opacity:1;fill-rule:evenodd;stroke:none" />
-          <path
-             inkscape:connector-curvature="0"
-             id="path3030-9"
-             d="M 157.35641,640.86574 302.90611,330.15865"
-             style="fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:1.206532;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:100;stroke-opacity:1;stroke-dasharray:none" />
-        </g>
+           style="fill:#f30000;fill-opacity:1" />
         <path
            sodipodi:type="arc"
            style="fill:#ff0000"
@@ -341,7 +292,7 @@
            sodipodi:cy="597.36218"
            sodipodi:rx="5"
            sodipodi:ry="5"
-           d="m 240,597.36218 a 5,5 0 1 1 -10,0 5,5 0 1 1 10,0 z"
+           d="m 240,597.36218 c 0,2.76143 -2.23858,5 -5,5 -2.76142,0 -5,-2.23857 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z"
            transform="translate(7.6524705,178.34612)" />
         <path
            sodipodi:type="arc"
@@ -351,7 +302,7 @@
            sodipodi:cy="597.36218"
            sodipodi:rx="5"
            sodipodi:ry="5"
-           d="m 240,597.36218 a 5,5 0 1 1 -10,0 5,5 0 1 1 10,0 z"
+           d="m 240,597.36218 c 0,2.76143 -2.23858,5 -5,5 -2.76142,0 -5,-2.23857 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z"
            transform="translate(172.59916,-164.15896)" />
         <text
            xml:space="preserve"
@@ -380,278 +331,196 @@
         <text
            xml:space="preserve"
            style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0000ff;fill-opacity:1;stroke:none;font-family:Sans"
-           x="260"
-           y="572.36218"
+           x="340"
+           y="592.36218"
            id="text3644-3"
            sodipodi:linespacing="125%"><tspan
              sodipodi:role="line"
              id="tspan3646-8"
-             x="260"
-             y="572.36218"
-             style="font-size:28px">he0</tspan></text>
+             x="340"
+             y="592.36218"
+             style="font-size:28px">edge0</tspan></text>
+      </g>
+      <g
+         id="g3306"
+         transform="matrix(0.67672246,0,0,0.58467734,272.9963,-325.83742)">
         <text
-           inkscape:transform-center-x="13.250977"
            xml:space="preserve"
-           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ff0000;fill-opacity:1;stroke:none;font-family:Sans"
-           x="350"
-           y="612.36218"
-           id="text3644-3-2"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0000ff;fill-opacity:1;stroke:none;font-family:Sans"
+           x="409.33133"
+           y="612.6449"
+           id="text3644-7-5"
            sodipodi:linespacing="125%"><tspan
              sodipodi:role="line"
-             id="tspan3646-8-6"
-             x="350"
-             y="612.36218"
-             style="font-size:28px;fill:#ff0000">he1</tspan><tspan
-             id="tspan4372"
-             sodipodi:role="line"
-             x="350"
-             y="647.36218"
-             style="font-size:28px;fill:#ff0000" /></text>
+             id="tspan3646-2-6"
+             x="409.33133"
+             y="612.6449"
+             style="font-size:28px">to</tspan></text>
+        <g
+           id="g3281"
+           transform="matrix(0.94379876,0,0,1,5.7363494,0)">
+          <path
+             style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+             d="m 262.14285,963.79074 -159.99999,-340"
+             id="path3588-2"
+             inkscape:connector-curvature="0" />
+          <path
+             style="fill:#0000ff;fill-opacity:0.93607309;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+             d="m 102.06802,623.5382 323.07606,0"
+             id="path3590-7"
+             inkscape:connector-curvature="0" />
+          <path
+             inkscape:connector-curvature="0"
+             id="path3767-1"
+             d="m 424.99999,622.36217 180,340"
+             style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+          <path
+             inkscape:connector-curvature="0"
+             id="path3769-0"
+             d="m 264.99999,962.36217 340,0"
+             style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+          <g
+             transform="matrix(0.52699893,0,0,0.53217452,177.08471,621.6736)"
+             id="g3800-8">
+            <path
+               style="fill:none;stroke:#0000e5;stroke-width:4.19745064;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:100;stroke-opacity:1;stroke-dasharray:none"
+               d="M 160.25515,641.41789 317.93112,311.55148"
+               id="path3030-1"
+               inkscape:connector-curvature="0" />
+            <flowRoot
+               transform="matrix(0.9749236,0,0,0.9820632,-81.075137,60.084755)"
+               style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+               id="flowRoot3931-0"
+               xml:space="preserve"><flowRegion
+                 id="flowRegion3933-8"><rect
+                   y="199.79344"
+                   x="139.40105"
+                   height="42.426407"
+                   width="195.96959"
+                   id="rect3935-2" /></flowRegion><flowPara
+                 id="flowPara3937-7">nex</flowPara></flowRoot>          </g>
+          <path
+             transform="translate(26.091375,367.99999)"
+             d="m 240,597.36218 c 0,2.76143 -2.23858,5 -5,5 -2.76142,0 -5,-2.23857 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z"
+             sodipodi:ry="5"
+             sodipodi:rx="5"
+             sodipodi:cy="597.36218"
+             sodipodi:cx="235"
+             id="path3599-40"
+             style="fill:#ff0000"
+             sodipodi:type="arc" />
+          <path
+             transform="translate(191.03806,25.49491)"
+             d="m 240,597.36218 c 0,2.76143 -2.23858,5 -5,5 -2.76142,0 -5,-2.23857 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z"
+             sodipodi:ry="5"
+             sodipodi:rx="5"
+             sodipodi:cy="597.36218"
+             sodipodi:cx="235"
+             id="path3599-4-2"
+             style="fill:#ff0000"
+             sodipodi:type="arc" />
+          <text
+             sodipodi:linespacing="125%"
+             id="text3644-4"
+             y="1002.3622"
+             x="205.00002"
+             style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0000ff;fill-opacity:1;stroke:none;font-family:Sans"
+             xml:space="preserve"><tspan
+               style="font-size:28px"
+               y="1002.3622"
+               x="205.00002"
+               id="tspan3646-28"
+               sodipodi:role="line">from</tspan></text>
+          <text
+             sodipodi:linespacing="125%"
+             id="text3644-3-6"
+             y="842.36218"
+             x="220"
+             style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0000ff;fill-opacity:1;stroke:none;font-family:Sans"
+             xml:space="preserve"><tspan
+               style="font-size:28px"
+               y="842.36218"
+               x="220"
+               id="tspan3646-8-4"
+               sodipodi:role="line">edge0</tspan></text>
+          <text
+             sodipodi:linespacing="125%"
+             id="text3644-3-6-4"
+             y="692.36218"
+             x="290"
+             style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0000ff;fill-opacity:1;stroke:none;font-family:Sans"
+             xml:space="preserve"><tspan
+               style="font-size:28px"
+               y="692.36218"
+               x="290"
+               id="tspan3646-8-4-2"
+               sodipodi:role="line">edge1</tspan></text>
+          <g
+             transform="matrix(0.43985195,0,0,0.42982208,283.25188,491.71191)"
+             id="g3800-8-5">
+            <path
+               style="fill:none;stroke:#0000e5;stroke-width:4.19745064;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:100;stroke-opacity:1;stroke-dasharray:none"
+               d="M 160.25515,641.41789 317.93112,311.55148"
+               id="path3030-1-1"
+               inkscape:connector-curvature="0" />
+            <flowRoot
+               transform="matrix(0.9749236,0,0,0.9820632,-81.075137,60.084755)"
+               style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+               id="flowRoot3931-0-6"
+               xml:space="preserve"><flowRegion
+                 id="flowRegion3933-8-0"><rect
+                   y="199.79344"
+                   x="139.40105"
+                   height="42.426407"
+                   width="195.96959"
+                   id="rect3935-2-7" /></flowRegion><flowPara
+                 id="flowPara3937-7-8">nex</flowPara></flowRoot>          </g>
+          <path
+             sodipodi:type="arc"
+             style="fill:#000080;fill-opacity:1;stroke:#ff0000;stroke-width:4;stroke-miterlimit:100;stroke-opacity:1;stroke-dasharray:none"
+             id="path4563"
+             sodipodi:cx="310"
+             sodipodi:cy="792.36218"
+             sodipodi:rx="10"
+             sodipodi:ry="10"
+             d="m 320,792.36218 a 10,10 0 1 1 -20,0 10,10 0 1 1 20,0 z"
+             transform="translate(32.954323,-2.3034447)" />
+          <flowRoot
+             xml:space="preserve"
+             id="flowRoot4671"
+             style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+             transform="translate(-36.657053,18.602341)"><flowRegion
+               id="flowRegion4673"><rect
+                 id="rect4675"
+                 width="146"
+                 height="112"
+                 x="386"
+                 y="771.36218" /></flowRegion><flowPara
+               id="flowPara4677"
+               style="font-size:28px">np0</flowPara></flowRoot>          <flowRoot
+             xml:space="preserve"
+             id="flowRoot4671-5"
+             style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+             transform="translate(-13.171481,-32.708018)"><flowRegion
+               id="flowRegion4673-8"><rect
+                 id="rect4675-8"
+                 width="146"
+                 height="112"
+                 x="386"
+                 y="771.36218" /></flowRegion><flowPara
+               id="flowPara4677-6"
+               style="font-size:28px">np1</flowPara></flowRoot>          <path
+             sodipodi:type="arc"
+             style="fill:#000080;fill-opacity:1;stroke:#ff0000;stroke-width:4;stroke-miterlimit:100;stroke-opacity:1;stroke-dasharray:none"
+             id="path4563-7"
+             sodipodi:cx="310"
+             sodipodi:cy="792.36218"
+             sodipodi:rx="10"
+             sodipodi:ry="10"
+             d="m 320,792.36218 a 10,10 0 1 1 -20,0 10,10 0 1 1 20,0 z"
+             transform="translate(47.045663,-28.813788)" />
+        </g>
       </g>
-      <path
-         style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-         d="m 262.14285,963.79074 -159.99999,-340"
-         id="path3588-2"
-         inkscape:connector-curvature="0" />
-      <path
-         style="fill:#0000ff;fill-opacity:0.93607309;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-         d="m 102.06802,623.5382 323.07606,0"
-         id="path3590-7"
-         inkscape:connector-curvature="0" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path3767-1"
-         d="m 424.99999,622.36217 180,340"
-         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path3769-0"
-         d="m 264.99999,962.36217 340,0"
-         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-      <g
-         transform="matrix(1.0257214,0,0,1.0182644,98.160504,308.81783)"
-         id="g3800-8">
-        <path
-           style="fill:#0000ff;fill-rule:evenodd;stroke:none"
-           d="m 296.56815,332.21092 8.912,4.5361 8.01665,-26.77285 z"
-           id="path3757-6"
-           inkscape:path-effect="#path-effect3759-1"
-           inkscape:original-d="m 301.02415,334.47897 12.47265,-24.5048"
-           inkscape:connector-curvature="0" />
-        <path
-           style="fill:none;stroke:#0000e5;stroke-width:3.91394758;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:100;stroke-opacity:1;stroke-dasharray:none"
-           d="M 157.35641,640.86574 302.90611,330.15865"
-           id="path3030-1"
-           inkscape:connector-curvature="0" />
-        <flowRoot
-           transform="matrix(0.9749236,0,0,0.9820632,-81.075137,60.084755)"
-           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-           id="flowRoot3931-0"
-           xml:space="preserve"><flowRegion
-             id="flowRegion3933-8"><rect
-               y="199.79344"
-               x="139.40105"
-               height="42.426407"
-               width="195.96959"
-               id="rect3935-2" /></flowRegion><flowPara
-             id="flowPara3937-7">nex</flowPara></flowRoot>        <text
-           transform="scale(0.99635839,1.0036549)"
-           sodipodi:linespacing="125%"
-           id="text3939-0"
-           y="297.01416"
-           x="143.68053"
-           style="font-size:39.13947678px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-           xml:space="preserve"><tspan
-             style="font-size:27.3976326px;fill:#0000ff"
-             y="297.01416"
-             x="143.68053"
-             id="tspan3941-5"
-             sodipodi:role="line">next</tspan></text>
-        <text
-           transform="matrix(0.43954965,0.90071045,-0.89416221,0.44276854,0,0)"
-           sodipodi:linespacing="125%"
-           id="text3939-2-9"
-           y="167.74648"
-           x="422.95166"
-           style="font-size:39.13947678px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-           xml:space="preserve"><tspan
-             style="font-size:27.3976326px;fill:#0000ff"
-             y="167.74648"
-             x="422.95166"
-             id="tspan3941-6-9"
-             sodipodi:role="line">previous</tspan></text>
-        <path
-           style="fill:#0000ff;fill-rule:evenodd;stroke:none"
-           d="m 224.2149,484.58855 8.912,4.5361 8.01665,-26.77285 z"
-           id="path3757-6-0"
-           inkscape:path-effect="#path-effect3759-1-5"
-           inkscape:original-d="m 228.6709,486.8566 12.47265,-24.5048"
-           inkscape:connector-curvature="0" />
-      </g>
-      <path
-         inkscape:connector-curvature="0"
-         inkscape:original-d="m 99.949238,624.17432 23.538082,0"
-         inkscape:path-effect="#path-effect3868-4"
-         id="path3866-6"
-         d="m 99.949238,624.17432 23.538082,5 0,-10 z"
-         style="fill:#0000f7;fill-opacity:1;fill-rule:evenodd;stroke:none" />
-      <path
-         inkscape:connector-curvature="0"
-         inkscape:original-d="m 250.14501,938.78291 13.03773,23.57926"
-         inkscape:path-effect="#path-effect3880-6"
-         id="path3878-7"
-         d="m 254.52066,936.36347 -8.7513,4.83888 17.41338,21.15982 z"
-         style="fill:#0000ff;fill-rule:evenodd;stroke:none" />
-      <g
-         style="fill:#f30000;fill-opacity:1"
-         transform="matrix(-1.0125769,0,0,-0.99984257,587.86098,1272.4652)"
-         id="g3800-1-2">
-        <path
-           style="fill:#f30000;fill-opacity:1;fill-rule:evenodd;stroke:none"
-           d="m 296.56815,332.21092 8.912,4.5361 8.01665,-26.77285 z"
-           id="path3757-5-1"
-           inkscape:path-effect="#path-effect3759-8-7"
-           inkscape:original-d="m 301.02415,334.47897 12.47265,-24.5048"
-           inkscape:connector-curvature="0" />
-        <path
-           style="fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:1.206532;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:100;stroke-opacity:1;stroke-dasharray:none"
-           d="M 157.35641,640.86574 302.90611,330.15865"
-           id="path3030-9-9"
-           inkscape:connector-curvature="0" />
-        <path
-           style="fill:#f30000;fill-opacity:1;fill-rule:evenodd;stroke:none"
-           d="m 212.62391,512.23926 8.912,4.5361 8.01665,-26.77285 z"
-           id="path3757-5-1-3"
-           inkscape:path-effect="#path-effect3759-8-7-1"
-           inkscape:original-d="m 217.07991,514.50731 12.47265,-24.5048"
-           inkscape:connector-curvature="0" />
-      </g>
-      <path
-         transform="translate(26.091375,367.99999)"
-         d="m 240,597.36218 a 5,5 0 1 1 -10,0 5,5 0 1 1 10,0 z"
-         sodipodi:ry="5"
-         sodipodi:rx="5"
-         sodipodi:cy="597.36218"
-         sodipodi:cx="235"
-         id="path3599-40"
-         style="fill:#ff0000"
-         sodipodi:type="arc" />
-      <path
-         transform="translate(191.03806,25.49491)"
-         d="m 240,597.36218 a 5,5 0 1 1 -10,0 5,5 0 1 1 10,0 z"
-         sodipodi:ry="5"
-         sodipodi:rx="5"
-         sodipodi:cy="597.36218"
-         sodipodi:cx="235"
-         id="path3599-4-2"
-         style="fill:#ff0000"
-         sodipodi:type="arc" />
-      <text
-         sodipodi:linespacing="125%"
-         id="text3644-4"
-         y="1002.3622"
-         x="205.00002"
-         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0000ff;fill-opacity:1;stroke:none;font-family:Sans"
-         xml:space="preserve"><tspan
-           style="font-size:28px"
-           y="1002.3622"
-           x="205.00002"
-           id="tspan3646-28"
-           sodipodi:role="line">from</tspan></text>
-      <text
-         sodipodi:linespacing="125%"
-         id="text3644-7-5"
-         y="612.36218"
-         x="420"
-         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0000ff;fill-opacity:1;stroke:none;font-family:Sans"
-         xml:space="preserve"><tspan
-           style="font-size:28px"
-           y="612.36218"
-           x="420"
-           id="tspan3646-2-6"
-           sodipodi:role="line">to</tspan></text>
-      <text
-         sodipodi:linespacing="125%"
-         id="text3644-3-6"
-         y="862.36218"
-         x="250"
-         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0000ff;fill-opacity:1;stroke:none;font-family:Sans"
-         xml:space="preserve"><tspan
-           style="font-size:28px"
-           y="862.36218"
-           x="250"
-           id="tspan3646-8-4"
-           sodipodi:role="line">he0</tspan></text>
-      <text
-         sodipodi:linespacing="125%"
-         id="text3644-3-2-2"
-         y="892.36218"
-         x="320"
-         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ff0000;fill-opacity:1;stroke:none;font-family:Sans"
-         xml:space="preserve"
-         inkscape:transform-center-x="13.250977"><tspan
-           style="font-size:28px;fill:#ff0000"
-           y="892.36218"
-           x="320"
-           id="tspan3646-8-6-0"
-           sodipodi:role="line">he1</tspan><tspan
-           style="font-size:28px;fill:#ff0000"
-           y="927.36218"
-           x="320"
-           sodipodi:role="line"
-           id="tspan4372-1" /></text>
-      <path
-         sodipodi:type="arc"
-         style="fill:#000080;fill-opacity:1;stroke:#ff0000;stroke-width:4;stroke-miterlimit:100;stroke-opacity:1;stroke-dasharray:none"
-         id="path4563"
-         sodipodi:cx="310"
-         sodipodi:cy="792.36218"
-         sodipodi:rx="10"
-         sodipodi:ry="10"
-         d="m 320,792.36218 a 10,10 0 1 1 -20,0 10,10 0 1 1 20,0 z"
-         transform="translate(40,-10)" />
-      <text
-         sodipodi:linespacing="125%"
-         id="text3644-3-6-4"
-         y="697.36218"
-         x="325"
-         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0000ff;fill-opacity:1;stroke:none;font-family:Sans"
-         xml:space="preserve"><tspan
-           style="font-size:28px"
-           y="697.36218"
-           x="325"
-           id="tspan3646-8-4-2"
-           sodipodi:role="line">he2</tspan></text>
-      <text
-         sodipodi:linespacing="125%"
-         id="text3644-3-2-2-1"
-         y="722.36218"
-         x="400"
-         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ff0000;fill-opacity:1;stroke:none;font-family:Sans"
-         xml:space="preserve"
-         inkscape:transform-center-x="13.250977"><tspan
-           style="font-size:28px;fill:#ff0000"
-           y="722.36218"
-           x="400"
-           id="tspan3646-8-6-0-6"
-           sodipodi:role="line">he3</tspan><tspan
-           style="font-size:28px;fill:#ff0000"
-           y="757.36218"
-           x="400"
-           sodipodi:role="line"
-           id="tspan4372-1-9" /></text>
-      <flowRoot
-         xml:space="preserve"
-         id="flowRoot4671"
-         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-         transform="translate(-21,-1.9217939)"><flowRegion
-           id="flowRegion4673"><rect
-             id="rect4675"
-             width="146"
-             height="112"
-             x="386"
-             y="771.36218" /></flowRegion><flowPara
-           id="flowPara4677"
-           style="font-size:28px">np</flowPara></flowRoot>    </g>
+    </g>
   </g>
 </svg>

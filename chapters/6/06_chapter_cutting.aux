@@ -19,32 +19,28 @@
 \citation{Sifakis2007}
 \citation{Steinemann}
 \@writefile{toc}{\contentsline {section}{\numberline {6.2}Overview}{72}}
-\citation{Mario2010PolygonMesh}
 \@writefile{toc}{\contentsline {section}{\numberline {6.3}Data structure}{73}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6.1}{\ignorespaces  {A tetrahedral element in its canonical view. Iterating over nodes, edges and faces of each element is one of the primary operations in a geometric algorithm that manipulates such elements.} }}{73}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.1}{\ignorespaces  {A tetrahedral element in its canonical view. Iterating over nodes, edges and faces of each element is one of the primary operations in a geometric algorithm that manipulates such elements. The order we chose here is not the only possible one but it simplifies the cutting algorithm and element subdivision process as we will see later.} }}{73}}
 \newlabel{fig:tetconfig3}{{6.1}{73}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6.2}{\ignorespaces  {Half-edge data structure to store mesh information. Each half-edge holds references to its previous and next half-edges, left and right faces and the two end points. It may also store a pointer to its opposite half-edge.} }}{75}}
-\newlabel{fig:halfedge}{{6.2}{75}}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {5}{\ignorespaces Unique face key computation.}}{76}}
-\newlabel{alg:facekey}{{5}{76}}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {6}{\ignorespaces Splitting an edge in our half-edge data structure. The input to this algorithm is the index of the edge to be splitted and the distance $t$ along the edge where the intersection happens. Figure 6.3\hbox {} shows this operation in detail. }}{77}}
-\newlabel{alg:edgesplit}{{6}{77}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6.3}{\ignorespaces  {Top: The edge to be splitted before the splitting operation described in algorithm 6\hbox {}. Bottom: Splitting an edge produces a pair of new half-edges $he2$ and $he3$ which connect to the original half-edges $he0$ and $he1$ at the point of intersection.} }}{78}}
-\newlabel{fig:splitedge}{{6.3}{78}}
+\citation{Mario2010PolygonMesh}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {5}{\ignorespaces Splitting an edge in our volumetric mesh data structure. The input to this algorithm is the index of the edge to be splitted and the distance $t$ along the edge where the intersection happens. Figure 6.2\hbox {} shows this operation in detail. }}{76}}
+\newlabel{alg:edgesplit}{{5}{76}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.2}{\ignorespaces  {Left: The edge to be splitted before the splitting operation described in algorithm 5\hbox {}. Right: Splitting an edge produces a new edge from the point of intersection to the original endpoint. New points $np_0$ and $np_1$ are initially co-located.} }}{76}}
+\newlabel{fig:splitedge}{{6.2}{76}}
 \citation{Ganovelli2000}
 \citation{Steinemann}
 \citation{Mor2000}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {7}{\ignorespaces Iterating over incoming half-edges. Input to this algorithm is an index to a node, output is a list of half-edges.}}{79}}
-\newlabel{alg:incomingHalfEdges}{{7}{79}}
-\@writefile{toc}{\contentsline {section}{\numberline {6.4}Cutting Algorithm}{79}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {6}{\ignorespaces Iterating over one-ring neighborhood nodes of a given node.}}{77}}
+\newlabel{alg:oneRingNbors}{{6}{77}}
+\@writefile{toc}{\contentsline {section}{\numberline {6.4}Cutting Algorithm}{77}}
 \citation{RTR3}
-\@writefile{lof}{\contentsline {figure}{\numberline {6.4}{\ignorespaces  {The cut trajectory in blue and the sweep-surface shown in pink. The scalpel passes through a single tetrahedral element for cutting.} }}{80}}
-\newlabel{fig:sweepsurf}{{6.4}{80}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.4.1}Edge Intersections}{80}}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {8}{\ignorespaces \textit  {EdgeIntersections} The kernel function that computes intersections of edges and the sweep-surface. The prototype of the kernel follows the listing above and the algorithm here represents one thread of the execution. }}{81}}
-\newlabel{alg:edgeIntersections}{{8}{81}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.3}{\ignorespaces  {The cut trajectory in blue and the sweep-surface shown in pink. The scalpel passes through a single tetrahedral element for cutting.} }}{78}}
+\newlabel{fig:sweepsurf}{{6.3}{78}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4.1}Edge Intersections}{78}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {7}{\ignorespaces \textit  {EdgeIntersections} The kernel function that computes intersections of edges and the sweep-surface. The prototype of the kernel follows the listing above and the algorithm here represents one thread of the execution. }}{79}}
+\newlabel{alg:edgeIntersections}{{7}{79}}
 \@setckpt{chapters/6/06_chapter_cutting}{
-\setcounter{page}{82}
+\setcounter{page}{80}
 \setcounter{equation}{1}
 \setcounter{enumi}{6}
 \setcounter{enumii}{0}
@@ -59,7 +55,7 @@
 \setcounter{subsubsection}{0}
 \setcounter{paragraph}{0}
 \setcounter{subparagraph}{0}
-\setcounter{figure}{4}
+\setcounter{figure}{3}
 \setcounter{table}{0}
 \setcounter{lofdepth}{2}
 \setcounter{lotdepth}{1}
@@ -67,8 +63,8 @@
 \setcounter{LT@chunks}{0}
 \setcounter{parentequation}{0}
 \setcounter{float@type}{16}
-\setcounter{algorithm}{8}
-\setcounter{ALC@unique}{123}
+\setcounter{algorithm}{7}
+\setcounter{ALC@unique}{104}
 \setcounter{ALC@line}{17}
 \setcounter{ALC@rem}{0}
 \setcounter{ALC@depth}{0}
