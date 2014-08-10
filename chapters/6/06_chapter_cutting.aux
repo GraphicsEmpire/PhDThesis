@@ -33,14 +33,21 @@
 \@writefile{loa}{\contentsline {algorithm}{\numberline {6}{\ignorespaces Iterating over one-ring neighborhood nodes of a given node.}}{77}}
 \newlabel{alg:oneRingNbors}{{6}{77}}
 \@writefile{toc}{\contentsline {section}{\numberline {6.4}Cutting Algorithm}{77}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.3}{\ignorespaces  {The main stages in our GPU-accelerated cutting algorithm. See the text for the description of each of these steps.} }}{78}}
+\newlabel{fig:workflow}{{6.3}{78}}
 \citation{RTR3}
-\@writefile{lof}{\contentsline {figure}{\numberline {6.3}{\ignorespaces  {The cut trajectory in blue and the sweep-surface shown in pink. The scalpel passes through a single tetrahedral element for cutting.} }}{78}}
-\newlabel{fig:sweepsurf}{{6.3}{78}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.4.1}Edge Intersections}{78}}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {7}{\ignorespaces \textit  {EdgeIntersections} The kernel function that computes intersections of edges and the sweep-surface. The prototype of the kernel follows the listing above and the algorithm here represents one thread of the execution. }}{79}}
-\newlabel{alg:edgeIntersections}{{7}{79}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6.4}{\ignorespaces  {The cut trajectory in blue and the sweep-surface shown in pink. The scalpel passes through a single tetrahedral element for cutting.} }}{79}}
+\newlabel{fig:sweepsurf}{{6.4}{79}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4.1}Edge Intersections}{79}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {7}{\ignorespaces \textit  {EdgeIntersections} The kernel function that computes intersections of edges and the sweep-surface. The prototype of the kernel follows the listing above and the algorithm here represents one thread of the execution. }}{80}}
+\newlabel{alg:edgeIntersections}{{7}{80}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4.2}Produce cut-node list}{80}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {8}{\ignorespaces \textit  {ProduceCutNodeList} The function that builds the cut-nodes list from the intersected edges. If an intersection is within the predefined distance of an edge endpoint it is considered as a ``cut-node''.}}{81}}
+\newlabel{alg:produceCutNodes}{{8}{81}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4.3}Filter intersected-edges}{81}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4.4}Compute configuration codes for cut elements}{81}}
 \@setckpt{chapters/6/06_chapter_cutting}{
-\setcounter{page}{80}
+\setcounter{page}{82}
 \setcounter{equation}{1}
 \setcounter{enumi}{6}
 \setcounter{enumii}{0}
@@ -51,11 +58,11 @@
 \setcounter{part}{0}
 \setcounter{chapter}{6}
 \setcounter{section}{4}
-\setcounter{subsection}{1}
+\setcounter{subsection}{4}
 \setcounter{subsubsection}{0}
 \setcounter{paragraph}{0}
 \setcounter{subparagraph}{0}
-\setcounter{figure}{3}
+\setcounter{figure}{4}
 \setcounter{table}{0}
 \setcounter{lofdepth}{2}
 \setcounter{lotdepth}{1}
@@ -63,9 +70,9 @@
 \setcounter{LT@chunks}{0}
 \setcounter{parentequation}{0}
 \setcounter{float@type}{16}
-\setcounter{algorithm}{7}
-\setcounter{ALC@unique}{104}
-\setcounter{ALC@line}{17}
+\setcounter{algorithm}{8}
+\setcounter{ALC@unique}{116}
+\setcounter{ALC@line}{12}
 \setcounter{ALC@rem}{0}
 \setcounter{ALC@depth}{0}
 \setcounter{lstnumber}{8}
