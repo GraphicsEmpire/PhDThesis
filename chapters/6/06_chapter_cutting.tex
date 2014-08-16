@@ -245,7 +245,6 @@ box. In such cases the scalpel might miss the surface if the bounding box test f
   \includegraphics[width=0.6\linewidth]{figures/cutting/cubecut02.png}
   \includegraphics[width=0.6\linewidth]{figures/cutting/cubecut04.png}
   \includegraphics[width=0.6\linewidth]{figures/cutting/cubecut05.png}
-
   \caption{\label{fig:sweepsurf}
   {The cut trajectory in blue and the sweep-surface shown in pink. The scalpel passes through the voxel grid model for cutting.}
 }
@@ -301,7 +300,47 @@ thread of the execution. }
 \end{algorithmic}
 \end{algorithm}
 
+\subsection{Produce cut-node list}
+To minimize the number of subdivided elements; per each intersection point which is ``too close'' to one of the edge endpoints; 
+the sweep surface is snapped to that endpoint. The associated endpoint is also stored in a separate list called ``cut-nodes''. 
+In our system if an intersection point lies within the 20 percent of its associated edge length radius then it is considered 
+as a ``cut node''. This value avoided the most skinny elements. An analysis on the quality factors of the tetrahedral elements 
+is made later in this chapter. The cut-nodes are later used to produce special subdivision cases which output non-skinny 
+tetrahedral elements.
 
+\begin{algorithm}[H]
+\caption{\textit{ProduceCutNodeList} The function that builds the cut-nodes list from the intersected edges.
+If an intersection is within the predefined distance of an edge endpoint it is considered as a ``cut-node''.}
+\label{alg:produceCutNodes}
+\begin{algorithmic}[1]	
+  \FOR{$i = 0$ \TO $cutEdges.count - 1$} 
+  \STATE $ce \gets cutEdges\left[i\right]$
+  \STATE $edge \gets mesh.edge(ce.handle)$
+  \STATE $normalizedT \gets ce.t / length(edge.from, edge.to)$
+  \IF{$normalizedT < NODE\_SNAP\_RADIUS$}
+  \STATE $cutNodes.insert(edge.from)$
+  \ELSE
+    \IF{$normalizedT > 1.0 - NODE\_SNAP\_RADIUS$}
+    \STATE $cutNodes.insert(edge.to)$
+    \ENDIF
+  \ENDIF
+  \ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+In algorithm (\ref{alg:produceCutNodes}) the intersection distance is normalized using the length of the associated edge.
+If the normalized distance is within the predefined snap radius then the start point of the edge is a cutnode. Otherwise
+if the condition is true on the other end point then that point is added as the cut-node.
+
+\subsection{Filter intersected-edges}
+All the edges that are incident to a ``cut-node'' are removed from the list of intersected-edges. Since our mesh data structure 
+already has the bottom-up links, it is trivial to access all the incident edges per each node. 
+
+
+\subsection{Compute configuration codes for cut elements}
+After building the list of cut-edges and cut-nodes, a GPU kernel function is invoked to visit all the tetrahedral elements and identify 
+the cells that are intersected by the sweep-surface. Per each element the 6 edges and the 4 nodes are checked against the hash table for 
+cut-edges and cut-nodes. 
 %The main contribution of our cutting method is the GPU-accelerations applied to the cutting process to support interactive topological 
 %modifications and the post processing step that supports smoothness of the cuts in case of complex tissues. 
 
