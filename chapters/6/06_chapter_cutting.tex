@@ -1,26 +1,26 @@
 \startchapter{Real-time Cutting}
 \label{chapter:Cutting}
+The physics simulation in our system uses tetrahedral meshes to compute deformations.
 One of the main objectives of virtual reality based surgical simulation systems is the removal of pathologic tissue 
 \cite{Steinemann, Nienhuys2001a}. Cutting imposes many challenges in the development of a robust, interactive surgery 
-simulation, not only because of the nonlinear geometric and material behavior exhibited by soft tissue but also due to the
+simulation, not only because of the nonlinear material behavior exhibited by soft tissue but also due to the
 complexity of introducing the cutting-induced discontinuity. In most publications, the progressive surgical cutting is modelled
-by conventional finite element (FE) method, in which the high computational cost and error accumulation due to remeshing constrain 
-the computational efficiency and accuracy. 
+by the conventional finite element (FE) method, in which the high computational cost and error accumulation due to remeshing constrain 
+the computational efficiency and accuracy \cite{Steinemann, Courtecuisse2010a}. 
 
 We developed our new cutting approach in the context of brain biopsy simulation. When an abnormality of the brain is suspected, 
 Stereotactic (probing in three dimensions) brain needle biopsy is performed and guided precisely by a computer system to avoid 
 serious complications. A small hole is drilled into the skull, and a needle is inserted into the brain tissue guided by computer-assisted 
-imaging techniques (CT or MRI scans). Due to this, the actual cutting process can not be seen by the surgeon. For this reason,
-non-progressive cutting, where a tetrahedral element is decomposed only once is has been completely traversed, is a reasonable
-approximation for our application area, and so we define the cut only once the instrument has traversed the pathology. 
+imaging techniques (CT or MRI scans). The actual cutting process can not be seen by the surgeon. For this reason,
+non-progressive cutting, where a tetrahedral element is decomposed after the sweep surface traverses the tetrahedral elements, is a reasonable
+approximation for our application area, and so we define the cut once the instrument has traversed the tissue. 
 Moreover, there is little, if at all, resistance to the cut tool movement through the tissue. Therefore, in the current stage, we do 
-not model any interaction of the cutting tool with the deformable object during a cut. 
+not model any haptic interaction of the cutting tool with the deformable object during a cut. 
 
-The deformable tissues in our framework are represented by tetrahedral meshes and simulated using nonlinear finite element methods. 
 
 \section{Related Work}
-A number of approaches has been proposed by the computer graphics community to enable cutting deformable models. 
-Except for a few methods most of them used tetrahedral meshes for the volumetric mesh representation. 
+A number of approaches has been proposed by the computer graphics community to enable cutting of deformable models. 
+Except for a few methods most of them use tetrahedral meshes for the volumetric mesh representation. 
 Bielser \etal performed an adaptive refinement of the tetrahedral elements cut by a virtual scalpel \cite{Bielser1999}.
 
 Mor \etal tried to reduce the number of sub-elements created while cutting tetrahedral meshes \cite{Mor2000}.
@@ -33,14 +33,14 @@ responses of soft tissue \cite{Jin2013}. A cloud of points is used for discretiz
 field within the continuum without generation of finite element meshes. They didn't report 
 any performance measurements and the quality of the cuts could not be verified with the simple truth cube model they reported in their paper.
  
-Wu \etal \cite{Wu2011} proposed an algorithm for 3D mesh cutting using a combination of the adaptive octree refinement with iterative composite
+Wu \etal \cite{Wu2011} proposed an algorithm for 3D mesh cutting using a combination of the adaptive octree refinement with an iterative composite
 element hierarchy to enable simulating high-resolution cuts with a small number of degrees of freedom (DOFs). 
 They used the dual contouring method \cite{Ju2002} to keep the sharp creases along the cut. Due to the high computational cost and naive implementation 
 their method is not scalable and has yet to become an interactive cutting approach.
 
 In a closely related work Courtecuisse \etal presented a soft-tissue cutting system with haptic 
 feedback \cite{Courtecuisse2010a}. Their cutting strategy follows Mor \etal  \cite{Mor2000} work and 
-suffers from jaggy lines along the cut surface as shown in their examples of a laparoscopic hepatecotomy.
+suffers from jagged lines along the cut surface as shown in their examples of a laparoscopic hepatecotomy.
 The progressive cutting is not supported in their system and as most of the other works in this area they produce too many
 new nodes when subdividing cut elements.
 
@@ -60,27 +60,40 @@ fragments will not allow the material to separate within that embedding tetrahed
 
 Steinemann \etal \cite{Steinemann} created a hysteroscopy simulator and minimized the number of added elements 
 after a tetrahedral subdivision by cutting along existing edges and faces. The problem with their system is that
-the result of the cutting is being produced only after it has been completed and this leads to felt lag in the system. 
+the result of the cutting is produced only after it has been completed and this leads to a delay in the system. 
 Unfortunately they didn't report any performance statistics of their algorithm. 
 
 In the following sections we provide an overview of the system and the data structures involved in the process 
 and our cutting algorithm. The chapter is concluded by the analysis of the simulation results.
 
 \section{Overview}
-We present a GPU-assisted approach in cutting tetrahedral meshes in real-time. 
+We present a GPU-assisted approach to cutting tetrahedral meshes in real-time. 
 The input to our system is a cut trajectory and an edge-based data structure representing the tetrahedral mesh. 
-The following steps are carried to complete the cut induced by the scalpel on the mesh:
+As shown in figure \ref{fig:sweepsurf}, the user moves the cutting tool and the system records the path of the 
+blade endpoints shown in purple. The first intersection between the recorded trajectory and the model marks the 
+beginning of the cutting process. When the tool completely traverses the model the system computes the cutting
+configurations as described below. The following steps are performed to complete the cut induced by the scalpel on the mesh:
+
+\begin{figure}[H]
+  \centering
+  % the following command controls the width of the embedded PS file
+  % (relative to the width of the current column)
+  \includegraphics[width=0.6\linewidth]{figures/cutting/cubecut02.png}
+  \includegraphics[width=0.6\linewidth]{figures/cutting/cubecut04.png}
+  \includegraphics[width=0.6\linewidth]{figures/cutting/cubecut05.png}
+  \caption{\label{fig:sweepsurf}
+  {The cut trajectory in blue and the sweep-surface shown in pink. The scalpel passes through the voxel grid model for cutting.}
+}
+\end{figure}
 
 \begin{enumerate}
- \item Using the cut trajectory and the bounding box of the cutting tool, the sweep-surface that passes through 
- the mesh is defined.
  \item Using the GPU-accelerated algorithm the intersection of the sweep-surface and all the edges of the mesh 
  are computed. The output of this stage is a list of cut-edges and their associated intersection points. 
  
  \item A GPU kernel function is used to compute the distance of the nodes in the cut-edges and the end points of 
  the cut tool. This way the nodes that are too close to the sweep-surface are identified and a different configuration 
- is used to produce subdivided elements in the next stage to avoid ill-shaped elements. The output of this stage is an
- associated list of cut nodes.
+ is used to produce subdivided elements in the next stage to avoid ill-shaped elements. The output of this stage is 
+ a list that associates edges with their cut-nodes.
  
  \item Using a look-up table all the cut tetrahedra are decomposed into sub-elements
  
@@ -122,15 +135,29 @@ The minimal set of operations frequently used by most algorithms are as followin
  \item Access to individual vertices, edges, faces and tetrahedral elements. This includes the enumeration of 
  all elements in unspecified order.
  
- \item Access to the so-called one-ring neighborhood of the nodes. A typical use-case for this operation is the uniform 
- distribution of the external forces applied to the mesh. Also many mesh simplification algorithms predicate on such operators.
+ \item Per each vertex, access to all the directly adjacent nodes to that vertex (i.e. one ring neighborhood see figure \ref{fig:meshlinks}). 
+ A typical use-case for this operation is the uniform distribution of the external forces applied to the mesh. 
+ Also many mesh simplification algorithms are based on such operators.
  
- \item Top-down and bottom-up hierarchical access to the mesh entities. Top-down access is inherently provided in the structure of the
- mesh entities e.g. elements are comprised of faces and faces are made up of set of edges etc. In case of the bottom up access some algorithms 
- will benefit to have the incident edges of a certain node, or in case of edges all the incident faces of a given edge and for a given face
- all the incident elements to a particular face in the mesh. This type of access patterns are particularly useful for topological modification 
- scenarios and the required book-keeping operations.
+ \item Top-down and bottom-up hierarchical access to the mesh entities (An example is shown in figure \ref{fig:meshlinks}). Top-down access 
+ is inherently provided in the structure of the mesh entities e.g. elements are comprised of faces and faces are made up of set of edges etc. 
+ In case of the bottom up access some algorithms will benefit to have the incident edges of a certain node, or in case of edges all the incident 
+ faces of a given edge and for a given face all the incident elements to a particular face in the mesh. This type of access patterns are particularly 
+ useful for topological modification scenarios and the required book-keeping operations.
  
+ \begin{figure}[H]
+  \centering
+  % the following command controls the width of the embedded PS file
+  % (relative to the width of the current column)
+  \includegraphics[width=0.8\linewidth]{figures/cutting/mesh_links.png}
+  \caption{\label{fig:meshlinks}
+  {Top-down and bottom-up mesh links. The top-down relationships is explicitly defined in the structure of the mesh.
+  An example of the bottom-up links is shown here: Edges $e_1..e_4$ are incident to node $p_1$ and therefore the set 
+  $\{p_0$, $p_2$, $p_3$, $p_4\}$} is the one-ring neighborhood of node $p_1$. Faces $F_1..F_3$ are incident to edge 
+  $e_5$ and both tetrahedral cells are incident to face $F_2$.
+}
+\end{figure}
+
  \item Insertion and removal operations for nodes, edges, faces and elements. These operations require extra care in order to keep
  the top-down and bottom-up links up-to-date. As we will see in our cutting algorithm deferred removal operations can make matters alot simpler by
  delaying the actual removal until after all the identified entities are being visited and the new entities inserted to the structure.
@@ -142,11 +169,12 @@ The minimal set of operations frequently used by most algorithms are as followin
  of that edge and also all the incident edges of the end points of the edge (lower level entity) should be updated.
 \end{itemize}
 
-Per each node we also store the rest position of it, this is used to update the physics model and to interpolate the position 
+The rest position of each node is stored which can be used to update the physics model and to interpolate the position 
 of newly added nodes in case of cutting. Accessing edges using the bottom-up structure is expensive: First the list of incident 
 edges to one of the endpoints of the edge is accessed and then a serial search on that list is done to find an edge with the matching 
 end points. This has logarithmic complexity with respect to the number of edges in the structure. Instead we chose to use a hash-table
-to access edges using a key derived from the two end-points of the edge. Below is how this key is computed for a given edge:
+to access edges using a key derived from the two end-points of the edge. Below is how this key is computed for a given edge 
+\cite{Mario2010PolygonMesh, Bloomenthal1997}:
 
 \begin{equation}
  key64 = (nodes\left[ 1 \right] << 32) \And nodes\left[ 0 \right]
@@ -156,16 +184,11 @@ This computation is performed when a new edge in inserted into the structure and
 The hash-map then associates this key to its corresponding edge index thereby providing constant-time access. 
 Using this technique the faces can also be accessed though their associated node indices which can be convenient for some applications. 
 
-In the case of triangle faces in our tetrahedral volume mesh. After finding the edge indices for all the three edges of the given 
-face using the described method above, the sublist containing the incident faces of the first edge is fetched. Using a linear search 
-in that sublist the queried face can be identified. 
-
-Nothing is removed directly from the our mesh storage buffers but rather upon cutting the elements
-are marked as to\_be\_deleted and later the garbage collection removes all unreferenced items from the mesh storage buffers. 
+Nothing is removed directly from the our mesh storage buffers but rather upon cutting, the elements
+are added to the $freelist$ and later the garbage collection removes all the $freelist$ items from the mesh storage buffers. 
 
 When cutting an edge, an edge-update process is performed followed by a new edge insertion. 
-The update process basically splits the original edge in two. Algorithm \ref{alg:edgesplit} describes this process
-in detail which is also depicted in figure \ref{fig:splitedge}:
+The update process splits the original edge in two. Algorithm \ref{alg:edgesplit} describes this process (also see figure \ref{fig:splitedge}):
 
 \begin{algorithm}[H]
 \caption{Splitting an edge in our volumetric mesh data structure. The input to this algorithm is the index of the edge to be splitted
@@ -187,6 +210,10 @@ and the distance $t$ along the edge where the intersection happens. Figure \ref{
 \end{algorithmic}
 \end{algorithm}
 
+Algorithm \ref{alg:edgesplit} starts by computing the co-located intersection points $newp0$ and $newp1$ using the provided distance $t$
+and the end-points of the original edge. Then both the current and rest positions of the new points are computed. The new points are appended to the 
+appropriate mesh storage lists and the current edge is updated to end at $newp0$. Another edge from $newp1$ to the original end point is added later.
+Figure \ref{fig:splitedge} shows this process.
 
 
 \begin{figure}[H]
@@ -195,32 +222,11 @@ and the distance $t$ along the edge where the intersection happens. Figure \ref{
   % (relative to the width of the current column)
   \includegraphics[width=0.8\linewidth]{figures/cutting/splitedge.png}
   \caption{\label{fig:splitedge}
-  {Left: The edge to be splitted before the splitting operation described in algorithm \ref{alg:edgesplit}. 
-  Right: Splitting an edge produces a new edge from the point of intersection to the original endpoint. New points $np_0$ and $np_1$ are
-  initially co-located.}
+  {Left: The edge to be split. Right: Splitting an edge produces a new edge from the point of 
+  intersection to the original endpoint. New points $newp_0$ and $newp_1$ are initially co-located.}
 }
 \end{figure}
 
-
-Iterating over the one-ring neighborhood nodes to a given node is performed using the following algorithm \ref{alg:oneRingNbors}:
-
-\begin{algorithm}[H]
-\caption{Iterating over one-ring neighborhood nodes of a given node.}
-\label{alg:oneRingNbors}
-\begin{algorithmic}[1]	
-  \STATE $incidentEdges \gets incident_edges_to_node(node)$
-  
-  \FOR{$i = 0$ \TO $incidentEdges.count - 1$} 
-  \STATE $edge \gets incidentEdges\left[i\right]$
-  \IF{$edge.from \neq node$}
-  \STATE $nbors.insert(edge.from)$
-  \ELSE
-  \STATE $nbors.insert(edge.to)$
-  \ENDIF
-  \ENDFOR
-  \RETURN $nbors$
-\end{algorithmic}
-\end{algorithm}
 
 Upon topological modification, events are generated to notify cutting algorithms of the internal changes in the mesh structure. 
 This is also useful for debugging and evaluation purposes and can be logged for accounting the sequence of changes made to the 
@@ -238,29 +244,18 @@ that the scalpel passed through in Euclidean space. The cut trajectory is not co
 with that of the tissue. The tissue bounding box is expanded to rule out the boundary cases where the surface of the model contacts with its own bounding 
 box. In such cases the scalpel might miss the surface if the bounding box test fails to detect the initial contact. 
 
-\begin{figure}[H]
-  \centering
-  % the following command controls the width of the embedded PS file
-  % (relative to the width of the current column)
-  \includegraphics[width=0.6\linewidth]{figures/cutting/cubecut02.png}
-  \includegraphics[width=0.6\linewidth]{figures/cutting/cubecut04.png}
-  \includegraphics[width=0.6\linewidth]{figures/cutting/cubecut05.png}
-  \caption{\label{fig:sweepsurf}
-  {The cut trajectory in blue and the sweep-surface shown in pink. The scalpel passes through the voxel grid model for cutting.}
-}
-\end{figure}
 
 \subsection{Edge Intersections}
 Using a GPU kernel function the intersection of the sweep-surface and all the edges of the model are computed. 
 The input to this stage is the list of edges of the model and 4 points defining the sweep-surface quadrilateral. 
 Since the intersection of a triangle and a line segment is faster to compute than a quadrilateral, we 
-use two intersection tests per each edge to figure out wether the segment is splitted or not. The implementation
+use two intersection tests per each edge to figure out whether the segment is split or not. The implementation
 of our edge triangle intersection follows the Ray-Triangle intersection test given in \cite{RTR3}.
 
 
 Similar to our GPU polygonization method in section \ref{sec:surfextraction}, a prefix-sum operator counts the number
 of intersections and also compacts the resulting array of intersection points. The final output of this stage is a list
-of intersection points and the associated edge indices. Listing below shows the prototype of the kernel function in 
+of intersection points and the associated edge indices. The listing below shows the prototype of the kernel function in 
 OpenCL:
 
 \begin{lstlisting}[frame=single]
@@ -299,6 +294,15 @@ thread of the execution. }
   
 \end{algorithmic}
 \end{algorithm}
+
+Each thread of execution will examine one edge of the mesh. The blade quadrilateral is divided to two triangles named $tri0$ and $tri1$ 
+as shown in algorithm \ref{alg:edgeIntersections}. The two endpoints of the current edge are retrieved from the mesh storage buffer called 
+$edgebuffer$. The function named ``IntersectSegmentTri'' computes the intersection point of a line segment and a triangle. If the
+first triangle does not intersect with the blade end-points the test is repeated for the second triangle. If there is a
+valid intersection point, it is stored in the appropriate output buffer ``scanIntersections'', the index of the intersected edge is stored at
+``scanIndices'' and a flag that later identifies successful intersection tests is written to ``scanFlags''. These buffers are compacted later 
+using sum-scan operators discussed in the previous chapter. 
+
 
 \subsection{Produce cut-node list}
 To minimize the number of subdivided elements; per each intersection point which is ``too close'' to one of the edge endpoints; 
