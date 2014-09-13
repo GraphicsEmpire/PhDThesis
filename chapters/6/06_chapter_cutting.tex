@@ -305,12 +305,25 @@ using sum-scan operators discussed in the previous chapter.
 
 
 \subsection{Produce cut-node list}
-To minimize the number of subdivided elements; per each intersection point which is ``too close'' to one of the edge endpoints; 
-the sweep surface is snapped to that endpoint. The associated endpoint is also stored in a separate list called ``cut-nodes''. 
+Following the improvement made by Steinmann \etal \cite{Steinemann} to minimize the number of subdivided elements; 
+per each intersection point which is ``too close'' to one of the edge endpoints; 
+the sweep surface is snapped to that endpoint (see figure \ref{fig:cutnode}). The associated endpoint is also stored in a separate list called ``cut-nodes''. 
 In our system if an intersection point lies within the 20 percent of its associated edge length radius then it is considered 
 as a ``cut node''. This value avoided the most skinny elements. An analysis on the quality factors of the tetrahedral elements 
 is made later in this chapter. The cut-nodes are later used to produce special subdivision cases which output non-skinny 
 tetrahedral elements.
+
+\begin{figure}[H]
+  \centering
+  % the following command controls the width of the embedded PS file
+  % (relative to the width of the current column)
+  \includegraphics[width=0.8\linewidth]{figures/cutting/cutnode.png}
+  \caption{\label{fig:cutnode}
+  {Dashed line represents the cut trajectory. For all the edges intersected by the cut sweep surface the end point closest to the sweep surface is selected.
+  If the node lies within a threshold h, it is marked as a cut-node painted in blue and all the incident edges to that node are removed from the cut-edges list.
+  The red dots are the intersection points associated with the remaining cut-edges.}
+}
+\end{figure}
 
 \begin{algorithm}[H]
 \caption{\textit{ProduceCutNodeList} The function that builds the cut-nodes list from the intersected edges.
@@ -321,10 +334,10 @@ If an intersection is within the predefined distance of an edge endpoint it is c
   \STATE $ce \gets cutEdges\left[i\right]$
   \STATE $edge \gets mesh.edge(ce.handle)$
   \STATE $normalizedT \gets ce.t / length(edge.from, edge.to)$
-  \IF{$normalizedT < NODE\_SNAP\_RADIUS$}
+  \IF{$normalizedT < h$}
   \STATE $cutNodes.insert(edge.from)$
   \ELSE
-    \IF{$normalizedT > 1.0 - NODE\_SNAP\_RADIUS$}
+    \IF{$normalizedT > 1.0 - h$}
     \STATE $cutNodes.insert(edge.to)$
     \ENDIF
   \ENDIF
@@ -333,20 +346,8 @@ If an intersection is within the predefined distance of an edge endpoint it is c
 \end{algorithm}
 
 In algorithm (\ref{alg:produceCutNodes}) the intersection distance is normalized using the length of the associated edge.
-If the normalized distance is within the predefined snap radius then the start point of the edge is a cutnode. Otherwise
-if the condition is true on the other end point then that point is added as the cut-node.
-
-\begin{figure}[H]
-  \centering
-  % the following command controls the width of the embedded PS file
-  % (relative to the width of the current column)
-  \includegraphics[width=0.5\linewidth]{figures/cutting/beforecut.png}
-  \includegraphics[width=0.5\linewidth]{figures/cutting/aftercut.png}
-  \caption{\label{fig:twotetsexample}
-  {Left: The cut trajectory. Right: After the cut is completed the disjoint parts are moved to the opposite sides of the sweep-surface.
-  The four blue dots depict the intersection points.}
-}
-\end{figure}
+If the normalized distance is within the predefined threshold $h$ then the start point of the edge is a cutnode. Otherwise
+if the condition is true on the other end point then that end point is added as the cut-node.
 
 \subsection{Filter intersected-edges}
 All the edges that are incident to a ``cut-node'' are removed from the list of intersected-edges. Since our mesh data structure 
@@ -456,3 +457,15 @@ possible for the next cutting operations.
 
 \section{Cutting Results}
 In this section we review the results of our cutting operation. 
+
+\begin{figure}[H]
+  \centering
+  % the following command controls the width of the embedded PS file
+  % (relative to the width of the current column)
+  \includegraphics[width=0.4\linewidth]{figures/cutting/beforecut.png}
+  \includegraphics[width=0.4\linewidth]{figures/cutting/aftercut.png}
+  \caption{\label{fig:twotetsexample}
+  {Left: The cut trajectory. Right: After the cut is completed the disjoint parts are moved to the opposite sides of the sweep-surface.
+  The four blue dots depicted there are the intersection points.}
+}
+\end{figure}
