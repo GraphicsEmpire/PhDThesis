@@ -1,0 +1,9 @@
+#backup files
+*~
+*.aux
+*.log
+*.bbl
+*.blg
+*.backup
+*.lot
+*.lof
