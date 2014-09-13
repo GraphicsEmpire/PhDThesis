@@ -336,15 +336,46 @@ In algorithm (\ref{alg:produceCutNodes}) the intersection distance is normalized
 If the normalized distance is within the predefined snap radius then the start point of the edge is a cutnode. Otherwise
 if the condition is true on the other end point then that point is added as the cut-node.
 
+\begin{figure}[H]
+  \centering
+  % the following command controls the width of the embedded PS file
+  % (relative to the width of the current column)
+  \includegraphics[width=0.5\linewidth]{figures/cutting/beforecut.png}
+  \includegraphics[width=0.5\linewidth]{figures/cutting/aftercut.png}
+  \caption{\label{fig:twotetsexample}
+  {Left: The cut trajectory. Right: After the cut is completed the disjoint parts are moved to the opposite sides of the sweep-surface.
+  The four blue dots depict the intersection points.}
+}
+\end{figure}
+
 \subsection{Filter intersected-edges}
 All the edges that are incident to a ``cut-node'' are removed from the list of intersected-edges. Since our mesh data structure 
 already has the bottom-up links, it is trivial to access all the incident edges per each node. 
 
 
 \subsection{Compute configuration codes for cut elements}
-After building the list of cut-edges and cut-nodes, a GPU kernel function is invoked to visit all the tetrahedral elements and identify 
-the cells that are intersected by the sweep-surface. Per each element the 6 edges and the 4 nodes are checked against the hash table for 
-cut-edges and cut-nodes. 
+After building the list of cut-edges and cut-nodes, all the tetrahedral cells are inspected for intersection. 
+The list of cut-edges and cut-nodes are implemented as hash-tables in our system, therefore, performing a query operation can be done 
+in constant time and this step is not bottleneck in our system. Per each cell all the 6 edges are checked against the cut-edges hash table 
+in the same order given in figure \ref{fig:tetconfig3}. If an edge is included in the cut-edges hash table then a flag bit is set for that
+particular edge. The same process is performed for the 4 nodes of each cell and a 4 bits cutnode code is computed for that cell.
+
+\begin{table}[H]
+\begin{center}
+\caption{\label{table:speedup}{Possible cut configurations and their associated cut-edge codes and cut-node codes.}}
+  \begin{tabular}{ | l | c | c | }
+    \hline    
+    Config & edges cut & generated cells \\ \hline \hline    
+    A56 & 3, 4, 5 & \{0, 12, 10, 14\}, \{3, 13, 11, 15\}, \{3, 1, 15, 11\}, \{1, 2, 3, 11\} \\ \hline
+    A37 & 0, 2, 5 & \{1, 4, 8, 15\}, \{3, 9, 5, 14\}, \{0, 3, 14, 5\}, \{0, 2, 3, 5\} \\ \hline
+    A11 & 0, 1, 3 & \{2, 5, 6, 11\}, \{3, 7, 10, 4\}, \{3, 1, 4, 10\}, \{0, 1, 3, 10\} \\ \hline
+    A22 & 1, 2, 4 & \{3, 13, 9, 7\}, \{1, 8, 12, 6\}, \{1, 2, 12, 6\}, \{0, 1, 2, 12\} \\ \hline
+    \hline
+  \end{tabular}
+\end{center}
+\end{table}
+
+
 %The main contribution of our cutting method is the GPU-accelerations applied to the cutting process to support interactive topological 
 %modifications and the post processing step that supports smoothness of the cuts in case of complex tissues. 
 
