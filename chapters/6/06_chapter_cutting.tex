@@ -456,16 +456,77 @@ then once the cut is finalized the mesh can be cleaned and any unused entities s
 possible for the next cutting operations.
 
 \section{Cutting Results}
-In this section we review the results of our cutting operation. 
+In this section we present some cutting examples. The model shown in figure \ref{fig:dumbelsexample} is composed of 
+two implicit spheres that are blended and tetrahedralized for physics simulation. The resulting volumetric mesh is cut horizontally, vertically and
+diagonally using the scalpel tool. 
 
 \begin{figure}[H]
   \centering
-  % the following command controls the width of the embedded PS file
-  % (relative to the width of the current column)
-  \includegraphics[width=0.4\linewidth]{figures/cutting/beforecut.png}
-  \includegraphics[width=0.4\linewidth]{figures/cutting/aftercut.png}
-  \caption{\label{fig:twotetsexample}
-  {Left: The cut trajectory. Right: After the cut is completed the disjoint parts are moved to the opposite sides of the sweep-surface.
-  The four blue dots depicted there are the intersection points.}
+  \includegraphics[width=0.4\linewidth]{figures/cutting/dumbel01.png}
+  \includegraphics[width=0.4\linewidth]{figures/cutting/dumbel02.png}
+  \includegraphics[width=0.4\linewidth]{figures/cutting/dumbel03.png}
+  \includegraphics[width=0.4\linewidth]{figures/cutting/dumbel04.png}
+  
+  \caption{\label{fig:dumbelsexample}
+  {Two implicit spheres are blended and tetrahedralized for our physics simulation system. The peanut model is cut 3 times.
+  Top-Left: The original volumetric mesh. Top-Right: Model cut horizontally with the scalpel tool.
+  Bottom-Left: Diagonal cutting, Bottom-Right: Vertical cut. Blue dot represent the intersection points on the original edges.}
 }
 \end{figure}
+
+The second model is a tumor composed of 10 blended spheres. Using the same process the model is tetrahedralized for physical simulation
+and cut 3 times. Figure \ref{fig:tumor} shows the result of these topological modifications.
+
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.4\linewidth]{figures/cutting/tumor01.png}
+  \includegraphics[width=0.4\linewidth]{figures/cutting/tumor02.png}
+  \includegraphics[width=0.4\linewidth]{figures/cutting/tumor03.png}
+  \includegraphics[width=0.4\linewidth]{figures/cutting/tumor04.png}
+  
+  \caption{\label{fig:tumor}
+  {The tumor model above is composed of 10 point primitives and a blending operator. Top-Left: the original mesh, Top-Right:
+  The mesh after a horizontal cut, Bottom-Left: The vertical cut, Bottom-Right: mesh after a diagonal cut.}
+}
+\end{figure}
+
+To analyse the quality of the tetrahedral mesh after the cutting process several attributes are being considered. First, the 
+number of elements before and after each cut. More elements will increase the system solve time and degrade the performance of the 
+physical simulation due to the larger matrix dimensions involved in the process. Badly shaped (skinny) tetrahedral elements impose stricter constraints 
+on the simulation time step \cite{Steinemann, Ganovelli2000}. In order to get an understanding of the quality of the tetrahedral mesh after the cuts, element
+counts and several other quality measures are considered \cite{parthasarathy1994comparison}. 
+
+\begin{itemize}
+ \item The ratio between largest and smallest tetrahedron volume
+ \item The ratio between largest and smallest edge length
+ \item The lowest aspect ratio of all tetrahedra 
+\end{itemize}
+
+The aspect ratio of a tetrahedra is measured as following:
+
+\begin{equation}
+\beta = \frac{CR}{3*IR} 
+\end{equation}
+
+Where $CR$ is the circumsphere radius of an element and $IR$ is the inscribed-sphere \cite{parthasarathy1994comparison}. 
+
+ 
+\begin{table}[H]
+\begin{center}
+\caption{\label{table:meshquality}{Mesh quality measurements.}}
+  \begin{tabular}{ | l | c | c || c | c |}
+    \hline    
+     & original peanut & peanut after 3 cuts & original tumor & tumor after 3 cuts \\ \hline \hline    
+    Nodes & 4437 & 8933 & 8035 & 15821  \\ \hline
+    Edges & 25420 & 46466 & 46121 & 82711 \\ \hline
+    Faces & 39108 & 67388 & 70998 & 120212 \\ \hline
+    Cells & 18124 & 28322 & 32911 & 50605 \\ \hline
+    $V_{max} / V_{min}$ & 1 & 1 & 1 & 1 \\ \hline
+    $l_{max} / l_{min}$ & 1 & 1 & 1 & 1 \\ \hline
+    $AspectRatio_{min}$ & 1 & 1 & 1 & 1 \\ \hline
+
+    \hline
+  \end{tabular}
+\end{center}
+\end{table}
