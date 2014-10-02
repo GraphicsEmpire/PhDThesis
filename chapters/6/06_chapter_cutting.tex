@@ -355,6 +355,7 @@ already has the bottom-up links, it is trivial to access all the incident edges 
 
 
 \subsection{Compute configuration codes for cut elements}
+\label{sec:cutconfigs}
 After building the list of cut-edges and cut-nodes, all the tetrahedral cells are inspected for intersection. 
 The list of cut-edges and cut-nodes are implemented as hash-tables in our system, therefore, performing a query operation can be done 
 in constant time and this step is not bottleneck in our system. Per each cell all the 6 edges are checked against the cut-edges hash table 
@@ -531,4 +532,4 @@ Where $CR$ is the circumsphere radius of an element and $IR$ is the inscribed-sp
 \end{center}
 \end{table}
 
-All these measure are important for a stable deformation simulation. 
+%All these measure are important for a stable deformation simulation. 
