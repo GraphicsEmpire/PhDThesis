@@ -9,9 +9,22 @@ from the skull to access the brain. Craniotomies are often a critical operation 
 from brain lesions or traumatic brain injury (TBI), and can also allow doctors to surgically implant deep brain 
 stimulators for the treatment of Parkinson's disease, epilepsy and cerebellar tremor. The procedure is also widely 
 used in neuroscience for extracellular recording, brain imaging, and for neurological manipulations such as electrical 
-stimulation and chemical titration.
+stimulation and chemical titration. Craniotomies are also named according to their size and complexity. Small dime-sized 
+craniotomies are called burr holes or keyhole craniotomies. Sometimes stereotactic frames, image-guided computer systems, 
+or endoscopes are used to precisely direct instruments through these small holes. Burr holes or keyhole craniotomies are 
+used for minimally invasive procedures to:
 
-The second operation is brain biopsy which is the removal of a small piece of brain tissue for the diagnosis of abnormalities 
+\begin{itemize}
+ \item insert a shunt into the ventricles to drain cerebrospinal fluid (hydrocephalus)
+ \item insert a deep brain stimulator to treat Parkinson Disease
+ \item insert an intracranial pressure (ICP) monitor
+ \item remove a small sample of abnormal tissue (needle biopsy)
+ \item drain a blood clot (stereotactic hematoma aspiration)
+ \item insert an endoscope to remove small tumors and clip aneurysms
+\end{itemize}
+
+
+The second simulation operation is brain biopsy which is the removal of a small piece of brain tissue for the diagnosis of abnormalities 
 of the brain. It is used to diagnose Alzheimer's disease, tumors, infection, inflammation, and other brain disorders. By examining 
 the tissue sample under a microscope, the biopsy sample provides doctors with the information necessary to guide diagnosis and 
 treatment.
@@ -64,7 +77,7 @@ Figure \ref{fig:craniotomy01} shows the skull mesh in its initial position.
 The cutting tool in this scenario is a tube-shaped device which can drill into the skull tissue and separate the bone matter.
 In our system, the tool is defined as a curve approximated by $N$ line segments. The tool movement is tracked in the space 
 and the system checks for collisions between the tool and the model constantly. Figure \ref{fig:craniotomytube} shows the 
-polygonal shape of the cutting tool while in contact with skull tissue.
+polygonal shape of the cutting tool while in contact with the skull tissue.
 
 \begin{figure}[H]
   \centering
@@ -82,7 +95,7 @@ skull model. With $N$ line segments the cutting tool has $N$ quadrilateral faces
 test is performed in our system by calling the kernel function given in algorithm \ref{alg:edgeIntersections} once per each quad.
 After each call the hash-table storing the cut-edges is filled with the new cuts. In case an edge is cut twice by the tool only 
 the first cut is retained. This situation happens when a long edge of the tissue model is cut by relatively shorter segments of 
-the cutting tool, this situation is depicted in figure \ref{fig:ringscalpalissue}.
+the cutting tool which is also illustrated in figure \ref{fig:ringscalpalissue}.
 
 \begin{figure}[H]
   \centering
@@ -90,34 +103,43 @@ the cutting tool, this situation is depicted in figure \ref{fig:ringscalpalissue
   % (relative to the width of the current column)
   \includegraphics[width=0.2\linewidth]{figures/evaluation/ringscalpalissue.png}
   \caption{\label{fig:ringscalpalissue}
-  {An edge in the volumetric mesh model is cut by multiple segments of the scalpel. 
-    Only the first intersection is accepted in this case.}
+  {An edge in the volumetric mesh model is cut by multiple segments of the scalpel (Intersection points are shown in red dots)
+   Only the first intersection is accepted in this case.}
 }
 \end{figure}
 
-\begin{figure}[H]
-  \centering
-  % the following command controls the width of the embedded PS file
-  % (relative to the width of the current column)
-  \includegraphics[width=0.6\linewidth]{figures/evaluation/craniotomytube.png}
-  \caption{\label{fig:craniotomytube}
-  {Cutting tool is defined as a tube with a base composed of a curve approximated with $N$ line segments. 
-  Collisions between the tool and the tissue are monitored constantly.}
-}
-\end{figure}
 
 The cutting configurations presented in section \ref{sec:cutconfigs} are extracted based on one intersection per edge, therefore
 it's not possible to cut a given edge more than once. In our system we only accept the first cut-edge and this did not produce any 
 visual defects. Perhaps a more robust implementation would be to approximate the cutting tool curve based on the size of the longest 
-edge in the mesh. After the cutting is made the mesh is separated and each the disconnected part is converted into a separate node
+edge in the mesh. After the cutting is made the mesh is separated and each of the disconnected parts is converted into a separate node
 in our scenegraph structure. This operation results in correct detection of the self-collisions in the subsequent frames of the simulation.
+
+The internal gray, white and CSF matters are also included in this simulation. The drilling operation only affects the skull tissue and
+in fact it does not pass the Dura layer. This condition is a requirement for the successful completion of this procedure. 
+
+Figure \ref{fig:crosssection} shows the cross section view of the brain. The skull is cut with a scalpel tool 
+to show the internal tissues which are drawn in blue for better visibility. 
+\begin{figure}[H]
+  \centering
+  % the following command controls the width of the embedded PS file
+  % (relative to the width of the current column)
+  \includegraphics[width=0.5\linewidth]{figures/evaluation/crosssection.png}
+  \caption{\label{fig:crosssection}
+  {Cross section view of the brain layers. The skull shown in pink is cut using a scalpel avatar to show 
+   all the other layers depicted in blue.}
+}
+\end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.5\linewidth]{figures/evaluation/craniotomy03.png}
-  \includegraphics[width=0.5\linewidth]{figures/evaluation/craniotomy04.png}
-  \includegraphics[width=0.5\linewidth]{figures/evaluation/craniotomy05.png}
+  \includegraphics[width=0.5\linewidth]{figures/evaluation/craniotomy06.png}
+  \includegraphics[width=0.5\linewidth]{figures/evaluation/craniotomy07.png}
+  \includegraphics[width=0.5\linewidth]{figures/evaluation/craniotomy08.png}
   \caption{\label{fig:craniotomy}
   {Simulation of the craniotomy operation using our surgical simulation framework with support for interactive cutting.}
 }
 \end{figure}
+
+Figure \ref{fig:craniotomy} shows the three stages of the operation (before, during and after the cutting operation). 
+During the drilling process 845 tetrahedral cells are being cut in the vicinity of the drilling tool. 

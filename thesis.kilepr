@@ -4,7 +4,7 @@ img_extIsRegExp=false
 img_extensions=.eps .jpg .jpeg .png .pdf .ps .fig .gif
 kileprversion=2
 kileversion=2.1.3
-lastDocument=frontmatter/tp.tex
+lastDocument=chapters/6/06_chapter_cutting.tex
 masterDocument=
 name=Thesis
 pkg_extIsRegExp=false
@@ -218,13 +218,13 @@ order=-1
 
 [item:chapters/1/01_chapter_intro.tex]
 archive=true
-column=46
+column=0
 encoding=UTF-8
 highlight=LaTeX
-line=65
+line=93
 mode=LaTeX
-open=false
-order=1
+open=true
+order=0
 
 [item:chapters/1/chapter_intro.tex]
 archive=true
@@ -271,7 +271,7 @@ archive=true
 column=0
 encoding=UTF-8
 highlight=LaTeX
-line=288
+line=509
 mode=LaTeX
 open=false
 order=1
@@ -288,33 +288,33 @@ order=2
 
 [item:chapters/6/06_chapter_cutting.tex]
 archive=true
-column=0
+column=1
 encoding=UTF-8
 highlight=LaTeX
-line=512
+line=534
 mode=LaTeX
 open=true
-order=0
+order=3
 
 [item:chapters/7/07_chapter_evaluation.tex]
 archive=true
-column=56
+column=39
 encoding=ISO-8859-15
 highlight=LaTeX
-line=16
+line=120
 mode=LaTeX
 open=false
 order=-1
 
 [item:chapters/8/08_chapter_conclusion.tex]
 archive=true
-column=0
+column=91
 encoding=UTF-8
 highlight=LaTeX
-line=0
+line=16
 mode=LaTeX
-open=false
-order=-1
+open=true
+order=2
 
 [item:frontmatter/abs.tex]
 archive=true
@@ -368,12 +368,12 @@ order=-1
 
 [item:frontmatter/tp.tex]
 archive=true
-column=57
+column=36
 encoding=UTF-8
 highlight=LaTeX
-line=10
+line=18
 mode=LaTeX
-open=true
+open=false
 order=1
 
 [item:macros/use_packages.tex]
@@ -388,13 +388,13 @@ order=-1
 
 [item:mainthesisUVIC.tex]
 archive=true
-column=0
+column=2
 encoding=UTF-8
 highlight=LaTeX
-line=42
+line=26
 mode=LaTeX
-open=false
-order=0
+open=true
+order=1
 
 [item:thesis.kilepr]
 archive=true
@@ -413,8 +413,8 @@ JumpList=
 ViMarks=
 
 [view-settings,view=0,item:chapters/1/01_chapter_intro.tex]
-CursorColumn=46
-CursorLine=65
+CursorColumn=0
+CursorLine=93
 JumpList=
 ViMarks=.,65,46,[,65,46,],65,46
 
@@ -444,9 +444,9 @@ ViMarks=
 
 [view-settings,view=0,item:chapters/4/04_chapter_gpu_discretization.tex]
 CursorColumn=0
-CursorLine=288
+CursorLine=509
 JumpList=
-ViMarks=.,324,25,[,324,25,],324,25
+ViMarks=.,509,0,[,509,0,],509,0
 
 [view-settings,view=0,item:chapters/5/05_chapter_fem.tex]
 CursorColumn=0
@@ -455,22 +455,22 @@ JumpList=
 ViMarks=
 
 [view-settings,view=0,item:chapters/6/06_chapter_cutting.tex]
-CursorColumn=0
-CursorLine=512
+CursorColumn=1
+CursorLine=534
 JumpList=
-ViMarks=.,511,85,[,511,84,],511,118
+ViMarks=.,534,0,[,534,0,],534,0
 
 [view-settings,view=0,item:chapters/7/07_chapter_evaluation.tex]
-CursorColumn=56
-CursorLine=16
+CursorColumn=39
+CursorLine=120
 JumpList=
-ViMarks=
+ViMarks=.,120,8,[,120,8,],120,8
 
 [view-settings,view=0,item:chapters/8/08_chapter_conclusion.tex]
-CursorColumn=0
-CursorLine=0
+CursorColumn=91
+CursorLine=16
 JumpList=
-ViMarks=
+ViMarks=.,16,90,[,16,89,],16,90
 
 [view-settings,view=0,item:frontmatter/abs.tex]
 CursorColumn=0
@@ -503,10 +503,10 @@ JumpList=
 ViMarks=
 
 [view-settings,view=0,item:frontmatter/tp.tex]
-CursorColumn=57
-CursorLine=10
+CursorColumn=36
+CursorLine=18
 JumpList=
-ViMarks=
+ViMarks=.,18,35,[,18,35,],18,35
 
 [view-settings,view=0,item:macros/use_packages.tex]
 CursorColumn=0
@@ -515,7 +515,7 @@ JumpList=
 ViMarks=.,25,0,[,25,0,],25,0
 
 [view-settings,view=0,item:mainthesisUVIC.tex]
-CursorColumn=0
-CursorLine=42
+CursorColumn=2
+CursorLine=26
 JumpList=
-ViMarks=
+ViMarks=.,26,1,[,26,1,],26,1
