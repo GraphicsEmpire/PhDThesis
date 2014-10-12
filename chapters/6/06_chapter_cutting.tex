@@ -8,10 +8,10 @@ complexity of introducing the cutting-induced discontinuity. In most publication
 by the conventional finite element (FE) method, in which the high computational cost and error accumulation due to remeshing constrain 
 the computational efficiency and accuracy \cite{Steinemann, Courtecuisse2010a}. 
 
-We developed our new cutting approach in the context of brain biopsy simulation. When an abnormality of the brain is suspected, 
+We developed our new cutting approach in the context of a human skull craniotomy simulation. When an abnormality of the brain is suspected, 
 Stereotactic (probing in three dimensions) brain needle biopsy is performed and guided precisely by a computer system to avoid 
 serious complications. A small hole is drilled into the skull, and a needle is inserted into the brain tissue guided by computer-assisted 
-imaging techniques (CT or MRI scans). The actual cutting process can not be seen by the surgeon. For this reason,
+imaging techniques (CT or MRI scans). The actual biopsy process can not be seen by the surgeon. For this reason,
 non-progressive cutting, where a tetrahedral element is decomposed after the sweep surface traverses the tetrahedral elements, is a reasonable
 approximation for our application area, and so we define the cut once the instrument has traversed the tissue. 
 Moreover, there is little, if at all, resistance to the cut tool movement through the tissue. Therefore, in the current stage, we do 
@@ -440,7 +440,7 @@ Sub-elements are separated by semi-colon to fit on the line.}}
   \centering
   % the following command controls the width of the embedded PS file
   % (relative to the width of the current column)
-  \includegraphics[width=0.6\linewidth]{figures/cutting/midpoints.png}
+  \includegraphics[width=0.4\linewidth]{figures/cutting/midpoints.png}
   \caption{\label{fig:midpoints}
   {Nodes 0-3 are the original cell nodes shown in blue dots. Splitting each of the 6 edges can produce two additional nodes up to 12 more nodes which 
   are placed at indices 4-15 shown in black dots.}
@@ -457,9 +457,10 @@ then once the cut is finalized the mesh can be cleaned and any unused entities s
 possible for the next cutting operations.
 
 \section{Cutting Results}
-In this section we present some cutting examples. The model shown in figure \ref{fig:dumbelsexample} is composed of 
-two implicit spheres that are blended and tetrahedralized for physics simulation. The resulting volumetric mesh is cut horizontally, vertically and
-diagonally using the scalpel tool. 
+In this section we review the results for the cutting algorithm presented in this chapter. 
+Two models are considered for this analysis and a more complex cutting scenario is presented in chapter \ref{chapter:evaluation}.
+The model shown in figure \ref{fig:dumbelsexample} is composed of two implicit spheres that are blended and tetrahedralized for 
+physics simulation. The resulting volumetric mesh is cut horizontally, vertically and diagonally using the scalpel tool. 
 
 \begin{figure}[H]
   \centering
@@ -475,7 +476,7 @@ diagonally using the scalpel tool.
 }
 \end{figure}
 
-The second model is a tumor composed of 10 blended spheres. Using the same process the model is tetrahedralized for physical simulation
+The second model is the tumor model composed of 10 blended spheres. Using the same process the model is tetrahedralized for physical simulation
 and cut 3 times. Figure \ref{fig:tumor} shows the result of these topological modifications.
 
 
@@ -510,8 +511,14 @@ The aspect ratio of a tetrahedra is measured as following:
 \beta = \frac{CR}{3*IR} 
 \end{equation}
 
-Where $CR$ is the circumsphere radius of an element and $IR$ is the inscribed-sphere \cite{parthasarathy1994comparison}. 
+Where $CR$ is the circumsphere radius of an element and $IR$ is the inscribed-sphere computed by the following equation 
+\cite{parthasarathy1994comparison}:
 
+\begin{equation}
+IR = \frac{4V}{\sum_{i=1}^{4} SA_i}
+\end{equation}
+
+Where $V$ is the volume of a tetrahedra, $SA_i$ is the surface area of the $i$th triangle face of an element.
  
 \begin{table}[H]
 \begin{center}
@@ -523,13 +530,50 @@ Where $CR$ is the circumsphere radius of an element and $IR$ is the inscribed-sp
     Edges & 25420 & 46466 & 46121 & 82711 \\ \hline
     Faces & 39108 & 67388 & 70998 & 120212 \\ \hline
     Cells & 18124 & 28322 & 32911 & 50605 \\ \hline
-    $V_{max} / V_{min}$ & 1 & 1 & 1 & 1 \\ \hline
-    $l_{max} / l_{min}$ & 1 & 1 & 1 & 1 \\ \hline
-    $AspectRatio_{min}$ & 1 & 1 & 1 & 1 \\ \hline
-
+    $V_{max} / V_{min}$ & 84.927 & 58.253 & 316.898 & 287.596 \\ \hline
+    $l_{max} / l_{min}$ & 42.367 & 47.547 & 40.045 & 130.556 \\ \hline
+    $AspectRatio_{min}$ & $3 \times 10^{-7}$ & $3 \times 10^{-7}$ & $10^{-6}$ & $10^{-6}$ \\ \hline
     \hline
   \end{tabular}
 \end{center}
 \end{table}
 
-%All these measure are important for a stable deformation simulation. 
+Graichen \etal presented an excellent study on the tetrahedral mesh quality measures \cite{Graichen1993}. 
+Thin, wedge-like, flat and sliver elements (where 4 points of the element are co-planar) are the source of poor simulation 
+results. Table \ref{table:meshquality} summarises the statistical quality factors before and after cutting the two example meshes. 
+The original volumetric mesh of both of these models are extracted from their associated \blob representation using our GPU tetrahedralization
+algorithm presented in chapter \ref{chapter:GPUDiscretization}.
+
+As it can be seen from the results the cutting method presented in this chapter does not increase the ratio of maximum to minimum 
+volume after the cuts are being made. This means that the element subdivision stage in our system does not 
+introduce ill-shaped elements to the mesh. The ratio of the maximum to minimum edge-length did not change drastically.
+However, a local remeshing process after the cut specially in the vicinity of the cut region can improve the quality 
+of the mesh significantly. 
+
+The element count has increased steadily after each cut operation. Figure \ref{fig:cutting_cells_increase} shows the trend of element increase 
+after $N$ cuts are made to the mesh.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1.0\linewidth]{figures/cutting/cutting_cells_increase.pdf}
+  \caption{\label{fig:cutting_cells_increase}
+  {Number of tetrahedral cells after each cut operation. The horizontal axis is the cut number starting from cut 0 or the original mesh. 
+  The vertical axis is the number of cells.}
+}
+\end{figure}
+
+Figure \ref{fig:cutting_intersected_vs_new} provides a clear understanding of how many new cells are being added to the mesh after each cut operation.
+The blue bar in this figure shows the number of cells that are intersected with the cut surface per each cut. Following the algorithm given in 
+section \ref{sec:cutconfigs} the intersected cells are being subdivided and replaced by new set of generated cells shown in orange. 
+On average the ratio of newly generated cells to intersected cells is 3.6 from these results. This is due to the fact that most of the cut configurations
+are of type A which result in a 1 to 4 subdivision. 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1.0\linewidth]{figures/cutting/cutting_intersected_vs_new_tumor.pdf}
+  \includegraphics[width=1.0\linewidth]{figures/cutting/cutting_intersected_vs_new_peanut.pdf}
+  \caption{\label{fig:cutting_intersected_vs_new}
+  {The ratio of intersected cells to newly added cells for tumor (top) and peanut model (bottom). Each blue bar represents the count of cells 
+  intersected with the scalpel tool while the orange bar next to it, is the number of newly generated cells after subdividing those intersected cells.}
+}
+\end{figure}

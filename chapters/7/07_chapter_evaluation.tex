@@ -2,9 +2,9 @@
 \label{chapter:evaluation}
 Our methods presented in the previous chapters have been integrated into our surgical simulation system. 
 The result is a comprehensive environment for soft-tissue modeling and simulation with support for cutting and
-probing. We present our results in the context of two procedures.
+probing. We present our results in the context of a skull craniotomy procedure.
 
-The first operation is craniotomy which is a surgical operation in which a bone flap is temporarily removed 
+Craniotomy is a surgical operation in which a bone flap is temporarily removed 
 from the skull to access the brain. Craniotomies are often a critical operation performed on patients suffering 
 from brain lesions or traumatic brain injury (TBI), and can also allow doctors to surgically implant deep brain 
 stimulators for the treatment of Parkinson's disease, epilepsy and cerebellar tremor. The procedure is also widely 
@@ -23,11 +23,17 @@ used for minimally invasive procedures to:
  \item insert an endoscope to remove small tumors and clip aneurysms
 \end{itemize}
 
+In the following sections we describe our simulation setup and then review the results. 
+%The second simulation operation is brain biopsy which is the removal of a small piece of brain tissue for the diagnosis of abnormalities 
+%of the brain. It is used to diagnose Alzheimer's disease, tumors, infection, inflammation, and other brain disorders. By examining 
+%the tissue sample under a microscope, the biopsy sample provides doctors with the information necessary to guide diagnosis and treatment.
 
-The second simulation operation is brain biopsy which is the removal of a small piece of brain tissue for the diagnosis of abnormalities 
-of the brain. It is used to diagnose Alzheimer's disease, tumors, infection, inflammation, and other brain disorders. By examining 
-the tissue sample under a microscope, the biopsy sample provides doctors with the information necessary to guide diagnosis and 
-treatment.
+\section{Architectural constraints}
+We are able to perform interactive cuts on a model with more than 60,000 cells. The GPU accelerated cutting algorithm 
+presented in chapter \ref{chapter:Cutting} requires a modern GPU with OpenCL support. The system we used for this
+experiment is equipped with an Nvidia Geforce GTX760 with 2GB of video memory and 1152 CUDA cores. The CPU is an 
+Intel Core i7-4770K with 256 KB, 1MB and 8MB of L1 to L3 cache. This processor has 4 cores and up to 8 threads can run in parallel. 
+Our system is also equipped with 16 GB of main memory. 
 
 \section{Craniotomy}
 Fang \etal published a tetrahedral mesh data-set of the brain tissues \cite{fang2010mesh}. The MRI scanned data is 
@@ -142,4 +148,5 @@ to show the internal tissues which are drawn in blue for better visibility.
 \end{figure}
 
 Figure \ref{fig:craniotomy} shows the three stages of the operation (before, during and after the cutting operation). 
-During the drilling process 845 tetrahedral cells are being cut in the vicinity of the drilling tool. 
+During the drilling process 845 tetrahedral cells are being cut in the vicinity of the drilling tool. The interaction of the drilling tool and the skull 
+was interactive at all times supporting at least 60 frames per second.
