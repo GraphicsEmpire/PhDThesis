@@ -35,6 +35,41 @@ experiment is equipped with an Nvidia Geforce GTX760 with 2GB of video memory an
 Intel Core i7-4770K with 256 KB, 1MB and 8MB of L1 to L3 cache. This processor has 4 cores and up to 8 threads can run in parallel. 
 Our system is also equipped with 16 GB of main memory. 
 
+\section{Eggshell experiment}
+Before drilling an actual skull mesh with many tetrahedral elements we tested our system on a spherial model similar to 
+an eggshell. This model is composed of 840 nodes and 2280 tetrahedral cells. The outer surface is composed of two layers 
+of tetrahedral elements only (see figure \ref{fig:eggshell01}). To create this model implicitly a smaller sphere is subtracted 
+from a larger one. After tetrahedralization the mesh is post processed for smoothness.
+
+\begin{figure}[H]
+  \centering
+  % the following command controls the width of the embedded PS file
+  % (relative to the width of the current column)
+  \includegraphics[width=0.7\linewidth]{figures/evaluation/eggshell01.png}
+  \caption{\label{fig:eggshell01}
+  {Eggshell model before being drilled by our cutting tool.}
+}
+\end{figure}
+
+After the drilling operation, only 120 new elements are added to the mesh for a total of 2400 elements. The entire process is completed 
+interactively. The small disjoint parts fall down on the ground due to gravity. Each disjoint part becomes an independant
+deformable model in our system and subject to forces and deformations. Figure \ref{fig:eggshell02} shows the mesh after being 
+drilled for the bare hole.
+
+
+\begin{figure}[H]
+  \centering
+  % the following command controls the width of the embedded PS file
+  % (relative to the width of the current column)
+  \includegraphics[width=0.6\linewidth]{figures/evaluation/eggshell02.png}
+  \includegraphics[width=0.6\linewidth]{figures/evaluation/eggshell03.png}
+  \caption{\label{fig:eggshell02}
+  {Eggshell model after being drilled by our cutting tool.}
+}
+\end{figure}
+
+In the next stage a real data-set of an skull tissue is used for the craniotomy operation.
+
 \section{Craniotomy}
 Fang \etal published a tetrahedral mesh data-set of the brain tissues \cite{fang2010mesh}. The MRI scanned data is 
 segmented into the following four regions:
