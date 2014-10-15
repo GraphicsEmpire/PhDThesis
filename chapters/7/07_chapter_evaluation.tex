@@ -1,5 +1,11 @@
 \startchapter{Evaluation, Analysis and Comparisons}
 \label{chapter:evaluation}
+During the past decade a new thrust has appeared with the development of deformable tissue modeling techniques which could make it
+possible to develop patient-specific simulations. Whenever the best surgical strategy is unclear or the patient presents a rare
+pathology such simulations could be beneficial. Other use-cases for such systems is in surgical skill training which is a long 
+and tedius process of acquiring fine motor skills. In all those scenarios physically-based animation of soft tissues is challenging and 
+has lots of room for improvement. 
+
 Our methods presented in the previous chapters have been integrated into our surgical simulation system. 
 The result is a comprehensive environment for soft-tissue modeling and simulation with support for cutting and
 probing. We present our results in the context of a skull craniotomy procedure.
@@ -68,7 +74,8 @@ drilled for the bare hole.
 }
 \end{figure}
 
-In the next stage a real data-set of an skull tissue is used for the craniotomy operation.
+After completing this experiment successfully our algorithm showed to be robust enough to handle 
+more complex meshes. In the next stage a real data-set of an skull tissue is used for the craniotomy operation.
 
 \section{Craniotomy}
 Fang \etal published a tetrahedral mesh data-set of the brain tissues \cite{fang2010mesh}. The MRI scanned data is 
@@ -117,7 +124,7 @@ Figure \ref{fig:craniotomy01} shows the skull mesh in its initial position.
 
 The cutting tool in this scenario is a tube-shaped device which can drill into the skull tissue and separate the bone matter.
 In our system, the tool is defined as a curve approximated by $N$ line segments. The tool movement is tracked in the space 
-and the system checks for collisions between the tool and the model constantly. Figure \ref{fig:craniotomytube} shows the 
+and the system checks for collisions between the tool and the model continuously. Figure \ref{fig:craniotomytube} shows the 
 polygonal shape of the cutting tool while in contact with the skull tissue.
 
 \begin{figure}[H]

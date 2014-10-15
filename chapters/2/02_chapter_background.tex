@@ -132,6 +132,66 @@ These sketched objects can then be used in the same way as the standard skeletal
 unique shapes were not possible to create in previous collaborative environments, especially given this technique’s small memory footprint 
 needed to transfer the information.
 
+\section{Deformable Models}
+In their survey paper Meier \etal \cite{Meier2005} presented a classification of the deformable models available for surgery 
+simulation based on their applications. The main classifications are heuristic, hybric and continuum mechanical approaches.
+Examples of heuristic models are: deformable splines, spring-mass models, linked volumes and tensor-mass models. 
+
+With deformable splines, classical splines are employed to model a 3D object. They define a potential energy which is proportional
+to the degree of elastic deformation. By using the lagrange method, this energy is finally minimized with respect to the displacements
+enforced in some control points to obtain the corresponding deformation state. The increased number of parameters required to control
+the shape and the physical properties of the models will become the bottleneck and are difficult to determine empirically. A post processing
+step is also required to convert the smooth spline surface to discretized polygons for rendering. Even without this post processing stage
+they are computationally very expensive. E.g. solid objects have to be modelled as hollow shells which is not lending itself very well for
+volume preservation applications.
+
+\subsection{Mass-Spring Models}
+Mass spring models (MSM) are the most intuitive and most common method used in deformable object modeling.
+Terzopoulos \etal \cite{terzopoulos1988modeling, terzopoulos1987elastically} was the first who introduced mass-spring systems in 
+computer graphics animation systems. Provot \etal showed applications of this technique in cloth simulation \cite{provot1995deformation}
+as did Baraff \etal \cite{baraff1998large}. Kahel \etal used in facial animation \cite{kahler2001geometry}. 
+Gibson \etal survey reviewed many examples of mass-spring system applications \cite{Gibson1997a}. In this system the deformable object
+is discretized into a network of point masses which are connected with massless springs and dampers. By adding weights and considering
+constant coefficient $k_s$ the elastic force is obtained by:
+
+\begin{equation}
+ \boldsymbol{f}^s_i = \sum_{j \in N(\boldsymbol{x}_i)} k_s w_{ij}(\boldsymbol{x}_{ij})(1-\frac{l^0_{ij}}{\| \boldsymbol{x}_{ij} \|})
+\end{equation}
+
+In this setup:
+
+\begin{itemize}
+ \item $\boldsymbol{x_{ij}} = \boldsymbol{x}_j - \boldsymbol{x}_i$ where $\boldsymbol{x}_i$ is the position of node $i$, 
+ \item $l^0_{ij}$ is the initial spring length between node $i$ and node $j$,
+ \item $N(\boldsymbol{x_i})$ is the set of neighbors of node $i$ and $w_{ij}$ is the weight of $j$th neighbor of node $i$.
+\end{itemize}
+
+The damping force in this setup is given by:
+
+\begin{equation}
+ \boldsymbol{f}^d_i = \sum_{j \in N(\boldsymbol{x}_i)} k_d w_{ij} \frac{\boldsymbol{v}^\tau_{ij} \boldsymbol{x}_{ij} }{\|\boldsymbol{x}_{ij} \|} \boldsymbol{x}_{ij}
+\end{equation}
+where $\boldsymbol{v}_i$ is the velocity of node $i$ and $\boldsymbol{v}_{ij} = \boldsymbol{v}_j - \boldsymbol{v}_i$.
+
+\subsection{Linked Volumes}
+\label{sec:linkedvolumes}
+The ideas in MSM can be extended to volumetric modeling by discretizing the entire volume of a deformable model into evenly spaced cubic elements.
+The total mass of the model is distributed at the centers of these cubes. The cubes are interconnected with their neighbors using springs and dampers
+\cite{gibson1997simulating}. One of the disadvantages of this approach is its increased computational cost due to the higher number of nodes and
+their increased connectivity. In order to control the computational cost for large models the resolution of the discretization should be lowered 
+which will lead to unrealistic deformations. For rendering purposes auxilary surface representations should be used such as surface maps. 
+Increasing the number of elements slows down the propagation of deformations. The benefit of this approach is that complex interactions such as
+cutting, carving, joining, or tearing can easily be represented by simply eliminating or adding links between elements.
+
+
+\subsection{Mass Tensor Model}
+Using this technique the entire interior of the model is discretized into tetrahedrons. Points masses and springs are 
+being placed at the respective tetrahedral vertices and edges \cite{de1999modeling}. The performance of this model is comparable to that of the 
+linked volumes describe earlier in section \ref{sec:linkedvolumes}. Cutting models created with this techniques is a challenge since even when
+minimizing the number of newly created tetrahedrons in such a situation the corresponding increase of nodes in significant and directly hits the
+performance of the system. The performance of the model depends on the resolution of the mesh in this case \cite{picinbono2000real}. 
+
+
 \section{Continuum Mechanics Concepts} 
 Continuum biomechanics for soft tissue simulation deals with the movement of soft materials when subjected to applied forces \cite{Sifakis2012}. 
 The motion of a continuous and deformable solid can be described by a continuous displacement field resulting from a set of 
@@ -570,5 +630,10 @@ Such inversions can easily occur in practice, as a result of nonphysical kinemat
 or inadequate convergence of numerical solvers. In these situations the deformation gradient $F$ can be temporarily replaced by the nearest
 physically plausible value $\boldsymbol{F'}$ with $det\boldsymbol{F'} > \epsilon$
 \end{enumerate}
+
+In designing a finite element solution there are many aspects that must be considered such as the type of formulation used e.g.
+Total or updated Lagrangian, time integration scheme e.g. explicit or implicit and the type of elements used for discretization:
+e.g. hexahedral (uniform cubic voxel grid or non-uniform octree based grid) or n-simplices such as tetrahedral elements. 
+These design choices will impact the performance and the range of applications that can benefit from this formulation.
 
 \setlength{\unitlength}{\savedunitlength}

@@ -1,6 +1,24 @@
 \startchapter{Conclusions}
 \label{chapter:conclusion}
-We presented a comprehensive system for modelling and animating soft-tissues based on implicit surfaces and volumetic range data-sets.
+Surgical simulation systems can benefit from fast computational algorithms that provide visual and haptic feedback to the surgeon. 
+Various haptic interfaces for medical simulation are specially useful for training surgeons for minimally invasive procedures e.g.
+laparascopy or interventional radiology and remote surgery using tele-operators. The hard requirement for these type of systems is
+that the force interaction between the robotic tool and the tissue should be computed as speeds of at least 500 Hz to provide the 
+continuous force-feedback to the surgeon \cite{dimaio2005interactive, Otaduy2005}.
+
+One can follow various strategies to reduce the computational time:
+
+\begin{enumerate}
+ \item Improving the algorithms involved in soft tissue simulation (new force models)
+ \item Leveraging faster hardware (Higher computational power)
+ \item Using parallel computing techniques (Multicore and Manycore optimizations)
+\end{enumerate}
+
+We considered all these options but the use of faster hardware in our case is limited by the existing technology but appropriate 
+use of parallel computing techniques helped us in providing scalable solution at the expense of more expensive hardware and more 
+complex implementations.
+
+Towards this end, we presented a comprehensive system for modelling, interaction and rendering soft-tissues based on implicit surfaces and volumetic range data-sets.
 Our system provides the following facilities for researchers in the field of surgical simulation:
 
 \begin{itemize}
