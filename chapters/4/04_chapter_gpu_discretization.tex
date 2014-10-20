@@ -3,12 +3,12 @@
 In the previous chapter we presented an algorithm for fast triangle mesh extraction from \blob scene graphs. The output of that 
 algorithm is a list of vertices with their associated attributes such as position, color and normal and a list of triangles that
 defines the connectivity of the surface mesh. While the surface mesh is used for rasterization it can also facilitate  
-collision detection and contact modeling algorithms as we will see in the following chapters.  In this chapter we propose an improved 
+collision detection and contact modelling algorithms as we will see in the following chapters.  In this chapter we propose an improved 
 version of that algorithm that can take advantage of the processing capabilities of the GPU and provides real-time \blob rendering performance. 
 
 
 
-One of the primary objectives in our modeling framework was to be able to shift from sketching mode into live interactive animation mode
+One of the primary objectives in our modelling framework was to be able to shift from sketching mode into live interactive animation mode
 which can enable further enhancements; such as assignment of elastic parameters to the model in an incremental process, e.g. the
 modeler can interactively make certain parts of the object stiffer and check out the results by haptically interacting with it or
 visually examining the contacts between colliding bodies and with avatar. To make the modelled object amenable to this type of analysis, it has 
@@ -20,7 +20,7 @@ lead to incorrect stiffness matrices associated with the finite element method \
 
 In order to address the tetrahedra extraction stage of the process we propose a GPU accelerated volume tetrahedralization algorithm based on the work of
 Labelle \etal \cite{Labelle2007} that produces a smooth tetrahedral mesh. As opposed to their work our algorithm is scalable to number of processors 
-available on the graphics processing units and delivers real-time results to support our modeling system.
+available on the graphics processing units and delivers real-time results to support our modelling system.
 
 The contributions in this chapter are as following:
 
@@ -435,7 +435,7 @@ buffer holds the global offset for all the intersected edges as discussed previo
 \section{Analysis and Results}
 In this section we review the effects of the previous optimizations on the overall performance of the system.
 In our experiments we tested the effect of the stackless \blob traversal algorithm using a set of models created 
-with our incremental modeling system. To make a fair comparison the same algorithm implemented on the GPU using
+with our incremental modelling system. To make a fair comparison the same algorithm implemented on the GPU using
 the OpenCL framework once with the stack and the other time with the stackless method presented in section 
 \ref{sec:stackless}. The results are shown in the following table:
 

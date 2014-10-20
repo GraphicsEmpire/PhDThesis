@@ -1,7 +1,7 @@
 \startchapter{High Performance Rendering on Multi-Core Architectures}
 \label{chapter:cpuPoly}
 One of the main challenges in animating deformable tissues is their rendering which requires to support high frame-rates \cite{Shirazian2012}. 
-In order to leverage the benefits offered by \blob modeling the rendering issue has to be tackled accordingly. In this chapter
+In order to leverage the benefits offered by \blob modelling the rendering issue has to be tackled accordingly. In this chapter
 we present a parallel method for speeding up the generation of a polygon mesh from an implicit model \cite{Shirazian2012}. Although the method is applicable 
 to many types of implicit surfaces, we focus on surfaces generated from fields surrounding geometric  primitives,  known as skeletal implicit 
 surfaces,  \cite{Bloomenthal1997} that are discussed in chapter \ref{chapter:background}. The model data structure is a tree whose leaf nodes 
@@ -16,14 +16,14 @@ only be evaluated by traversing the \blob structure. The field due to each opera
 on its child nodes and the leaves are the primitives which can be any implicitly defined function; 
 e.g. distance field due to geometric skeletal elements.
 
-Implicit  modeling using the \blob has several advantages  over other modeling methods.  Various different blends are simple to represent, 
+Implicit  modelling using the \blob has several advantages  over other modelling methods.  Various different blends are simple to represent, 
 as are free-form volume deformations and constructive solid geometry operations  (CSG) \cite{gomes2009implicit}. Other operators 
  such as detecting contact, and warping surfaces accordingly (see  \cite{Grascuel1997}),  can easily be represented as nodes in the \blobns. 
 
  An incremental, sketch based \blob system was built by Schmidt \etal \cite{Schmidt2006}, promoting flexibility and modular design for the creation of complex models, 
 and most of the earlier problems with the methodology have been overcome \cite{Bernhardt2010a}. Although direct manipulation 
 is possible  \cite{Schmidt2006},  very complex models can only be visualized interactively as coarse meshes. 
-Hence the need for a faster polygonizer. The \blob facilitates incremental modeling, a strategy that promotes flexibility and modular design 
+Hence the need for a faster polygonizer. The \blob facilitates incremental modelling, a strategy that promotes flexibility and modular design 
 for creating  complex models. 
 
 The main contribution presented here is a high performance polygonization algorithm that scales well with the 
@@ -127,7 +127,7 @@ SIMD interval arithmetic. They used SSE instructions for fast computation of int
 and ray traversal algorithm. However, their method is restricted to static implicit functions and 
 algebraic surfaces.
 
-None of the proposed methods above used a modeling framework to define their input data in a hierarchical structure similar to 
+None of the proposed methods above used a modelling framework to define their input data in a hierarchical structure similar to 
 the \blobns. Their method is either limited to volume data or an algebraic implicit function to represent the underlying volume. 
 In a closely related work, Schmidt \etal \cite{SWG2005} used a field caching mechanism inside the \blob to perform fast potential field 
 reconstruction without traversing the entire tree. They used a trilinear reconstruction filter for field value and a triquaratic filter
@@ -136,7 +136,7 @@ without. They reported up to 16 times speedup for polygonizing a model with diff
 the cache nodes cannot be updated from different processing threads without using locking
 mechanisms or a data race condition can occur. 
 
-A background on implicit surfaces and \blob modeling is provided in section (\ref{sec:implicitmodelingintro}) in chapter \ref{chapter:background},
+A background on implicit surfaces and \blob modelling is provided in section (\ref{sec:implicitmodellingintro}) in chapter \ref{chapter:background},
 which will be helpful to understand the techniques provided here for rendering complex \blob models.
 %-------------------------------------------------------------------------
 \section{Architecture Constraints}\label{sec:architecture}

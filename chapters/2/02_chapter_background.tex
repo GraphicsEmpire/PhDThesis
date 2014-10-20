@@ -4,11 +4,11 @@
 \newlength{\savedunitlength}
 \setlength{\unitlength}{2em}
 This chapter provides a short summary of the material which is relevant to the subject of this research. Starting with the concepts underlying 
-implicit and deformable tissue modeling and an outline of continuum mechanics and finite element concepts, the chapter will conclude by reviewing closely related 
+implicit and deformable tissue modelling and an outline of continuum mechanics and finite element concepts, the chapter will conclude by reviewing closely related 
 deformable models presented in the literature. 
 
-\section{Implicit Modeling}
-\label{sec:implicitmodelingintro}
+\section{Implicit Modelling}
+\label{sec:implicitmodellingintro}
 Implicit surfaces are two-dimensional, geometric shapes that exist in three dimensional space; they can be defined based on discrete data, 
 radial basis functions, offset surfaces, algebraic surfaces, level sets or distance fields to skeletal geometric primitives \cite{Bloomenthal1997}.
 Independently of its origin, an implicit surface can be defined as a level-set function $F:\mathbb{R}^3 \rightarrow \mathbb{R}$ where the surface 
@@ -25,7 +25,7 @@ V = \left\{M = (x,y,z) \in \mathbb{R}^3 | F(x,y,x) \geq c\right\}
 $c$ is a constant and is called the \textit{iso-value} which is set to $0.5$ in our system. For each point in space if the field is greater than
 $c$ the point is considered inside the model otherwise outside. 
 
-Most of the primitives used in the \blob are built from geometric skeletons, which are incorporated in many implicit modeling software packages 
+Most of the primitives used in the \blob are built from geometric skeletons, which are incorporated in many implicit modelling software packages 
 such as BlobTree.net \cite{de2008blobtree} or ShapeShop \cite{Schmidt2006}. They are ideally suited to prototype shapes of arbitrary topology 
 \cite{Bloomenthal1997}. In general these works conclude that the use of skeletal primitives can lead to a simple and intuitive user modelling 
 methodology. The basic building block of a skeletal primitive is a skeleton $S$. To create a skeletal primitive the distance-field $dS$ of the 
@@ -61,7 +61,7 @@ In equation \ref{eq:WyvillFunc}, $x$ is clamped to the range $[0,1]$. This polyn
 tangents at each end. An important property of this skeletal primitive definition is that the scalar field is \textit{bounded}, meaning that $f=0$
 outside some sphere with finite radius. Bounded fields guarantee local influence, preventing changes made to a small part of a complex model from
 affecting distant portions of the surface. Local influence preserves a \textquotedblleft principle of least surprise\textquotedblright that is critical 
-for interactive modeling.  
+for interactive modelling.  
 
 Normals can be derived from gradients which are computed by evaluating 4 field values and performing a numerical approximation:
 
@@ -148,8 +148,8 @@ they are computationally very expensive. E.g. solid objects have to be modelled 
 volume preservation applications.
 
 \subsection{Mass-Spring Models}
-Mass spring models (MSM) are the most intuitive and most common method used in deformable object modeling.
-Terzopoulos \etal \cite{terzopoulos1988modeling, terzopoulos1987elastically} was the first who introduced mass-spring systems in 
+Mass spring models (MSM) are the most intuitive and most common method used in deformable object modelling.
+Terzopoulos \etal \cite{terzopoulos1988modelling, terzopoulos1987elastically} was the first who introduced mass-spring systems in 
 computer graphics animation systems. Provot \etal showed applications of this technique in cloth simulation \cite{provot1995deformation}
 as did Baraff \etal \cite{baraff1998large}. Kahel \etal used in facial animation \cite{kahler2001geometry}. 
 Gibson \etal survey reviewed many examples of mass-spring system applications \cite{Gibson1997a}. In this system the deformable object
@@ -177,7 +177,7 @@ where $\boldsymbol{v}_i$ is the velocity of node $i$ and $\boldsymbol{v}_{ij} = 
 
 \subsection{Linked Volumes}
 \label{sec:linkedvolumes}
-The ideas in MSM can be extended to volumetric modeling by discretizing the entire volume of a deformable model into evenly spaced cubic elements.
+The ideas in MSM can be extended to volumetric modelling by discretizing the entire volume of a deformable model into evenly spaced cubic elements.
 The total mass of the model is distributed at the centers of these cubes. The cubes are interconnected with their neighbors using springs and dampers
 \cite{gibson1997simulating}. One of the disadvantages of this approach is its increased computational cost due to the higher number of nodes and
 their increased connectivity. In order to control the computational cost for large models the resolution of the discretization should be lowered 
