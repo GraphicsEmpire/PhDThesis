@@ -5,11 +5,11 @@ One of the main objectives of virtual reality based surgical simulation systems 
 \cite{Steinemann, Nienhuys2001a}. Cutting imposes many challenges in the development of a robust, interactive surgery 
 simulation, not only because of the nonlinear material behavior exhibited by soft tissue but also due to the
 complexity of introducing the cutting-induced discontinuity. In most publications, the progressive surgical cutting is modelled
-by the conventional finite element (FE) method, in which the high computational cost and error accumulation due to remeshing constrain 
+by the conventional finite element (FE) method, in which the high computational cost and error accumulation due to re-meshing constrain 
 the computational efficiency and accuracy \cite{Steinemann, Courtecuisse2010a}. 
 
 We developed our new cutting approach in the context of a human skull craniotomy simulation. When an abnormality of the brain is suspected, 
-Stereotactic (probing in three dimensions) brain needle biopsy is performed and guided precisely by a computer system to avoid 
+Stereo-tactic (probing in three dimensions) brain needle biopsy is performed and guided precisely by a computer system to avoid 
 serious complications. A small hole is drilled into the skull, and a needle is inserted into the brain tissue guided by computer-assisted 
 imaging techniques (CT or MRI scans). The actual biopsy process can not be seen by the surgeon. For this reason,
 non-progressive cutting, where a tetrahedral element is decomposed after the sweep surface traverses the tetrahedral elements, is a reasonable
@@ -400,9 +400,9 @@ The lookup table for type B is shown in table \ref{table:lutcutB}. Four edges ar
 Cutting 4 out of 6 edges should result in $C(n, r) = C(6, 4) = 15$ distinct cut-edges. However, using the same analogy only 3 valid cuts are able to split the cell 
 in two disjoint parts. Those cuts are summarized in table \ref{table:lutcutB}. 
 
-Case Z is trivial since the cell is left intact. For case Y two tetrahedral elements are being generated and one edge is being splitted only. Case X is very similar to
+Case Z is trivial since the cell is left intact. For case Y two tetrahedral elements are being generated and one edge is being split only. Case X is very similar to
 A in the sense that one original node is being separated from the rest of the simplex. In cases X and Y the cut-nodes are duplicated and the new cells are generated based
-on the splitted edges and the original nodes and their associated duplicates. Since we haven't implemented progressive cutting yet cases C, D and E are left for the future work.
+on the split edges and the original nodes and their associated duplicates. Since we haven't implemented progressive cutting yet cases C, D and E are left for the future work.
 
 \begin{table}[H]
 \begin{center}
@@ -450,7 +450,7 @@ Sub-elements are separated by semi-colon to fit on the line.}}
 %modifications and the post processing step that supports smoothness of the cuts in case of complex tissues. 
 
 \subsection{Topological Updates}
-During the cutting process, the intersected cells are being replaced by sub-cells as dicussed in the previous section. Cell removal operation involves updating the entire 
+During the cutting process, the intersected cells are being replaced by sub-cells as discussed in the previous section. Cell removal operation involves updating the entire 
 mesh structure which can be expensive if performed during the cut process. In our system all the intersected cells are being placed on a pending list for later deletion 
 which will be visited by a post-processing stage called ``garbage collection''. This way the indices of the mesh entities are left intact during the cutting process and 
 then once the cut is finalized the mesh can be cleaned and any unused entities such as cells, faces, edges or nodes are being purged to keep the structure as compact as 
@@ -540,14 +540,14 @@ Where $V$ is the volume of a tetrahedra, $SA_i$ is the surface area of the $i$th
 
 Graichen \etal presented an excellent study on the tetrahedral mesh quality measures \cite{Graichen1993}. 
 Thin, wedge-like, flat and sliver elements (where 4 points of the element are co-planar) are the source of poor simulation 
-results. Table \ref{table:meshquality} summarises the statistical quality factors before and after cutting the two example meshes. 
+results. Table \ref{table:meshquality} summarizes the statistical quality factors before and after cutting the two example meshes. 
 The original volumetric mesh of both of these models are extracted from their associated \blob representation using our GPU tetrahedralization
 algorithm presented in chapter \ref{chapter:GPUDiscretization}.
 
 As it can be seen from the results the cutting method presented in this chapter does not increase the ratio of maximum to minimum 
 volume after the cuts are being made. This means that the element subdivision stage in our system does not 
 introduce ill-shaped elements to the mesh. The ratio of the maximum to minimum edge-length did not change drastically.
-However, a local remeshing process after the cut specially in the vicinity of the cut region can improve the quality 
+However, a local re-meshing process after the cut specially in the vicinity of the cut region can improve the quality 
 of the mesh significantly. 
 
 The element count has increased steadily after each cut operation. Figure \ref{fig:cutting_cells_increase} shows the trend of element increase 

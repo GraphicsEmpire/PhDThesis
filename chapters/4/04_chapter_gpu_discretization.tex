@@ -28,7 +28,7 @@ The contributions in this chapter are as following:
  \item A GPU accelerated polygonization algorithm for rendering complex \blob models. The algorithm scales with the number of stream cores available
  on modern GPU and can be easily extended to support various geometric primitives.
  
- \item A Tetrahedralization algorithm that leverages GPU for high performance volume discretization from \blob models. The output tetrahedral mesh is
+ \item A tetrahedralization algorithm that leverages GPU for high performance volume discretization from \blob models. The output tetrahedral mesh is
  readily available for further physically-based simulations.
 \end{itemize}
 
@@ -46,7 +46,7 @@ vertices. The triangle mesh is produced which is shaded using the fragment shade
 of their algorithm and the input models are limited to time varying simple algebraic surfaces. The used a linear interpolation root finding
 method which produces low quality output. 
 
-Buatois \etal proposed a GPU accelerated isosurface extraction method based on MT, similar to Chochl{\'i}k \etal \cite{Buatois2006}. The 
+Buatois \etal proposed a GPU accelerated iso-surface extraction method based on MT, similar to Chochl{\'i}k \etal \cite{Buatois2006}. The 
 texture memory to transfer the position and field values of the grid vertices. They presented an analysis of the performance of their algorithm
 using a fluid simulation volume data-set. They reported that excessive texture fetches can be a bottleneck in the performance of their method.
 
@@ -81,7 +81,7 @@ producing any mesh the computations will be lost after rendering.
 \section{Many-cores architectures}
 Shrinking of CMOS circuitry has allowed distances between transistors to scale fairly consistently for an extended period of time. The shrinking 
 of distances and reduction in size of capacitors allowed hardware architects to clock circuits at a higher rate. This led to Gordon Moore's
-famous self-fullfilling prophecy about transistor density and its misinterpretations into the realm of execution frequency and overall performance.
+famous self fulfilling prophecy about transistor density and its misinterpretations into the realm of execution frequency and overall performance.
 
 Certainly, increasing frequency allowed the performance of nonparallel code to increase consistently during that time, such that it became an 
 expectation for software developers until the early 21st century. During the past decade, it has become obvious the continued scaling of clock 
@@ -186,7 +186,7 @@ pressure.
 
 After analyzing the performance of our OpenCL kernels, register spilling often found to be the major cause for many latencies. Resorting to shared memory spaces, reducing 
 number of intermediate variable in field-evaluation kernels and avoiding loop unrolling in some cases helped to optimize the performance. Upon every
-change in the input \blob the scenegraph is compacted and transferred from main memory to the GPU. Currently the maximum number of nodes is set at 64K which covers
+change in the input \blob the scene-graph is compacted and transferred from main memory to the GPU. Currently the maximum number of nodes is set at 64K which covers
 all of the complex cases we modelled for this thesis. However, for larger \blob models  we can easily increase this amount to support them. The memory footprint of 
 our current \blob representation is summarized in table \ref{table:memfootprint}).
 
@@ -219,7 +219,7 @@ algorithms. Unfortunately, even the latest GPU architectures are poorly suited f
 
 
 
-A complex \blob scenegraph data structure may contain thousands of primitives and operators which can lead to deep tree structures. The fieldvalue 
+A complex \blob scene-graph data structure may contain thousands of primitives and operators which can lead to deep tree structures. The fieldvalue 
 evaluation process has two stages: ``down traversal'' and an ``up traversal''. During the down traversal stage all operators starting from the root node 
 are visited and pushed onto an operators stack until a leaf node (primitive) is reached at which point the field due to the primitive is computed and 
 pushed onto a separate fields stack and the next stage which is the up traversal begins. During the up traversal stage the operators are popped out of 
@@ -234,7 +234,7 @@ the count of nodes in the input \blob, this will ultimately limit the maximum nu
 is given by: $M=\log(N)$ or the depth of the binary tree created by $N$ nodes. Recalling from section \ref{sec:memory} there is very limited amount of
 local memory available per each thread executing on the GPU. Keeping the stack in the shared memory will also complicate the implementation and
 the access patterns from other threads in the current thread block may impact the performance. Needless to say a stack in global memory will require very expensive 
-memory transfers and is not an option for a realtime rendering algorithm. 
+memory transfers and is not an option for a real-time rendering algorithm. 
 
 Our algorithm is based on the neighbor cell-links concept in the stackless traversal of spatial subdivision trees which is first introduced by Samet \etal 
 \cite{Samet1984,Samet1990}. Using a similar technique Popov \etal presented a stackless KD-Tree Traversal for high performance GPU ray tracing algorithm \cite{Popov2007}.
@@ -273,9 +273,9 @@ operators stack $S1$ and a \text{break} nodes stack $S2$. The latter is defined 
 
 Figure \ref{fig:stackless}, shows the final route for a sample \blob. The benefits of this type of routing encoded into the tree
 is that there is no need for storing a deep stack for tree traversals. The kernel functions written in OpenCL to compute the field
-has the following prototypes. The structure of the input blobtree are as following:
-arrHeader4: Defines the header of the linear blobtree.
-arrOps4: The operators structure for the compact blobtree.
+has the following prototypes. The structure of the input \blob are as following:
+arrHeader4: Defines the header of the linear \blob.
+arrOps4: The operators structure for the compact \blob.
 arrPrims4: The compact structure for the primitives.
 arrMtxNodes4: The input transformation matrices associated with primitives.
 
@@ -339,10 +339,10 @@ After computing all the fields, the grid edges are processed in the following or
 Each vertex in the grid can be connected to upto 6 other adjacent vertices. Starting from the lower corner of the voxel grid 
 the kernel function \textit{ProcessEdges} visits the corresponding vertex in the grid and examines only the edges that start 
 from that vertex and connect to the adjacent vertices in the next index step. This way all edges in the voxel grid are checked 
-and redudant traversals can be avoided. Needless to say that at boundary vertices it may process less than 3 edges per each 
+and redundant traversals can be avoided. Needless to say that at boundary vertices it may process less than 3 edges per each 
 vertex (i.e. the ones that are within the convex-hull of the model). Upon each kernel run at this stage the index address to 
 the corresponding vertex and it 3 other adjacent vertices is computed as shown in the algorithm \ref{alg:processedgeskernel}. Per each vertex
-an inclusion query is performed (i.e. The fieldvalue at that vertex is compared against the isovalue. If it is greater than or equal 
+an inclusion query is performed (i.e. The fieldvalue at that vertex is compared against the iso-value. If it is greater than or equal 
 the isovalue the vertex is considered inside otherwise outside the model). Two values are stored before completion of this kernel call. 
 The first is the count of crossed edges at that vertex and the second one is a 3 bits flag which basically locates the intersected 
 edges along x, y or z axes.

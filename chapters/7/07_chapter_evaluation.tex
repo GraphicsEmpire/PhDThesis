@@ -3,7 +3,7 @@
 During the past decade a new thrust has appeared with the development of deformable tissue modeling techniques which could make it
 possible to develop patient-specific simulations. Whenever the best surgical strategy is unclear or the patient presents a rare
 pathology such simulations could be beneficial. Other use-cases for such systems is in surgical skill training which is a long 
-and tedius process of acquiring fine motor skills. In all those scenarios physically-based animation of soft tissues is challenging and 
+and tedious process of acquiring fine motor skills. In all those scenarios physically-based animation of soft tissues is challenging and 
 has lots of room for improvement. 
 
 Our methods presented in the previous chapters have been integrated into our surgical simulation system. 
@@ -13,7 +13,7 @@ probing. We present our results in the context of a skull craniotomy procedure.
 Craniotomy is a surgical operation in which a bone flap is temporarily removed 
 from the skull to access the brain. Craniotomies are often a critical operation performed on patients suffering 
 from brain lesions or traumatic brain injury (TBI), and can also allow doctors to surgically implant deep brain 
-stimulators for the treatment of Parkinson's disease, epilepsy and cerebellar tremor. The procedure is also widely 
+stimulator for the treatment of Parkinson's disease, epilepsy and cerebellar tremor. The procedure is also widely 
 used in neuroscience for extracellular recording, brain imaging, and for neurological manipulations such as electrical 
 stimulation and chemical titration. Craniotomies are also named according to their size and complexity. Small dime-sized 
 craniotomies are called burr holes or keyhole craniotomies. Sometimes stereotactic frames, image-guided computer systems, 
@@ -58,7 +58,7 @@ from a larger one. After tetrahedralization the mesh is post processed for smoot
 \end{figure}
 
 After the drilling operation, only 120 new elements are added to the mesh for a total of 2400 elements. The entire process is completed 
-interactively. The small disjoint parts fall down on the ground due to gravity. Each disjoint part becomes an independant
+interactively. The small disjoint parts fall down on the ground due to gravity. Each disjoint part becomes an independent
 deformable model in our system and subject to forces and deformations. Figure \ref{fig:eggshell02} shows the mesh after being 
 drilled for the bare hole.
 
@@ -161,7 +161,7 @@ The cutting configurations presented in section \ref{sec:cutconfigs} are extract
 it's not possible to cut a given edge more than once. In our system we only accept the first cut-edge and this did not produce any 
 visual defects. Perhaps a more robust implementation would be to approximate the cutting tool curve based on the size of the longest 
 edge in the mesh. After the cutting is made the mesh is separated and each of the disconnected parts is converted into a separate node
-in our scenegraph structure. This operation results in correct detection of the self-collisions in the subsequent frames of the simulation.
+in our scene-graph structure. This operation results in correct detection of the self-collisions in the subsequent frames of the simulation.
 
 The internal gray, white and CSF matters are also included in this simulation. The drilling operation only affects the skull tissue and
 in fact it does not pass the Dura layer. This condition is a requirement for the successful completion of this procedure. 

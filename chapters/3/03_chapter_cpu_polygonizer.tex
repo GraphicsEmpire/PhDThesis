@@ -54,7 +54,7 @@ each primitive and evaluating the field at cell vertices along each of the three
 volume were classified as `hot' and `cold' outside. A hash table was used to keep track of processed cells to avoid redundant field 
 evaluations and to avoid storing any cells that did not contain part of the surface. Only adjacent cells that share an intersecting edge 
 with their parent were processed, and a second cubic subdivision served to reduce the number of primitives considered in each field evaluation. 
-Ambiguous cases were ameliorated by taking another sample from the centre of the face.
+Ambiguous cases were ameliorated by taking another sample from the center of the face.
 A similar method was later introduced as Marching Cubes in \cite{Lorensen1987}. The main difference between the two algorithms was that 
 Lorenson \etal applied their method to discrete volume data instead of sampling a continuous function and in Lorenson's method
 the space was completely partitioned into cubic voxels and all cubes were visited.
@@ -123,7 +123,7 @@ They reported very slow rendering times even for the simple models that they hav
 
 
 In a similar work Knoll \etal \cite{Knoll2007} proposed interactive raytracing of arbitrary implicits with 
-SIMD interval arithmatic. They used SSE instructions for fast computation of interval arithmatic 
+SIMD interval arithmetic. They used SSE instructions for fast computation of interval arithmetic 
 and ray traversal algorithm. However, their method is restricted to static implicit functions and 
 algebraic surfaces.
 
@@ -132,7 +132,7 @@ the \blobns. Their method is either limited to volume data or an algebraic impli
 In a closely related work, Schmidt \etal \cite{SWG2005} used a field caching mechanism inside the \blob to perform fast potential field 
 reconstruction without traversing the entire tree. They used a trilinear reconstruction filter for field value and a triquaratic filter
 for gradient interpolation. They evaluated cache efficiency by polygonizing a \blob model once using cache nodes and the other time 
-without. They reported upto 16 times speedup for polygonizing a model with different resolutions. However, their method is not scalable since 
+without. They reported up to 16 times speedup for polygonizing a model with different resolutions. However, their method is not scalable since 
 the cache nodes cannot be updated from different processing threads without using locking
 mechanisms or a data race condition can occur. 
 
@@ -155,7 +155,7 @@ Although our test environment was Intel based, our algorithm should be implement
 multicore machine with SIMD instructions and sufficient cache.
 
 \section{Naming Conventions}\label{sec:naming}
-The polygonization method used, is a space partioning algorithm based on \cite{Wyvill1986}, which uses a  uniform grid of a user 
+The polygonization method used, is a space partitioning algorithm based on \cite{Wyvill1986}, which uses a  uniform grid of a user 
 defined cell size (\textit{cellsize}). In order to leverage the SIMD parallel computation capabilities of the processor, the bounding 
 box of the model is divided into axis-aligned grids of 8x8x8 vertices where each grid is called  model partitioning unit (\textit{MPU}). 
 
@@ -172,7 +172,7 @@ $[a, b)$ over \textit{MPUSET} is called an \textit{MPURANGE} which contains cons
   \caption{\label{fig:MPU}
   {The \textit{MPU} is our unit of computation per each core illustrated as a 2D cross section here. 
   Field-values due to every 4 or 8 points are computed in parallel with SSE or AVX instructions, respectively. 
-  When the field at a vertex is zero no iso-surface will pass in the neighbourhood of a unit circle (sphere in 3D) centred at that vertex.}
+  When the field at a vertex is zero no iso-surface will pass in the neighborhood of a unit circle (sphere in 3D) centered at that vertex.}
 }
 \end{figure}
 
@@ -238,7 +238,7 @@ For larger \textit{cellsize}s the iso-surface may still intersect with the \text
 This process is depicted in the middle column of figure (\ref{fig:AlgorithmHighLevelView}).
 For a discussion on \textit{cellsize} versus performance see section~\ref{sec:results}.
 
-For larger \textit{cellsize}s we shoot 8 rays from the centre of the \textit{MPU} to its eight vertices, using  the technique of Zhang \etal per 
+For larger \textit{cellsize}s we shoot 8 rays from the center of the \textit{MPU} to its eight vertices, using  the technique of Zhang \etal per 
 each step we march $0.866c$ (0.866 is half of the diagonal of an \textit{MPU} with side one and $c$ being the cellsize parameter) along each ray. 
 At each step we compute the fields for the 8 vertices along the rays; if a non-zero field is found then the \textit{MPU} is further processed, 
 otherwise we march along the rays until we reach the vertices of the \textit{MPU}. 
@@ -277,7 +277,7 @@ performs a horizontal add operation on the values to compute the configuration i
 
 For each intersecting edge there is one inside and one outside vertex.
 Using a root finding method the point of intersection of the iso-surface is computed and stored in a 
-hash table to be reused by the neighbouring cells that share that vertex. 
+hash table to be reused by the neighboring cells that share that vertex. 
 
 For the root finding methods that do not require gradient information such as regula falsi or bisection method, 
 the field value should be evaluated multiple times along the edge, which will degrade the performance of the system. Other methods 
@@ -313,7 +313,7 @@ one SIMD call which greatly enhances the throughput of the system and minimizes 
 \begin{algorithm}
 \caption{Algorithm for surface extraction of an \textit{MPU} using AVX SIMD instructions,
 Similar code can be written for SSE instruction set. 
-Input is linearized BlobTree $T$, lower vertex of \textit{MPU} and the \textit{cellsize} parameter. 
+Input is linearized \blob $T$, lower vertex of \textit{MPU} and the \textit{cellsize} parameter. 
 Output is the local mesh contained in the \textit{MPU}}
 \label{alg:surfaceextraction}
 \begin{algorithmic}[1]		
@@ -370,17 +370,17 @@ Output is the local mesh contained in the \textit{MPU}}
 \section{Results}\label{sec:results}
 We have implemented our algorithm using Intel threading building blocks in C++ on a Linux platform. We used two systems with 
 different configurations. On the first system which has Intel i7-3960X processor with Sandy Bridge architecture, there are 6 
-physical cores given that each core runs in hyperthreaded mode; up to 12 threads can run in parallel on this machine. 
+physical cores given that each core runs in hyper-threaded mode; up to 12 threads can run in parallel on this machine. 
 This processor supports both SSE and AVX instructions and there is a last level cache memory of 15 megabytes 
 which is shared between all cores.
 
 The second system is a server with 4 Intel X7560 processor with Nehalem architecture. Each processor has 8 physical cores
-or 16 in hyperthreaded mode and has 24 megabytes of last level cache memory and it does not support AVX instructions. 
-Together these 4 processors provide us with as many as 32 physical cores (64 when hyperthreaded) on this server. 
+or 16 in hyper-threaded mode and has 24 megabytes of last level cache memory and it does not support AVX instructions. 
+Together these 4 processors provide us with as many as 32 physical cores (64 when hyper-threaded) on this server. 
 We refer to these two systems with SNB and NHM respectively.
 
 
-On the first experiment our goal was to prove the scalibility of our algorithm. Figures (\ref{fig:PerfSNBTower}, \ref{fig:PerfXeonTower}) 
+On the first experiment our goal was to prove the scalability of our algorithm. Figures (\ref{fig:PerfSNBTower}, \ref{fig:PerfXeonTower}) 
 show the average running time of the algorithm when rendering towers model (figure \ref{fig:ModelTower}) on SNB and NHM systems, 
 respectively. The \blob of the towers model has 7360 operators and 7296 primitives and a depth of 64 levels. 
 In this test the cellsize parameter kept as a constant value of 0.14 which we found it to be a balance between number of triangles produced and 
@@ -393,7 +393,7 @@ The slope is reduced because each thread gets less resources than it would if it
 schedule multiple threads per core, and they start to thrash the cache; making the algorithm memory bound.
 
 Figure \ref{fig:PerfXeonTower} shows the performance of our algorithm when running on the NHM system. Doubling number of 
-threads, doubled the performance of the algorithm on this machine up to 33rd thread. The same behaviour is shown and hyperthreaded 
+threads, doubled the performance of the algorithm on this machine up to 33rd thread. The same behavior is shown and hyper-threaded 
 cores start to compete for memory access when having more than 32 threads running on this machine.
 
 \begin{figure}[H]
@@ -495,7 +495,7 @@ the idle time is very short and the cores are active almost all the time. This s
 }
 \end{figure}
 
-These results demonstrate the scalibility of our algorithm both in the number of SIMD vector lines and 
+These results demonstrate the scalability of our algorithm both in the number of SIMD vector lines and 
 the number of cores available on each processor. 
 
 Finally, we compare our method against Schmidt \etal's \cite{SWG2005} using the Medusa model provided by them   
