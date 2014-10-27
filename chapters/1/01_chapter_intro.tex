@@ -6,48 +6,48 @@
 \startfirstchapter{Introduction}
 \label{chapter:introduction}
 \section{General aim of this Research}
-The goal of this thesis is to develop a framework for physically based animation of soft tissues which are increasingly used in
-games, movies and simulation systems. Although at this stage this physically-based model is a goal in itself, it is hoped that
-it will eventually be used for clinical predictions and for research on the influence of deformations on the functional properties 
-of deformable tissues. In order to demonstrate this potential, preliminary studies in that direction are reported in the final chapter
-of this thesis. To that end, a skull craniotomy simulation scenario is created which showcases the contributions of this research in an
-interactive surgical scenario. 
+Simulating the behavior of elastic objects in real time and with some level of user interaction is a challenging problem 
+with many applications in different areas of research including virtual surgery \cite{Meier2005}. 
+In computer graphics, the models used for the construction of objects with deformable behavior are known as deformable models. 
+A complete model should be quite realistic, interactive and should enable the user to modify the topology of the objects.
+Therefore, there exist a number of contrasting constrains: high fidelity, which in general implies accurate models and high frame rate,
+and use of low cost computers. A number of proposals have been recently presented to fulfill these objectives. But even if the efficiency
+of the simulation models have been largely improved in the last few years, soft object modelling and deformation remains a rather 
+complex task and can be solved in interactive time only on models composed by a few hundreds of cells. In addition, integrating effects
+such as cut and lacerations, makes the simulation model more complex. In modern interactive simulation and modelling environments the ability to 
+cut 3-dimensional geometry in real-time is of fundamental importance. This creates the need for efficient cutting algorithms that process the 
+underlying representation. In surgery simulation, interactive cutting algorithms enable the dynamic simulation of scalpel intersections that open 
+immediately behind the scalpel \cite{Nienhuys2001}. Cutting a volumetric mesh under deformation is a non-trivial problem, due to several conflicting
+requirements. On the one hand, the cutting process should not create badly shaped elements, which could cause numerical instabilities during deformation
+calculation. On the other hand cut trajectory should be closely approximated for realistic appearance. So far, most methods have concentrated only on 
+one of these problems. 
 
-In this research we tackled three main problems found in the domain of soft tissue simulation and has been the topic of interest for many
-researchers in the field. First, our proposed modelling solution captures the key advantages found in volumetric modelling approaches using 
+Therefore the following major problems are identified in the surgical simulation domain:
+
+\begin{itemize}
+ \item Modelling complex tissues that are readily available for simulation \cite{Nealen2006,Meier2005,Gibson1997a}.
+ \item Real-time visualization of those tissues \cite{Mario2010PolygonMesh,Bloomenthal1997}.
+ \item Performing interactive topological modifications on complex models while under deformation \cite{Jin2013,Wu2011,Courtecuisse2010a,Jerabkova2010}. 
+\end{itemize}
+
+First, our proposed modelling solution captures the key advantages found in volumetric modelling approaches using 
 implicit surfaces \cite{Bloomenthal1997, Wyvill1986, Wyvill1999, Wyvill1996, Wyvill1997, Schmidt2006, Bernhardt2010a}. Automatic blending and compact 
 representation are the major benefits of using implicit surfaces for modelling. In addition, the ability to perform inside-outside tests 
 easily is an inherent advantage in implicit models when implementing physically based simulations requiring collision tests. 
 The \blob \cite{Wyvill1999} combined blending, affine transformations and constructive solid geometry (CSG) operators in a 
 comprehensive and compact scene graph data-structure. \blob provides the ability to create complex models incrementally \cite{Schmidt2006}. 
-However, volumetric models in general are often several orders of magnitude slower during visualization \cite{Bloomenthal1990a, Bloomenthal1997}.
+
+Secondly we propose a solution for high performance and scalable visualization of complex models created by \blob method.
+Volumetric models in general are often several orders of magnitude slower during visualization \cite{Bloomenthal1990a, Bloomenthal1997}.
 We proposed a data-driven algorithm for rendering complex implicit models in real-time on multi-core processors \cite{Shirazian2012}, later, we 
 fine tuned that algorithm for running on many core architectures such as the ones in high-end graphical processing units (GPUs). 
 
-In traditional animation systems based on key-framing, specifying the motion and the successive shapes of objects interacting with a simulated 
-world requires a great amount of specialized knowledge and intuition from the animator. Models based on simplified physical laws have been 
-proposed for automating these tasks. They generate motion and deformation from initial conditions and from a set of externally applied forces 
-over time, and automatically detect and respond to collisions. These models are particularly appropriate for facilitating the animation of 
-deformable objects. They can either be used alone for the simulation of inanimate bodies, or be combined with user-controlled structures as 
-has been done for instance in character animation \cite{chadwick1989layered,miller1988motion}. We show that a number of problems that are difficult
-to solve with previous models can be easily handled by combining them with an external layer based on implicit surfaces. The implicit formulation
-defines a smooth surface around the object that can be used to perform efficient collision detection, to enable exact contact modelling, and to ease
-volume preservation. The second contribution of our research is the high performance volume discretization technique and non-linear finite element 
-formulation to support the elastic deformations of the created models \cite{Shirazian2013}. 
-
-In modern interactive simulation and modelling environments the ability to cut 3-dimensional geometry in real-time is of fundamental importance. 
-This creates the need for efficient cutting algorithms that process the underlying representation. Such methods can be utilized in a wide spectrum 
-of applications including surgical interventions, free form modelling, or scientific visualization. In surgery simulation, for instance, interactive 
-cutting algorithms enable the dynamic simulation of scalpel intersections that open immediately behind the scalpel \cite{Nienhuys2001}. In the 
-case of free-form modelling or sculpting, dynamic cutting supports a precise positioning and guidance of a cutting tool. In scientific visualization, 
-real-time cutting algorithms create new opportunities for the interactive analysis of volume data sets. Seismic data sets, as an example, can be 
-cut arbitrarily along interesting strata. The third main contribution of our research is our GPU-assisted interactive cutting algorithm that allows
-arbitrary cuts in the model and can enable many scenarios for tissue manipulation and sensing. 
+Third, we take a different approach to develop a stable and realistic cutting system. Our GPU-assisted interactive cutting algorithm allows
+arbitrary cuts in the model and can enable many scenarios for tissue manipulation while under deformations. 
 
 In what follows, the implicit modelling approach to deformable tissue modelling will be studied. To achieve the initial goal of this research, a
-computational framework for designing, rendering and animating deformable tissues has been developed which has the potential to be used in any 
-simulation system requiring deformable tissues with some level of interaction and topology modification. The final chapter of this thesis is dedicated
-for the evaluation of our system and analysis of some example scenarios in which our system might be a good fit for. 
+computational framework for designing, rendering and animating deformable tissues has been developed and the details of the process is documented 
+in the following chapters. 
 
 
 \section{Deformable Models}

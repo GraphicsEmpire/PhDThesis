@@ -198,70 +198,70 @@ order=-1
 
 [item:chapters/1/01_chapter_intro.tex]
 archive=true
-column=122
+column=55
 encoding=UTF-8
 highlight=LaTeX
-line=64
+line=16
 mode=LaTeX
-open=true
+open=false
 order=0
 
 [item:chapters/2/02_chapter_background.tex]
 archive=true
-column=83
+column=78
 encoding=UTF-8
 highlight=LaTeX
-line=534
+line=190
 mode=LaTeX
 open=false
 order=2
 
 [item:chapters/3/03_chapter_cpu_polygonizer.tex]
 archive=true
-column=41
+column=60
 encoding=UTF-8
 highlight=LaTeX
-line=497
+line=3
 mode=LaTeX
 open=false
 order=1
 
 [item:chapters/4/04_chapter_gpu_discretization.tex]
 archive=true
-column=11
+column=33
 encoding=UTF-8
 highlight=LaTeX
-line=504
+line=0
 mode=LaTeX
 open=false
 order=1
 
 [item:chapters/6/06_chapter_cutting.tex]
 archive=true
-column=20
+column=23
 encoding=UTF-8
 highlight=LaTeX
-line=549
+line=1
 mode=LaTeX
 open=false
 order=1
 
 [item:chapters/7/07_chapter_evaluation.tex]
 archive=true
-column=12
+column=100
 encoding=ISO-8859-15
 highlight=LaTeX
-line=182
+line=2
 mode=LaTeX
 open=false
 order=4
 
 [item:chapters/8/08_chapter_conclusion.tex]
 archive=true
-column=24
+column=15
 encoding=UTF-8
 highlight=LaTeX
-line=18
+line=23
 mode=LaTeX
 open=false
 order=5
@@ -359,46 +359,46 @@ JumpList=
 ViMarks=
 
 [view-settings,view=0,item:chapters/1/01_chapter_intro.tex]
-CursorColumn=122
-CursorLine=64
+CursorColumn=55
+CursorLine=16
 JumpList=
-ViMarks=.,64,121,[,64,121,],64,121
+ViMarks=.,142,23,[,142,23,],142,31
 
 [view-settings,view=0,item:chapters/2/02_chapter_background.tex]
-CursorColumn=83
-CursorLine=534
+CursorColumn=78
+CursorLine=190
 JumpList=
-ViMarks=.,534,82,[,534,82,],534,82
+ViMarks=.,190,78,[,190,78,],190,78
 
 [view-settings,view=0,item:chapters/3/03_chapter_cpu_polygonizer.tex]
-CursorColumn=41
-CursorLine=497
+CursorColumn=60
+CursorLine=3
 JumpList=
-ViMarks=.,497,30,[,497,30,],497,40
+ViMarks=.,138,95,[,138,95,],138,103
 
 [view-settings,view=0,item:chapters/4/04_chapter_gpu_discretization.tex]
-CursorColumn=11
-CursorLine=504
+CursorColumn=33
+CursorLine=0
 JumpList=
-ViMarks=.,344,95,[,344,95,],344,95
+ViMarks=.,437,21,[,437,21,],437,29
 
 [view-settings,view=0,item:chapters/6/06_chapter_cutting.tex]
-CursorColumn=20
-CursorLine=549
+CursorColumn=23
+CursorLine=1
 JumpList=
 ViMarks=.,549,19,[,549,19,],549,19
 
 [view-settings,view=0,item:chapters/7/07_chapter_evaluation.tex]
-CursorColumn=12
-CursorLine=182
+CursorColumn=100
+CursorLine=2
 JumpList=
-ViMarks=.,163,12,[,163,12,],163,12
+ViMarks=.,9,58,[,9,58,],9,66
 
 [view-settings,view=0,item:chapters/8/08_chapter_conclusion.tex]
-CursorColumn=24
-CursorLine=18
+CursorColumn=15
+CursorLine=23
 JumpList=
-ViMarks=.,20,146,[,20,146,],20,146
+ViMarks=.,24,23,[,24,23,],24,31
 
 [view-settings,view=0,item:frontmatter/abs.tex]
 CursorColumn=14
