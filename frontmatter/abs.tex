@@ -9,26 +9,22 @@
 \begin{center}
 \textbf{ABSTRACT}
 \end{center}
-Modelling deformable tissues has applications in many interesting areas of research
-including visual effects in the movies, games and surgical simulation systems. Modelling
-such objects requires mastering several complex software packages. Designers
-often take an incremental fine-tuning approach, i.e. a process which is based on many
-small modifications to the original design. The result of such changes are required
-to be seen in real-time. Creating life-like animations is far more complicated and
-requires certain skills and experience.
-
-In a surgical simulation system for example the ability to interact with the models
-requires modelling the physical properties of the materials,
-accurate and high performance rendering. Cutting and poking the models
-also impose many challenges. Prototyping models for surgical scenes requires many
-post-processing steps in order to bring those models to life.
+A surgical simulation system requires models of elastic material to behave 
+accurately, to appear as realistic as possible, and allow interaction that can 
+deform and change the topology of the model.
+ For example pushing on a model  should produce physically accurate deformations without changing the topology. 
+ A cutting operation is 
+more complex as it requires the  topology to change. Both of these procedures are required 
+for surgical scenes in order to bring those models to life sufficiently to be useful for surgical planning or
+training.
 In this research we propose a comprehensive framework for high-performance rendering
 and physically-based animation of deformable  tissues using implicit surfaces.
-Our system provides interactive cutting ability using smooth intersection surfaces.
+Our system provides an interactive cutting ability using smooth intersection surfaces.
 Complex models can be created with implicit primitives, blending operators, affine
 transformations, deformations and constructive solid geometry in a design environment that organizes
 all these in a scene graph data structure called the BlobTree. We show that the
-BlobTree modelling approach provides a very compact data structure which supports
+BlobTree modelling approach provides a very compact data structure which supports 
+the requirements above, as well as 
 incremental changes and network-based cooperative design.
 Using a finite element approach we discretize BlobTree models with a GPU-Assisted
 algorithm for accurate physically-based animation. Interactions with the model are

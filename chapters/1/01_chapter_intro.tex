@@ -63,16 +63,24 @@ Essentially, they are applied in three different areas of research \cite{Meier20
 \end{itemize}
 
 Our solution is targeted for the last area where it can be used both in deferred application like surgery planning (e.g., simulation of the 
-outcome of craniofacial surgery) \cite{bro1995modelling, keeve1996craniofacial} and in real-time applications. These real-time applications 
-include image guided surgery \cite{Szekely2000}, minimally-invasive or tele-surgery and surgery simulation. 
+outcome of craniofacial surgery) \cite{bro1995modelling, keeve1996craniofacial} and real-time applications 
+including image guided surgery \cite{Szekely2000}, minimally-invasive or tele-surgery. 
 
-From the number of applications, it is obvious that there is no single deformable model that is appropriate for all of the above mentioned 
-problems. Instead, there are a variety of methods that are optimized in different ways to meet specific needs. Even though virtual reality 
-applications of deformable models are becoming more and more frequent, in many cases, the governing prerequisite for the simulation of 
+
+There is no single deformable model that is appropriate for all of the above mentioned 
+problems. Instead, there are a variety of methods that are optimized in different ways to meet specific 
+needs. 
+Current deformable model solutions trade precision in exchange with real-time response.
+Even though real-time applications of deformable models are becoming more and more frequent, 
+in many cases, the governing prerequisite for the simulation of 
 mechanical deformations has been interactivity rather than precision. In addition to that, many of the modelled objects like garments or soft 
-tissues do not possess easily describable properties. Consequently, exact methods, in general, cannot be applied as deformable models, and thus, 
-other approaches must to be found \cite{bro1998finite}. Important progress in the field of deformable models has been made since the emergence of surgery 
-simulation, with one of the first contributors being Cover et al. \cite{cover1993interactively}. This is mostly due to the extreme prerequisites 
+tissues do not possess easily describable properties. Consequently, other approaches must to be found 
+\cite{bro1998finite}. Important progress in the field of deformable models has been made since the emergence of surgery 
+simulation, with one of the first contributors being Cover et al. \cite{cover1993interactively}. 
+
+
+% move to the section in background
+This is mostly due to the extreme prerequisites 
 as far as computation time, complex properties of the simulated soft tissues, and intricate interactions with the virtual instruments are concerned. 
 In fact, there have been many different points of departure in the research of adequate deformable models, focusing on anatomies and surgical techniques 
 that are as different from each other as are eye surgery \cite{cai2001parametric, sagar1994virtual}, knee arthroscopy \cite{gibson1997simulating, 
@@ -84,13 +92,17 @@ hoffman1998commercially}, or hepatic laparoscopy \cite{cotin1999real}. The defor
  \item Hybrid methods from the combination of 1 and 2
 \end{enumerate}
 
+
+
 \section{Motivation}
-One of the most important changes in the past decade has been the laparoscopic surgery which brought new technologies into the operating room and created a 
-distance between the surgeon and the patient. More recently, other minimally invasive techniques have been proposed, such as natural orifice transluminal 
-endoscopic surgery, which can be considered as an evolution of the laparoscopic surgery. As a new surgical technique, laparoscopy requires surgeons to acquire 
-new skills, and adapt to changes from conventional open surgery (e.g. amplified tremor, diminished tactile sensation, loss of depth perception). This has been 
-a motivation for a number of works in the field of surgery simulation, real-time deformable models, or haptic rendering \cite{Lin2004}. The following benefits are reported
-from using the surgical simulation systems:
+Laparoscopic surgery brought new technologies into the operating room and created a 
+distance between the surgeon and the patient. More recently, other minimally invasive techniques have 
+been proposed, such as natural orifice transluminal endoscopic surgery, which can be considered as an 
+evolution of the laparoscopic surgery. Laparoscopy requires surgeons to acquire new skills, and adapt 
+to changes from conventional open surgery e.g. amplified tremor, diminished tactile sensation, loss of 
+depth perception. This has been a motivation for a number of works in the field of surgery simulation, 
+real-time deformable models, or haptic rendering \cite{Lin2004}. Following benefits reported from 
+using surgical simulation systems:
 
 \begin{itemize}
  \item Systematic training and objective assessment of technical competence
@@ -99,15 +111,18 @@ from using the surgical simulation systems:
  \item The ability to use augmented reality for image-guided surgery (i.e. to improve the accuracy and limit the adverse effects of surgery)
 \end{itemize}
 
-In order to accomplish these goals, accurate, real-time biomechanical models are needed, but their interactions with medical devices also needs to be modeled.
-Such interactions not only involve tissue manipulation, but also tissue dissection. 
+%These are the benfits
+In order to accomplish these goals, accurate, real-time biomechanical models are needed together
+with interactions with medical devices also needs to be modeled.
+Such interactions involve tissue manipulation and tissue dissection. 
 
-In this context, modelling and high-performance rendering of soft-tissues are the core requirements for any simulation scenarios. 
-The development of fast algorithms to compute the deformation, contact response, cutting and haptic feedback of soft tissues could enable a number of the 
-aforementioned applications.
+In this context, modelling and high-performance rendering of soft-tissues are the core requirements for 
+a simulation scenario. The development of fast algorithms to compute the deformation, contact response, 
+cutting and haptic feedback of soft tissues could enable a number of the aforementioned applications.
 
-More specifically, when considering requirements for realistic interactive simulations of medical procedures, several elements seem mandatory: anatomical 
-models and tissue properties need to be patient-specific and obtained without complex additional procedure; soft tissue behavior needs to be realistic and 
+More specifically, when considering requirements for realistic interactive simulations of medical procedures, 
+several elements are mandatory: anatomical models and tissue properties need to be patient-specific and 
+obtained without complex additional procedure; soft tissue behavior needs to be realistic and 
 demonstrate a predictive capability, yet it should be compatible with real-time computation; interactions with the surrounding anatomy and with medical 
 devices need to involve advanced contact models that can be computed in real-time; the different types of dissection performed on soft tissues should be 
 simulated; and finally realistic visual and haptic feedback should be provided to create a higher level of immersion, in particular during training sessions.
@@ -147,8 +162,15 @@ The main contributions are as the following:
  \item An optimized GPU-assisted algorithm for high-performance polygonization of implicit surfaces on many-core architectures.
  \item A high-performance algorithm for volume discretization of \blob models which can generate tetrahedral mesh elements with respect to a triangular 
  surface mesh for finite element formulation.
- \item A non-linear finite element formulation of deformations and a GPU-assisted algorithm for fast numerical approximations.
- \item A high-performance algorithm for cutting the tissues interactively. 
+ \item A high-performance algorithm for cutting rigid and deformable tissues interactively.
+ \item Smooth cutting of complex volumetric meshes without the need for a post-processing step.
+ \item Real-time Craniotomy simulation for neurosurgery and biopsy simulations
+ \item A comprehensive software architecture for physically-based animation of rigid and deformable models 
+ \item A mesh data-structure suitable for storing dynamic meshes on the GPU to 
+ support realtime modifications during cutting
+ \item A novel technique for collision detection using implicit fields which is 
+ used in our system to detect the intersection of the scalpel tool with the volume mesh in realtime. 
+ 
 \end{itemize}
 
 

@@ -79,10 +79,12 @@
         <relationship name="bookmarks" type="0/0" destination="BOOKMARK"></relationship>
     </object>
     <object type="FILE" id="z122">
+        <attribute name="visiblerect" type="string">{{0, 0}, {959, 496}}</attribute>
+        <attribute name="cursor" type="string">{495, 0}</attribute>
         <attribute name="wasopen" type="bool">-1</attribute>
         <attribute name="lasteditdate" type="date">412710558.97962099313735961914</attribute>
         <attribute name="istext" type="bool">1</attribute>
-        <attribute name="fileloaddate" type="date">436156644.85181498527526855469</attribute>
+        <attribute name="fileloaddate" type="date">436474355.44739997386932373047</attribute>
         <attribute name="extension" type="string">bib</attribute>
         <attribute name="sortindex" type="int32">0</attribute>
         <attribute name="name" type="string">PouryaLibrary.bib</attribute>
@@ -192,7 +194,7 @@
         <relationship name="selected" type="1/1" destination="FILE" idrefs="z135"></relationship>
         <relationship name="settings" type="1/1" destination="SETTINGS" idrefs="z134"></relationship>
         <relationship name="uisettings" type="1/1" destination="UISETTINGS" idrefs="z149"></relationship>
-        <relationship name="items" type="0/0" destination="PROJECTITEM" idrefs="z123 z141 z125 z132 z128 z148 z150 z122 z130 z118 z137 z124 z131 z142 z147 z135 z144 z127 z140 z143 z126 z129"></relationship>
+        <relationship name="items" type="0/0" destination="PROJECTITEM" idrefs="z141 z118 z124 z135 z128 z143 z129 z131 z126 z147 z132 z144 z122 z125 z127 z142 z137 z123 z130 z148 z140 z150"></relationship>
     </object>
     <object type="SETTINGS" id="z134">
         <attribute name="outputdirectory" type="string"></attribute>
@@ -209,13 +211,13 @@
         <relationship name="project" type="1/1" destination="PROJECT" idrefs="z133"></relationship>
     </object>
     <object type="TEXFILE" id="z135">
-        <attribute name="wasopen" type="bool">0</attribute>
-        <attribute name="visiblerect" type="string">{{0, 780}, {838, 497}}</attribute>
-        <attribute name="lasteditdate" type="date">436158196.04271399974822998047</attribute>
+        <attribute name="wasopen" type="bool">1</attribute>
+        <attribute name="visiblerect" type="string">{{0, 1863}, {953, 496}}</attribute>
+        <attribute name="lasteditdate" type="date">436486893.50955998897552490234</attribute>
         <attribute name="istext" type="bool">1</attribute>
-        <attribute name="fileloaddate" type="date">436158224.75564897060394287109</attribute>
+        <attribute name="fileloaddate" type="date">436486896.85839402675628662109</attribute>
         <attribute name="extension" type="string">tex</attribute>
-        <attribute name="cursor" type="string">{5141, 0}</attribute>
+        <attribute name="cursor" type="string">{9423, 0}</attribute>
         <attribute name="sortindex" type="int32">21</attribute>
         <attribute name="name" type="string">01_chapter_intro.tex</attribute>
         <attribute name="isexpanded" type="bool">0</attribute>
@@ -300,12 +302,12 @@
     </object>
     <object type="TEXFILE" id="z143">
         <attribute name="wasopen" type="bool">-1</attribute>
-        <attribute name="visiblerect" type="string">{{0, 0}, {700, 502}}</attribute>
-        <attribute name="lasteditdate" type="date">436156644.87176501750946044922</attribute>
+        <attribute name="visiblerect" type="string">{{0, 4121}, {832, 496}}</attribute>
+        <attribute name="lasteditdate" type="date">436474433.40733700990676879883</attribute>
         <attribute name="istext" type="bool">1</attribute>
-        <attribute name="fileloaddate" type="date">436156644.83991402387619018555</attribute>
+        <attribute name="fileloaddate" type="date">436475905.57248800992965698242</attribute>
         <attribute name="extension" type="string">tex</attribute>
-        <attribute name="cursor" type="string">{127, 0}</attribute>
+        <attribute name="cursor" type="string">{18533, 0}</attribute>
         <attribute name="sortindex" type="int32">11</attribute>
         <attribute name="name" type="string">06_chapter_cutting.tex</attribute>
         <attribute name="isexpanded" type="bool">0</attribute>
@@ -351,13 +353,13 @@
         <relationship name="bookmarks" type="0/0" destination="BOOKMARK"></relationship>
     </object>
     <object type="TEXFILE" id="z148">
-        <attribute name="wasopen" type="bool">-1</attribute>
-        <attribute name="visiblerect" type="string">{{0, 1813}, {694, 502}}</attribute>
+        <attribute name="wasopen" type="bool">0</attribute>
+        <attribute name="visiblerect" type="string">{{0, 0}, {959, 496}}</attribute>
         <attribute name="lasteditdate" type="date">429230957.42661201953887939453</attribute>
         <attribute name="istext" type="bool">1</attribute>
-        <attribute name="fileloaddate" type="date">436156644.83588302135467529297</attribute>
+        <attribute name="fileloaddate" type="date">436474355.50959002971649169922</attribute>
         <attribute name="extension" type="string">tex</attribute>
-        <attribute name="cursor" type="string">{8531, 28}</attribute>
+        <attribute name="cursor" type="string">{487, 18}</attribute>
         <attribute name="sortindex" type="int32">19</attribute>
         <attribute name="name" type="string">02_chapter_background.tex</attribute>
         <attribute name="isexpanded" type="bool">0</attribute>
@@ -370,23 +372,23 @@
     </object>
     <object type="UISETTINGS" id="z149">
         <attribute name="showpdfthumbnails" type="bool">0</attribute>
-        <attribute name="selectedcontrolstab" type="int16">0</attribute>
-        <attribute name="pdfviewscrollrect" type="string">{{0, 96615.149105367862}, {619.99999999985664, 984.85089463213808}}</attribute>
+        <attribute name="selectedcontrolstab" type="int16">3</attribute>
+        <attribute name="pdfviewscrollrect" type="string">{{0, 96303.193717277492}, {620, 1296.8062827225076}}</attribute>
         <attribute name="maxoutlinedepth" type="int16">7</attribute>
         <attribute name="logoutputlevel" type="int16">0</attribute>
-        <attribute name="editorwidth" type="float">875</attribute>
+        <attribute name="editorwidth" type="float">996</attribute>
         <attribute name="controlswidth" type="float">283</attribute>
         <attribute name="consoleview" type="int16">0</attribute>
         <relationship name="project" type="1/1" destination="PROJECT" idrefs="z133"></relationship>
     </object>
     <object type="TEXFILE" id="z150">
         <attribute name="wasopen" type="bool">-1</attribute>
-        <attribute name="visiblerect" type="string">{{0, 0}, {700, 502}}</attribute>
+        <attribute name="visiblerect" type="string">{{0, 218}, {959, 511}}</attribute>
         <attribute name="lasteditdate" type="date">436156854.68499797582626342773</attribute>
         <attribute name="istext" type="bool">1</attribute>
-        <attribute name="fileloaddate" type="date">436156854.68498599529266357422</attribute>
+        <attribute name="fileloaddate" type="date">436474355.40885901451110839844</attribute>
         <attribute name="extension" type="string">tex</attribute>
-        <attribute name="cursor" type="string">{451, 0}</attribute>
+        <attribute name="cursor" type="string">{495, 0}</attribute>
         <attribute name="sortindex" type="int32">1</attribute>
         <attribute name="name" type="string">PhdThesis_PouryaShirazian.tex</attribute>
         <attribute name="isexpanded" type="bool">0</attribute>
