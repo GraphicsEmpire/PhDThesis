@@ -176,14 +176,21 @@ Indentation Mode=normal
 Mode=LaTeX
 ReadWrite=true
 
+[document-settings,item:thesis.kilepr]
+Bookmarks=
+Encoding=UTF-8
+Highlighting=None
+Indentation Mode=normal
+Mode=
+
 [item:PhdThesis_PouryaShirazian.tex]
 archive=true
-column=51
+column=10
 encoding=UTF-8
 highlight=LaTeX
-line=20
+line=17
 mode=LaTeX
-open=false
+open=true
 order=0
 
 [item:PouryaLibrary.bib]
@@ -198,13 +205,13 @@ order=-1
 
 [item:chapters/1/01_chapter_intro.tex]
 archive=true
-column=55
+column=27
 encoding=UTF-8
 highlight=LaTeX
-line=16
+line=49
 mode=LaTeX
-open=false
-order=0
+open=true
+order=1
 
 [item:chapters/2/02_chapter_background.tex]
 archive=true
@@ -339,16 +346,16 @@ order=-1
 [item:thesis.kilepr]
 archive=true
 column=0
-encoding=
-highlight=
+encoding=UTF-8
+highlight=None
 line=0
 mode=
 open=false
 order=-1
 
 [view-settings,view=0,item:PhdThesis_PouryaShirazian.tex]
-CursorColumn=51
-CursorLine=20
+CursorColumn=10
+CursorLine=17
 JumpList=
 ViMarks=.,20,51,[,20,51,],20,51
 
@@ -359,10 +366,10 @@ JumpList=
 ViMarks=
 
 [view-settings,view=0,item:chapters/1/01_chapter_intro.tex]
-CursorColumn=55
-CursorLine=16
+CursorColumn=27
+CursorLine=49
 JumpList=
-ViMarks=.,142,23,[,142,23,],142,31
+ViMarks=.,28,7,[,28,7,],28,15
 
 [view-settings,view=0,item:chapters/2/02_chapter_background.tex]
 CursorColumn=78
@@ -441,3 +448,9 @@ CursorColumn=0
 CursorLine=25
 JumpList=
 ViMarks=.,25,0,[,25,0,],25,0
+
+[view-settings,view=0,item:thesis.kilepr]
+CursorColumn=0
+CursorLine=0
+JumpList=
+ViMarks=
