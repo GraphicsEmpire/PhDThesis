@@ -1,10 +1,42 @@
 \startchapter{Conclusions}
 \label{chapter:conclusion}
+The following contributions were made:
+
+
+\begin{enumerate}
+ \item Smooth, interactive cutting for complex elastic tissues 
+ \item Real-time Craniotomy simulation for neurosurgery and biopsy simulations
+\end{enumerate} 
+
+%cutting contribution how does it compare to previous work
+Our proposed GPU-based data-structure enables real-time updates of the volumetric meshes upon 
+cutting. Our cutting algorithm as shown in section \ref{sec:cutalg} is interactive for approximately 100,000 finite 
+element cells. This is sufficient for highly complex brain surgery simulations. The resulting finite element 
+cells are of high quality (the tetrahedral cells are not flat or wedge-shaped) as shown in section \ref{sec:cutres}. 
+This is better than what has been done in the work of Courtecuisse \etal \cite{Courtecuisse2010a}.
+The cut edges are smooth, not jagged and a minimal amount of tetrahedral elements are 
+created as the result of elements subdivision and this is better than the results published by Courtecuisse
+\etal and Steinemann \etal \cite{Courtecuisse2010a, Steinemann}. 
+
+%craniotomy simulation
+We presented a Craniotomy simulation based on our real-time cutting algorithm. 
+Our simulation system delivers interactive 
+
+% don't talk about haptics simulation, we have not done haptics
+
+
+
 Surgical simulation systems can benefit from fast computational algorithms that provide visual and haptic feedback to the surgeon. 
 Various haptic interfaces for medical simulation are specially useful for training surgeons for minimally invasive procedures e.g.
 laparascopy or interventional radiology and remote surgery using tele-operators. The hard requirement for these type of systems is
 that the force interaction between the robotic tool and the tissue should be computed as speeds of at least 500 Hz to provide the 
 continuous force-feedback to the surgeon \cite{dimaio2005interactive, Otaduy2005}.
+
+
+
+
+
+
 
 One can follow various strategies to reduce the computational time:
 

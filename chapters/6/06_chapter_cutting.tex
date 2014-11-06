@@ -236,6 +236,7 @@ original mesh. The events include update, insertion and removal of nodes, edges,
 In the next section we describe the cutting algorithm which is based on the edge-based data structure presented in this section.
 
 \section{Cutting Algorithm}
+\label{sec:cutalg}
 Our cutting algorithm follows the same strategy presented by Ganovelli \etal \cite{Ganovelli2000} which suggests use of lookup tables to 
 handle different configurations. We also applied the optimizations suggested by
 Steinemann and Mor \etal \cite{Steinemann, Mor2000} to have minimal new elements added to the mesh under cut. 
@@ -457,6 +458,7 @@ then once the cut is finalized the mesh can be cleaned and any unused entities s
 possible for the next cutting operations.
 
 \section{Cutting Results}
+\label{sec:cutres}
 In this section we review the results for the cutting algorithm presented in this chapter. 
 Two models are considered for this analysis and a more complex cutting scenario is presented in chapter \ref{chapter:evaluation}.
 The model shown in figure \ref{fig:dumbelsexample} is composed of two implicit spheres that are blended and tetrahedralized for 
@@ -577,3 +579,4 @@ are of type A which result in a 1 to 4 subdivision.
   intersected with the scalpel tool while the orange bar next to it, is the number of newly generated cells after subdividing those intersected cells.}
 }
 \end{figure}
+
