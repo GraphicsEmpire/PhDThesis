@@ -213,28 +213,28 @@ our current \blob representation is summarized in table \ref{table:memfootprint}
 \label{sec:stackless}
 In this section we describe our novel stackless \blob traversal algorithm that completely eliminates the need to maintain a stack during a \blob
 traversal and that reduces the number of traversal steps per fieldvalue evaluation. While our multicore algorithm presented in the previous chapter 
-benefit moderately from the stackless approach, it improves GPU performance significantly. In high performance rendering algorithms the use of 
+benefits moderately from the stackless approach, it improves GPU performance significantly. In high performance rendering algorithms the use of 
 hierarchical spatial data structures for acceleration reasons is common. Vising nodes in such structures requires stack-based traversal 
 algorithms. Unfortunately, even the latest GPU architectures are poorly suited for implementing such algorithms. 
 
 
-
 A complex \blob scene-graph data structure may contain thousands of primitives and operators which can lead to deep tree structures. The fieldvalue 
-evaluation process has two stages: ``down traversal'' and an ``up traversal''. During the down traversal stage all operators starting from the root node 
-are visited and pushed onto an operators stack until a leaf node (primitive) is reached at which point the field due to the primitive is computed and 
-pushed onto a separate fields stack and the next stage which is the up traversal begins. During the up traversal stage the operators are popped out of 
-the stack and per each child an associated field is popped from the fields stack for the operator to combine them in its own specific way. The resulting 
-field is again pushed back on the fields stack.  This process continues until the operators stack get emptied and the final fieldvalue due to the root node is 
-computed and returned.
+evaluation process has two stages in the original stack-based algorithm: A ``down traversal'' followed by an ``up traversal''. During the down traversal stage 
+all operators starting from the root node are visited and pushed onto an operators stack until a leaf node (primitive) is reached at which point the 
+field due to the primitive is computed and pushed onto a separate fields stack and the next stage which is the up traversal begins.
 
-This naive algorithm requires many push and pop operations which will limit the performance of the traversal process. The other issue relates to the 
+During the up traversal stage the operators are popped out of the stack and per each child an associated field is popped from the fields stack for the 
+operator to combine them in its own specific way. The resulting field is again pushed back on the fields stack.  This process continues until the 
+operators stack get emptied and the final fieldvalue due to the root node is computed and returned.
+
+This naive algorithm requires many push and pop operations which limits the performance of the traversal process. The other issue relates to the 
 inherently dynamic storage requirement for the stack itself. Although, creating a fixed-size stack is possible but since the stack size is a function of
 the count of nodes in the input \blob, this will ultimately limit the maximum number of nodes in a complex scene. If $N$ is the maximum number of nodes 
 (primitives plus operators) allowed in a \blob model then the minimum number of elements to be stored in the stack during the traversal process 
-is given by: $M=\log(N)$ or the depth of the binary tree created by $N$ nodes. Recalling from section \ref{sec:memory} there is very limited amount of
+is given by: $M=\log(N)$ or the depth of the binary tree created by $N$ nodes. Recalling from section \ref{sec:memory} there is a limited amount of
 local memory available per each thread executing on the GPU. Keeping the stack in the shared memory will also complicate the implementation and
-the access patterns from other threads in the current thread block may impact the performance. Needless to say a stack in global memory will require very expensive 
-memory transfers and is not an option for a real-time rendering algorithm. 
+the access patterns from other threads in the current thread block and may impact the performance. Needless to say that implementing a stack in the global 
+video memory will require very expensive memory transfers and is not an option for a real-time rendering algorithm. 
 
 Our algorithm is based on the neighbor cell-links concept in the stackless traversal of spatial subdivision trees which is first introduced by Samet \etal 
 \cite{Samet1984,Samet1990}. Using a similar technique Popov \etal presented a stackless KD-Tree Traversal for high performance GPU ray tracing algorithm \cite{Popov2007}.
@@ -250,19 +250,19 @@ Our algorithm is based on the neighbor cell-links concept in the stackless trave
 }
 \end{figure}
 
-We start by computing a route to visit all nodes in the \blob. This process is done once and is not a bottleneck in the system.
-Using the naive \blob traversal algorithm the nodes are visited from root to leaves. Two stacks are used in this process, an
+We start by computing a route to visit all nodes in the \blob. This process is performed once and is not a bottleneck in the system.
+Using the naive \blob traversal algorithm the nodes are visited from root to leaves. Two stacks are maintained in this process, an
 operators stack $S1$ and a \text{break} nodes stack $S2$. The latter is defined in the following:
 
 \begin{enumerate}
- \item If one of the children is an operator and the other is a primitive. Let $A$ be the name of that child operator. The parent for $A$ is set 
+ \item If one of the children is an operator $A$ and the other is a primitive $B$. The parent for $A$ is set 
  to the current node and then it is pushed onto $S1$.
  
- \item If both children are operators. The right child is set as a \textit{break} node (The route at break nodes will be flipped to 
- the left branch of the tree, see figure \ref{fig:stackless}) then it is pushed on to $S2$.
+ \item If both children are operators. The right child is set as a \textit{break} node and is pushed on to $S2$. 
+ The route at break nodes is flipped to the left branch of the tree, see figure \ref{fig:stackless}. 
  
- \item If the two children are both primitives: First the root of the \blob is set to the current node if it hasn't been set before.
-  (Refer to the \blob header format in figure \ref{fig:datastructure} for the location of the root field $RT$) 
+ \item If the two children are both primitives: First the root of the \blob is set to the current node if it has not been set before.
+  (Refer to the \blob header format in figure \ref{fig:datastructure} for the location of the root field shown as $RT$.) 
   A rope is created between the two primitives, linking the two nodes and a break node $B$ is popped from $S2$. 
   The next node for $B$ is set to the current node.
  
@@ -272,34 +272,27 @@ operators stack $S1$ and a \text{break} nodes stack $S2$. The latter is defined 
 
 
 Figure \ref{fig:stackless}, shows the final route for a sample \blob. The benefits of this type of routing encoded into the tree
-is that there is no need for storing a deep stack for tree traversals. The kernel functions written in OpenCL to compute the field
-has the following prototypes. The structure of the input \blob are as following:
-arrHeader4: Defines the header of the linear \blob.
-arrOps4: The operators structure for the compact \blob.
-arrPrims4: The compact structure for the primitives.
-arrMtxNodes4: The input transformation matrices associated with primitives.
+is that there is no need for storing a deep stack for tree traversals. The following listing shows the prototypes of the OpenCL 
+kernels to compute the field using the proposed stackless algorithm.
 
+The structure of the input \blob is break down into several arrays of four floating point numbers, namely: headers, operators, 
+primitives and matrices. Refer to section \ref{sec:datastructure} for a full description of these fields. The matrices array 
+stores the input transformation nodes that are associated with primitives.
 
+\pagebreak
 \begin{lstlisting}[frame=single]
 //Computes the field at point v due to a skeletal primitive. 
 float PrimitiveField(unsigned int idxPrimitive, float4 v,			
-		     __global float4* arrOps4,
-		     __global float4* arrPrims4, 
-		     __global float4* arrMtxNodes4);
+		     __global float4* operators,
+		     __global float4* primitives, 
+		     __global float4* matrices);
 
 //Computes the field at point v due to an operator.
 float OpField(unsigned int idxPrimitive, float4 v,			
-	      __global float4* arrOps4,
-	      __global float4* arrPrims4, 
-              __global float4* arrMtxNodes4);
+	      __global float4* operators,
+	      __global float4* primitives, 
+              __global float4* matrices);
 
-/*A Range is an operator with all primitive children. Left child field 
-in this operator defines the index of the first primitive child and 
-right child is the index of the last primitive.*/
-float RangeField(float4 v, unsigned int idxOp, 						
-		 __global float4* arrOps4,
-		 __global float4* arrPrims4, 
-		 __global float4* arrMtxNodes4);
 
 /*The field due to a branch of the tree until a break node is reached. 
 lf and rf are the fields previously computed for the left and right branches 
@@ -307,41 +300,49 @@ of the tree (initially zero)*/
 float BranchField(unsigned int idxBranchOp, unsigned int* lpNextOp, 
 		  bool* lpIsBreakOp, float4 v, 
 		  float lf, float rf,
-		  __global float4* arrHeader4,
-		  __global float4* arrOps4,
-		  __global float4* arrPrims4, 
-		  __global float4* arrMtxNodes4);
+		  __global float4* headers,
+		  __global float4* operators,
+		  __global float4* primitives, 
+		  __global float4* matrices);
 		  
 /*The main field evaluation function which will call the other four functions accordingly.*/
 float Field(float4 v,			
-	    __global float4* arrHeader4,
-            __global float4* arrOps4,
-	    __global float4* arrPrims4, 
-	    __global float4* arrMtxNodes4);
+	    __global float4* headers,
+            __global float4* operators,
+	    __global float4* primitives, 
+	    __global float4* matrices);
 \end{lstlisting}
+
+Using this new approach the tree is now only evaluated from bottom to top. 
+The traversal operation starts by invoking the main kernel titled ``Field''. The evaluation is then handed off to the 
+``BranchField'' function with the root node passed in as the starting point of that branch (The entire \blob root node 
+is encoded in the header). The field at primitive nodes are computed by the ``PrimitiveField'' function. 
+When the fields associated with the children of an operator are available then the field due to the operator 
+itself is computed by the ``OperatorField'' function. At break nodes the ``BranchField'' function is called for the next
+unvisited branch of the tree until all nodes are evaluated for the final field.
 
 
 \section{GPU Surface Extraction Algorithm}
 \label{sec:surfextraction}
 In this section we present our GPU polygonization algorithm which is based on our novel field value evaluation technique described
 in the previous section. Since the following steps are implemented using OpenCL on the GPU we will use the term \textit{kernel} which 
-refers to the single thread of execution on the GPU. Please refer to section \ref{sec:memory} for a description of the memory model for
+is a single thread of execution on the GPU. Please refer to section \ref{sec:memory} for a description of the memory model for
 general purpose GPU (\textit{GPGPU}) programming.
 
 We start by computing the axis-aligned bounding box of the model by traversing the tree from root to leaves 
 and applying the transformation matrices at leaf nodes (primitives). Using the \textit{cellsize} parameter supplied by the user the 
-bounding box is divided into a grid of voxels. The kernel function \textit{ComputeAllFields} will compute a fieldvalue per each
-vertex of this voxel grid and store that value in the format of \textit{XYZF} where \text{XYZ} denotes the vertex position and 
+bounding box is subdivided into a grid of voxels. The kernel \textit{ComputeAllFields} then computes a fieldvalue per each
+vertex of the voxel grid and stores that value in the format of \textit{XYZF} where \text{XYZ} denotes the vertex position and 
 \textit{F} is the so-called field at that position. 
 
 
 After computing all the fields, the grid edges are processed in the following order. 
-Each vertex in the grid can be connected to upto 6 other adjacent vertices. Starting from the lower corner of the voxel grid 
-the kernel function \textit{ProcessEdges} visits the corresponding vertex in the grid and examines only the edges that start 
+Each vertex in the grid is connected to at most 6 other directly adjacent vertices. Starting from the lower corner of the voxel grid 
+the kernel \textit{ProcessEdges} visits the corresponding vertex in the grid and examines only the edges that start 
 from that vertex and connect to the adjacent vertices in the next index step. This way all edges in the voxel grid are checked 
-and redundant traversals can be avoided. Needless to say that at boundary vertices it may process less than 3 edges per each 
+and redundant traversals can be avoided. Needless to say that at boundary vertices the kernel may process less than 3 edges per each 
 vertex (i.e. the ones that are within the convex-hull of the model). Upon each kernel run at this stage the index address to 
-the corresponding vertex and it 3 other adjacent vertices is computed as shown in the algorithm \ref{alg:processedgeskernel}. Per each vertex
+the corresponding vertex and its 3 other adjacent vertices is computed as shown in the algorithm \ref{alg:processedgeskernel}. Per each vertex
 an inclusion query is performed (i.e. The fieldvalue at that vertex is compared against the iso-value. If it is greater than or equal 
 the isovalue the vertex is considered inside otherwise outside the model). Two values are stored before completion of this kernel call. 
 The first is the count of crossed edges at that vertex and the second one is a 3 bits flag which basically locates the intersected 
@@ -349,8 +350,8 @@ edges along x, y or z axes.
 
 
 \begin{algorithm}[H]
-\caption{\textit{ProcessEdges} kernel function counts the number of intersected edges and their corresponding axes. This kernel runs per each
-vertex of the voxel grid.}
+\caption{\textit{ProcessEdges} kernel counts the number of intersected edges and their corresponding axes. 
+This kernel runs per each vertex in the voxel grid.}
 \label{alg:processedgeskernel}
 \begin{algorithmic}[1]	
   \STATE $v = queryVertexInclusion(i, j, k)$
@@ -368,8 +369,8 @@ contains the count of intersected edges per each vertex in the voxel grid. In or
 output vertices in the triangle mesh the prefix-sum (\cite{Sengupta2007}) of \textit{EdgeBuffer} is computed and
 stored in a separate gpu memory buffer called \textit{ScannedEdges}. The total number of vertices is the sum of the
 last element in both the \textit{EdgeBuffer} and \text{ScannedEdges}. Before computing the vertex 
-attributes (position, color and normal) the GPU memory buffers are allocated on the device global memory using the total number 
-of vertices computed in the previous step. 
+attributes such as the position, color and normal, the associated memory buffers are allocated on the device using 
+the total number of vertices computed in the previous step. 
 
 After this stage the vertex attributes of the mesh can be computed by executing a root finding method on the intersected 
 edges and storing the output vertices in their appropriate buffer locations using the offsets in \textit{ScannedEdges}.
@@ -385,16 +386,16 @@ A maximum iterations of 4 is sufficient to provide smooth results in our tests.
 After computing the root position other attributes such as the color and normal at that vertex are also computed and stored in their 
 designated buffers. The next step is to process the cells in the voxel grid in parallel and compute a configuration index per each cell
 for extracting the topology of the triangles. There is no \blob traversal at this stage since the computed fields will be provided
-to the kernel function. The configuration table is passed in as a texture image and being accessed using texture sampler for 
+to the kernel function. The configuration table is supplied as a texture and can be accessed using sampler unit for 
 fast access. The number of triangles that are output per each cell is stored in a buffer called \textit{FaceBuffer}.
 
-In order to find the total number of triangle elements a prefix-sum scan is applied to the \textit{FaceBuffer} array 
+In order to find the total number of triangle elements, a prefix-sum scan is applied to the \textit{FaceBuffer} array 
 in the same way that total number of vertices is computed previously. The buffer \textit{ScannedFaces} will be used to hold the 
 offset values per each cell. 
 
 The final stage in our GPU polygonizer is producing the triangles. For this purpose the kernel function \textit{GenerateFaces} 
 is called per each cell in the voxel grid. No \blob traversal is required for this stage. Only the cells which intersect with the 
-iso-surface will be further processed. Upon each kernel run the indices for the eight vertices of the current cell is computed. 
+iso-surface will be further processed. Upon each kernel run the indices for the eight vertices of the current cell are computed. 
 
 To process cell configurations we used the improved marching cubes table by Dietrich \etal 
 \cite{Dietrich2009}, which avoids most of the small and badly shaped triangles. The table is supplied to the kernel as 
