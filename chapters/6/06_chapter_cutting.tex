@@ -1,8 +1,7 @@
 \startchapter{Real-time Cutting}
 \label{chapter:Cutting}
-The physics simulation in our system uses tetrahedral meshes to compute deformations.
-One of the main objectives of virtual reality based surgical simulation systems is the removal of pathologic tissue 
-\cite{Steinemann, Nienhuys2001a}. Cutting imposes many challenges in the development of a robust, interactive surgery 
+One of the main objectives of a virtual reality based surgical simulation system is the removal of pathologic tissue 
+\cite{Steinemann, Nienhuys2001a}. Cutting imposes many challenges in the development of a robust, interactive surgical 
 simulation, not only because of the nonlinear material behavior exhibited by soft tissue but also due to the
 complexity of introducing the cutting-induced discontinuity. In most publications, the progressive surgical cutting is modelled
 by the conventional finite element (FE) method, in which the high computational cost and error accumulation due to re-meshing constrain 
@@ -13,13 +12,12 @@ Stereo-tactic (probing in three dimensions) brain needle biopsy is performed and
 serious complications. A small hole is drilled into the skull, and a needle is inserted into the brain tissue guided by computer-assisted 
 imaging techniques (CT or MRI scans). The actual biopsy process can not be seen by the surgeon. For this reason,
 non-progressive cutting, where a tetrahedral element is decomposed after the sweep surface traverses the tetrahedral elements, is a reasonable
-approximation for our application area, and so we define the cut once the instrument has traversed the tissue. 
-Moreover, there is little, if at all, resistance to the cut tool movement through the tissue. Therefore, in the current stage, we do 
-not model any haptic interaction of the cutting tool with the deformable object during a cut. 
+approximation for that application. Also, in the current stage, we do not model any haptic interaction of the cutting tool with the 
+deformable object during a cut. 
 
 
 \section{Related Work}
-A number of approaches has been proposed by the computer graphics community to enable cutting of deformable models. 
+A number of approaches has been proposed by the computer graphics community to enable cutting of deformable and rigid models. 
 Except for a few methods most of them use tetrahedral meshes for the volumetric mesh representation. 
 Bielser \etal performed an adaptive refinement of the tetrahedral elements cut by a virtual scalpel \cite{Bielser1999}.
 
@@ -67,24 +65,26 @@ In the following sections we provide an overview of the system and the data stru
 and our cutting algorithm. The chapter is concluded by the analysis of the simulation results.
 
 \section{Overview}
-We present a GPU-assisted approach to cutting tetrahedral meshes in real-time. 
+The physics simulation in our system uses tetrahedral meshes to compute deformations. In this section,
+we present a GPU-assisted approach to cutting tetrahedral meshes in real-time. 
 The input to our system is a cut trajectory and an edge-based data structure representing the tetrahedral mesh. 
 As shown in figure \ref{fig:sweepsurf}, the user moves the cutting tool and the system records the path of the 
 blade endpoints shown in purple. The first intersection between the recorded trajectory and the model marks the 
 beginning of the cutting process. When the tool completely traverses the model the system computes the cutting
-configurations as described below. The following steps are performed to complete the cut induced by the scalpel on the mesh:
+configurations as described below. 
 
 \begin{figure}[H]
   \centering
   % the following command controls the width of the embedded PS file
   % (relative to the width of the current column)
-  \includegraphics[width=0.6\linewidth]{figures/cutting/cubecut02.png}
-  \includegraphics[width=0.6\linewidth]{figures/cutting/cubecut04.png}
-  \includegraphics[width=0.6\linewidth]{figures/cutting/cubecut05.png}
+  \includegraphics[width=0.6\linewidth]{figures/cutting/trajectory03.png}
+  \includegraphics[width=0.6\linewidth]{figures/cutting/trajectory04.png}
   \caption{\label{fig:sweepsurf}
-  {The cut trajectory in blue and the sweep-surface shown in pink. The scalpel passes through the voxel grid model for cutting.}
+  {The cut trajectory in blue and the sweep-surface shown in pink. The scalpel passes through the shell model for cutting.}
 }
 \end{figure}
+
+The following steps are performed to complete the cut induced by the scalpel on the mesh:
 
 \begin{enumerate}
  \item Using the GPU-accelerated algorithm the intersection of the sweep-surface and all the edges of the mesh 
@@ -105,7 +105,7 @@ configurations as described below. The following steps are performed to complete
 
 
 \section{Data structure}
-The tetrahedron is the three-dimensional case of the more general concept of a Euclidean simplex. 
+The tetrahedron is the three-dimensional case of the more general concept of an Euclidean simplex. 
 Figure \ref{fig:tetconfig3} shows the structure of a tetrahedral element and the order we chose to 
 name the nodes, edges and faces in its canonical orientation. In this figure $P_0$ to $P_3$ are
 the nodes (i.e. degrees of freedom in the context of system deformation computation), $e_0$ to $e_5$ the edges 
@@ -149,7 +149,7 @@ The minimal set of operations frequently used by most algorithms are as followin
   \centering
   % the following command controls the width of the embedded PS file
   % (relative to the width of the current column)
-  \includegraphics[width=0.8\linewidth]{figures/cutting/mesh_links.png}
+  \includegraphics[width=0.8\linewidth]{figures/cutting/mesh_links.pdf}
   \caption{\label{fig:meshlinks}
   {Top-down and bottom-up mesh links. The top-down relationships is explicitly defined in the structure of the mesh.
   An example of the bottom-up links is shown here: Edges $e_1..e_4$ are incident to node $p_1$ and therefore the set 
@@ -159,8 +159,8 @@ The minimal set of operations frequently used by most algorithms are as followin
 \end{figure}
 
  \item Insertion and removal operations for nodes, edges, faces and elements. These operations require extra care in order to keep
- the top-down and bottom-up links up-to-date. As we will see in our cutting algorithm deferred removal operations can make matters alot simpler by
- delaying the actual removal until after all the identified entities are being visited and the new entities inserted to the structure.
+ the top-down and bottom-up links up-to-date. As we will see in our cutting algorithm deferred removal operations can make process much simpler by
+ delaying the actual removal until after all the identified entities are visited and the new entities are inserted to the structure.
  This is due to the fact that removal operations will update the internal links between mesh entities therefore two consecutive access operations
  might find the mesh at different states which is not intended in the original proposed algorithm.
  
@@ -184,7 +184,7 @@ This computation is performed when a new edge in inserted into the structure and
 The hash-map then associates this key to its corresponding edge index thereby providing constant-time access. 
 Using this technique the faces can also be accessed though their associated node indices which can be convenient for some applications. 
 
-Nothing is removed directly from the our mesh storage buffers but rather upon cutting, the elements
+Nothing is removed directly from the mesh storage buffers but rather upon cutting, the elements
 are added to the $freelist$ and later the garbage collection removes all the $freelist$ items from the mesh storage buffers. 
 
 When cutting an edge, an edge-update process is performed followed by a new edge insertion. 
@@ -220,7 +220,7 @@ Figure \ref{fig:splitedge} shows this process.
   \centering
   % the following command controls the width of the embedded PS file
   % (relative to the width of the current column)
-  \includegraphics[width=0.8\linewidth]{figures/cutting/splitedge.png}
+  \includegraphics[width=0.8\linewidth]{figures/cutting/splitedge.pdf}
   \caption{\label{fig:splitedge}
   {Left: The edge to be split. Right: Splitting an edge produces a new edge from the point of 
   intersection to the original endpoint. New points $newp_0$ and $newp_1$ are initially co-located.}
@@ -228,7 +228,7 @@ Figure \ref{fig:splitedge} shows this process.
 \end{figure}
 
 
-Upon topological modification, events are generated to notify cutting algorithms of the internal changes in the mesh structure. 
+Upon topological modifications, events are generated to notify cutting algorithms of the internal changes in the mesh structure. 
 This is also useful for debugging and evaluation purposes and can be logged for accounting the sequence of changes made to the 
 original mesh. The events include update, insertion and removal of nodes, edges, faces and elements.
 

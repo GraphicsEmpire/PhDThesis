@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="591.03381"
-   height="341.05923"
+   width="589.03381"
+   height="337.05923"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="mesh_links.png">
+   sodipodi:docname="mesh_links.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -25,15 +25,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="366.46078"
-     inkscape:cy="173.25245"
+     inkscape:cx="279.46078"
+     inkscape:cy="173.25244"
      inkscape:document-units="px"
-     inkscape:current-layer="g4718"
+     inkscape:current-layer="layer1"
      showgrid="true"
-     inkscape:window-width="1600"
-     inkscape:window-height="800"
-     inkscape:window-x="0"
-     inkscape:window-y="28"
+     inkscape:window-width="1615"
+     inkscape:window-height="1026"
+     inkscape:window-x="65"
+     inkscape:window-y="24"
      inkscape:window-maximized="1"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -46,8 +46,8 @@
        visible="true"
        enabled="true"
        snapvisiblegridlinesonly="true"
-       originx="-14.357142px"
-       originy="-672.06287px" />
+       originx="-16.357142px"
+       originy="-672.06288px" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -57,7 +57,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -65,7 +65,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-14.357142,-39.240112)">
+     transform="translate(-16.357142,-43.240112)">
     <g
        id="g4594"
        transform="translate(35.000006,69.999998)">
@@ -348,7 +348,7 @@
                x="137.38075"
                y="349.29602" /></flowRegion><flowPara
              id="flowPara2999-42-5"
-             style="font-size:23.58031984px;font-weight:normal;-inkscape-font-specification:Sans">p4</flowPara></flowRoot>        <path
+             style="font-size:23.58032036px;font-weight:normal;-inkscape-font-specification:Sans">p4</flowPara></flowRoot>        <path
            sodipodi:type="arc"
            style="fill:#ff0000;fill-opacity:1;stroke:none"
            id="path3104-5-7"
@@ -377,44 +377,46 @@
        xml:space="preserve"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
        x="20"
-       y="52.362183"
+       y="56.362183"
        id="text4343"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4345"
          x="20"
-         y="52.362183"
+         y="56.362183"
          style="font-size:18px">Bottom-Up</tspan></text>
     <g
        id="g4408">
-      <rect
-         ry="14.507069"
-         rx="20.035418"
-         y="72.855118"
-         x="17.63579"
-         height="29.014137"
-         width="250.4427"
-         id="rect4347"
-         style="fill:#e193e2;fill-opacity:1;stroke:#000080;stroke-width:2.55729175;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-      <flowRoot
-         transform="translate(55,-73.641802)"
-         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-         id="flowRoot4349"
-         xml:space="preserve"><flowRegion
-           id="flowRegion4351"><rect
-             y="148.07646"
-             x="15"
-             height="115.71429"
-             width="327.14285"
-             id="rect4353" /></flowRegion><flowPara
-           style="font-size:18px"
-           id="flowPara4355">node -&gt; edges</flowPara></flowRoot>    </g>
-    <g
-       transform="translate(30,60.000001)"
-       id="g4408-2">
       <g
-         id="g4498"
-         transform="translate(-30,-20.000001)">
+         id="g3192">
+        <rect
+           style="fill:#e193e2;fill-opacity:1;stroke:#000080;stroke-width:2.55729175;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           id="rect4347"
+           width="250.4427"
+           height="29.014137"
+           x="17.63579"
+           y="72.855118"
+           rx="20.035418"
+           ry="14.507069" />
+        <flowRoot
+           xml:space="preserve"
+           id="flowRoot4349"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           transform="translate(55,-73.641802)"><flowRegion
+             id="flowRegion4351"><rect
+               id="rect4353"
+               width="327.14285"
+               height="115.71429"
+               x="15"
+               y="148.07646" /></flowRegion><flowPara
+             id="flowPara4355"
+             style="font-size:18px">node -&gt; edges</flowPara></flowRoot>      </g>
+    </g>
+    <g
+       transform="translate(0,40)"
+       id="g4498">
+      <g
+         id="g3185">
         <rect
            style="fill:#e3dbdb;fill-opacity:1;stroke:#000080;stroke-width:2.55729175;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
            id="rect4347-0"
@@ -437,9 +439,77 @@
                y="148.07646" /></flowRegion><flowPara
              id="flowPara4355-9"
              style="font-size:18px">edge -&gt; faces</flowPara></flowRoot>      </g>
+    </g>
+    <g
+       id="g3178">
+      <rect
+         style="fill:#e12c3a;fill-opacity:1;stroke:#000080;stroke-width:2.55729175;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect4347-4"
+         width="250.4427"
+         height="29.014137"
+         x="17.63579"
+         y="152.85512"
+         rx="20.035418"
+         ry="14.507069" />
+      <flowRoot
+         xml:space="preserve"
+         id="flowRoot4349-2"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         transform="translate(55,6.358198)"><flowRegion
+           id="flowRegion4351-1"><rect
+             id="rect4353-8"
+             width="327.14285"
+             height="115.71429"
+             x="15"
+             y="148.07646" /></flowRegion><flowPara
+           id="flowPara4355-1"
+           style="font-size:18px">face -&gt; cells</flowPara></flowRoot>    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="18"
+       y="232.36218"
+       id="text4343-6"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4345-0"
+         x="18"
+         y="232.36218"
+         style="font-size:18px">Top-Down</tspan></text>
+    <g
+       transform="translate(-30.000002,160)"
+       id="g4408-8">
       <g
-         transform="translate(-30,19.999999)"
-         id="g4408-1">
+         id="g3103"
+         transform="translate(30,100.00003)">
+        <rect
+           style="fill:#e193e2;fill-opacity:1;stroke:#000080;stroke-width:2.55729175;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           id="rect4347-2"
+           width="250.4427"
+           height="29.014137"
+           x="17.63579"
+           y="72.855118"
+           rx="20.035418"
+           ry="14.507069" />
+        <flowRoot
+           xml:space="preserve"
+           id="flowRoot4349-25"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           transform="translate(55,-73.641802)"><flowRegion
+             id="flowRegion4351-7"><rect
+               id="rect4353-3"
+               width="327.14285"
+               height="115.71429"
+               x="15"
+               y="148.07646" /></flowRegion><flowPara
+             id="flowPara4355-4"
+             style="font-size:18px">edge -&gt; nodes</flowPara></flowRoot>      </g>
+    </g>
+    <g
+       id="g4498-8"
+       transform="translate(-1.9e-6,220)">
+      <g
+         id="g3110">
         <rect
            ry="14.507069"
            rx="20.035418"
@@ -447,104 +517,46 @@
            x="17.63579"
            height="29.014137"
            width="250.4427"
-           id="rect4347-4"
-           style="fill:#e12c3a;fill-opacity:1;stroke:#000080;stroke-width:2.55729175;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+           id="rect4347-0-4"
+           style="fill:#e3dbdb;fill-opacity:1;stroke:#000080;stroke-width:2.55729175;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
         <flowRoot
            transform="translate(55,-73.641802)"
            style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-           id="flowRoot4349-2"
+           id="flowRoot4349-7-1"
            xml:space="preserve"><flowRegion
-             id="flowRegion4351-1"><rect
+             id="flowRegion4351-5-6"><rect
                y="148.07646"
                x="15"
                height="115.71429"
                width="327.14285"
-               id="rect4353-8" /></flowRegion><flowPara
+               id="rect4353-9-4" /></flowRegion><flowPara
              style="font-size:18px"
-             id="flowPara4355-1">face -&gt; cells</flowPara></flowRoot>        <text
-           xml:space="preserve"
-           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-           x="18"
-           y="152.36218"
-           id="text4343-6"
-           sodipodi:linespacing="125%"><tspan
-             sodipodi:role="line"
-             id="tspan4345-0"
-             x="18"
-             y="152.36218"
-             style="font-size:18px">Top-Down</tspan></text>
-        <g
-           transform="translate(-2,100)"
-           id="g4408-8">
-          <rect
-             ry="14.507069"
-             rx="20.035418"
-             y="72.855118"
-             x="17.63579"
-             height="29.014137"
-             width="250.4427"
-             id="rect4347-2"
-             style="fill:#e193e2;fill-opacity:1;stroke:#000080;stroke-width:2.55729175;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-          <flowRoot
-             transform="translate(37,-73.641802)"
-             style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-             id="flowRoot4349-25"
-             xml:space="preserve"><flowRegion
-               id="flowRegion4351-7"><rect
-                 y="148.07646"
-                 x="15"
-                 height="115.71429"
-                 width="327.14285"
-                 id="rect4353-3" /></flowRegion><flowPara
-               style="font-size:18px"
-               id="flowPara4355-4">edge -&gt; end points</flowPara></flowRoot>        </g>
-        <g
-           id="g4498-8"
-           transform="translate(-2,140)">
-          <rect
-             style="fill:#e3dbdb;fill-opacity:1;stroke:#000080;stroke-width:2.55729175;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-             id="rect4347-0-4"
-             width="250.4427"
-             height="29.014137"
-             x="17.63579"
-             y="72.855118"
-             rx="20.035418"
-             ry="14.507069" />
-          <flowRoot
-             xml:space="preserve"
-             id="flowRoot4349-7-1"
-             style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-             transform="translate(55,-73.641802)"><flowRegion
-               id="flowRegion4351-5-6"><rect
-                 id="rect4353-9-4"
-                 width="327.14285"
-                 height="115.71429"
-                 x="15"
-                 y="148.07646" /></flowRegion><flowPara
-               id="flowPara4355-9-0"
-               style="font-size:18px">face -&gt; edges</flowPara></flowRoot>        </g>
-        <rect
-           ry="14.507069"
-           rx="20.035418"
-           y="252.85513"
-           x="15.635788"
-           height="29.014137"
-           width="250.4427"
-           id="rect4347-4-4"
-           style="fill:#e12c3a;fill-opacity:1;stroke:#000080;stroke-width:2.55729175;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-        <flowRoot
-           transform="translate(53,106.3582)"
-           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-           id="flowRoot4349-2-8"
-           xml:space="preserve"><flowRegion
-             id="flowRegion4351-1-9"><rect
-               y="148.07646"
-               x="15"
-               height="115.71429"
-               width="327.14285"
-               id="rect4353-8-0" /></flowRegion><flowPara
-             style="font-size:18px"
-             id="flowPara4355-1-2">cell -&gt; faces</flowPara></flowRoot>      </g>
+             id="flowPara4355-9-0">face -&gt; edges</flowPara></flowRoot>      </g>
     </g>
+    <g
+       id="g3096"
+       transform="translate(2,3.2e-5)">
+      <rect
+         style="fill:#e12c3a;fill-opacity:1;stroke:#000080;stroke-width:2.55729175;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="rect4347-4-4"
+         width="250.4427"
+         height="29.014137"
+         x="15.635788"
+         y="252.85513"
+         rx="20.035418"
+         ry="14.507069" />
+      <flowRoot
+         xml:space="preserve"
+         id="flowRoot4349-2-8"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         transform="translate(53,106.3582)"><flowRegion
+           id="flowRegion4351-1-9"><rect
+             id="rect4353-8-0"
+             width="327.14285"
+             height="115.71429"
+             x="15"
+             y="148.07646" /></flowRegion><flowPara
+           id="flowPara4355-1-2"
+           style="font-size:18px">cell -&gt; faces</flowPara></flowRoot>    </g>
   </g>
 </svg>
