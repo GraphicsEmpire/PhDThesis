@@ -29,10 +29,22 @@ used for minimally invasive procedures to:
  \item insert an endoscope to remove small tumors and clip aneurysms
 \end{itemize}
 
-In the following sections we describe our simulation setup and then review the results. 
+In the following sections we review the related work in this domain and then describe our simulation 
+setup. The chapter concludes with results and analysis.
 %The second simulation operation is brain biopsy which is the removal of a small piece of brain tissue for the diagnosis of abnormalities 
 %of the brain. It is used to diagnose Alzheimer's disease, tumors, infection, inflammation, and other brain disorders. By examining 
 %the tissue sample under a microscope, the biopsy sample provides doctors with the information necessary to guide diagnosis and treatment.
+
+\section{Related Work}
+Stadie \etal performed a study on the effectiveness of virtual reality systems for placing the craniotomies 
+in minimally invasive procedures \cite{Stadie2011}.  They used the Dextroscope and RadioDexter workstations 
+supplied by Volume Interactions Pte. Ltd. that are capable of visualizing and annotating 3D VR models. 
+Those systems are used to measure the curvilinear distances of the proposed craniotomy centers on the 
+patients skull model.
+
+
+
+
 
 \section{Architectural constraints}
 We are able to perform interactive cuts on a model with more than 60,000 cells. The GPU accelerated cutting algorithm 
