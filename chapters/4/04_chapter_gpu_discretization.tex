@@ -6,31 +6,23 @@ defines the connectivity of the surface mesh. While the surface mesh is used for
 collision detection and contact modelling algorithms as we will see in the following chapters.  In this chapter we propose an improved 
 version of that algorithm that can take advantage of the processing capabilities of the GPU and provides real-time \blob rendering performance. 
 
-
-
-One of the primary objectives in our modelling framework was to be able to shift from sketching mode into live interactive animation mode
-which can enable further enhancements; such as assignment of elastic parameters to the model in an incremental process, e.g. the
-modeler can interactively make certain parts of the object stiffer and check out the results by haptically interacting with it or
-visually examining the contacts between colliding bodies and with avatar. To make the modelled object amenable to this type of analysis, it has 
-to be decomposed into simple shapes called \textit{elements}, which commonly are tetrahedra \cite{Labelle2007}. 
-The success of the finite element method depends on the shapes of these tetrahedra, i.e. large dihedral angles cause large interpolation 
-and discretization errors and will degrade the accuracy of the numerical simulation, small dihedral angles on the other hand will 
-lead to incorrect stiffness matrices associated with the finite element method \cite{Shewchuk}. 
-
-
-In order to address the tetrahedra extraction stage of the process we propose a GPU accelerated volume tetrahedralization algorithm based on the work of
-Labelle \etal \cite{Labelle2007} that produces a smooth tetrahedral mesh. As opposed to their work our algorithm is scalable to number of processors 
-available on the graphics processing units and delivers real-time results to support our modelling system.
-
-The contributions in this chapter are as following:
+Building on top of the results from our SIMD polygonization algorithm, in this chapter we present our work in optimizing that 
+algorithm for many-core architectures such as GPU. When compared to the related work in the field, our proposed method has the following
+benefits:
 
 \begin{itemize}
- \item A GPU accelerated polygonization algorithm for rendering complex \blob models. The algorithm scales with the number of stream cores available
- on modern GPU and can be easily extended to support various geometric primitives.
- 
- \item A tetrahedralization algorithm that leverages GPU for high performance volume discretization from \blob models. The output tetrahedral mesh is
- readily available for further physically-based simulations.
+ \item It is data-driven, i.e. the input to our algorithm is a dynamic \blob structure that can change 
+ in every frame. This is a key advantage that can enable interactive modelling sessions in an implicit 
+ framework, i.e. the result of modifications to the model can be viewed in real-time.
+
+ \item The proposed GPU-based data-structure is compact enough to enable rendering complex \blob models 
+ in the order of 60,000 nodes. (64,000 nodes only requires about 20MiB of video memory in our system).
 \end{itemize}
+
+In the following we review the related work in this domain and continue with a discussion in differences of many-core 
+architectures. The data-structure and the algorithm are explained in the following sections. The chapter concludes with 
+the results and analysis.
+
 
 
 \section{Related Work}
@@ -102,69 +94,19 @@ GPU, as well as full instruction sets, such as double precision computations and
 standard was released in 2009, with a programming model very similar to CUDA \cite{gaster2012heterogeneous}. The presented algorithms in this chapter
 have been implemented in OpenCL. 
 
-\section{Data Structures}
-\label{sec:datastructure}
-The \blob linearization step introduced in (section \ref{sec:linearization}) is modified to create a compact representation of the input model in our 
-GPU polygonization algorithm. Figure (\ref{fig:datastructure}) depicts this pointerless representation in details.
+In OpenCL and CUDA threads may access data from multiple memory spaces during their execution \cite{Nickolls2008}. Each thread has a 
+private \textit{local} memory. OpenCL uses this memory for thread-private variables that do not fit in the thread's registers, as well 
+as for stack frames and register spilling. Each thread block has a shared memory visible to all threads of the block that has the same 
+lifetime as the block. Finally, all threads have access to the same \textit{global} memory. 
 
-\begin{figure}[H]
-  \centering
-  % the following command controls the width of the embedded PS file
-  % (relative to the width of the current column)
-  \includegraphics[width=1.0\linewidth]{figures/gpupoly/lineartree.pdf}
-  \caption{\label{fig:datastructure}
-  {The compact \blob scenegraph representation for GPU polygonization and tetrahedralization algorithms. The structure is aligned at 16 bytes (4 floats). 
-  1- The header. 2- Skeletal implicit primitives. 3- Operators. 4- Affine transformation nodes. 5- Control points for sketched objects. Refer to section 
-  \ref{sec:datastructure} for details.}
-}
-\end{figure}
+Programs declare variables in shared and global memory with the \texttt{\_\_local} and \texttt{\_\_global} type qualifiers. On a Tesla-architecture 
+GPU, these memory spaces correspond to physically separate memories: per-block shared memory is a low-latency on-chip RAM, while global memory 
+resides in the fast DRAM on the graphics board. 
 
-All the structures are aligned at 16 bytes (four floating points) memory addresses (This is similar to the texture accessing techniques in graphical 
-shader programming languages such as (GLSL or Cg) where four floats represent the RGBA values of a texel accordingly.) If a primitive node has an associated 
-transformation node with a non-identity transformation matrix, that matrix will be stored in the primitive matrices section of the input structure and an associated 
-id will be provided to the primitive. The default id is 0 which points to an identity transformation matrix. The inverse of the primitive matrix is 
-computed and the first three rows of it will be stored for further field computations. To transform the axis-aligned bounding boxes of the primitives the full forward 
-transformation matrix will be stored in the box matrices section of the structure and it can be accessed using the same id provided for the primitive matrix.
-Each input data-structure is numbered in figure (\ref{fig:datastructure}) for further reference. We review the details in the following:
-\begin{enumerate}
- \item The header section defines the lower and upper corner of the axis-aligned bounding box enclosing the entire model, i.e. the convex hull of the 
- input \blob. The header also contains the count of primitives, operators and transformation nodes. The id associated with the root operator of the 
- tree is also defined in the header.
- \item The primitive section defines the type of skeleton. MX, PR and SB fields are the ids associated with the inverse transformation matrix, the parent and the
- sibling of the node respectively. The following texels define the position, direction, skeleton-specific parameters and the color of the primitive node in 
- that order. For the primitives that are computed from sketched control points (Thin-plate spline \cite{Turk1999, Grasberger} primitives.) the interval of the 
- associated stored control points are provided.
-
- \item This section defines the operators in the \blob. The type of each operator is the first field defined in the structure. The following fields define the 
- left and right children, in case all the children are primitives and their indices are in a consecutive order (range); LC defines the first child and RC the last child
- included in that closed range of children. The NX field is related to our stackless \blob traversal algorithm which is explained in the following sections and 
- points to the next operator node in the \blob traversal route. The operator-specific parameters and its axis-aligned bounding box are stored next. The F* flag 
- provides more control over the operator and the definition of the bit flags is explained at the bottom of section 3 in the figure. 
- Bits 1 and 0 are set in case the left child or the right child of the current node are operators as well. Bit 2 is set if the LC and RC indices are actually defining 
- a range of skeletal primitives. This situation can happen if a high-level op contains many children such as a global union operator in this case the first two fields
- will be zero as well. If the unary flag is set this operator has only one left child.  Bit 4 is set when the current operator appears as a right node for its parent.
- Bit 5 is the break route flag and is discussed further in our stackless \blob routing algorithm. The rest of the bits are reserved for future use. 
- 
- 
- \item As mentioned above the inverse of the transformation matrices are computed and the first three rows are stored in our input structure for field computation
- purposes. The elements are depicted in the format of [row][column]. The forward transformation is stored as a 4x4 matrix in a separate input structure for performance
- reasons. 
- 
- \item The control points associated with the sketched primitives are all stored in this section. Each control point is defined with their XYZ coordinate and an associated 
- weight. 
-\end{enumerate}
-
-\section{Memory foot prints}\label{sec:memory}
-In OpenCL and CUDA threads may access data from multiple memory spaces during their execution \cite{Nickolls2008}. Each thread has a private \textit{local} memory. 
-OpenCL uses this memory for thread-private variables that do not fit in the thread's registers, as well as for stack frames and register spilling. Each thread block 
-has a shared memory visible to all threads of the block that has the same lifetime as the block. Finally, all threads have access to the same \textit{global} memory. 
-Programs declare variables in shared and global memory with the \texttt{\_\_local} and \texttt{\_\_global} type qualifier. On a Tesla-architecture GPU, these memory spaces correspond to 
-physically separate memories: per-block shared memory is a low-latency on-chip RAM, while global memory resides in the fast DRAM on the graphics board. 
-
-Shared memory is expected to be a low-latency memory near each processor, much like an L1 cache. It can therefore, provide for high-performance communication and
-data sharing among the threads of a thread block. Since it has the same lifetime as its corresponding thread block, kernel code will typically initialize data in shared
-variables, compute using shared variables, and copy shared memory results to global memory. Thread blocks of sequentially dependent grids communicate via global
-memory, using it to read input and write results. 
+Shared memory is expected to be a low-latency memory near each processor, much like an L1 cache. It can therefore, provide for high-performance 
+communication and data sharing among the threads of a thread block. Since it has the same lifetime as its corresponding thread block, kernel 
+code will typically initialize data in shared variables, compute using shared variables, and copy shared memory results to global memory. 
+Thread blocks of sequentially dependent grids communicate via global memory, using it to read input and write results. 
 
 %Register spilling can increase the number of instructions required to generate prefetch addresses. Ideally only a single instruction would be needed for each prefetch,
 % i.e. the prefetch instruction itself. In some cases, as many as 20 extra instructions were added for each prefetch. 
@@ -184,11 +126,74 @@ On the other hand the potential downside of the loop unrolling is creating too m
 register spilling. One way for the compiler to avoid those register-spilling problems is to perform loop unrolling with a greater awareness of its effect on register 
 pressure. 
 
+\section{Data Structures}
+\label{sec:datastructure}
+The \blob linearization step introduced in (section \ref{sec:linearization}) is modified to create a compact representation of the input model in our 
+GPU polygonization algorithm. 
+
+All the structures are aligned at 16 bytes (four floating points) memory addresses (This is similar to the texture 
+accessing techniques in graphical shader programming languages such as (GLSL or Cg) where four floats represent the 
+RGBA values of a texel accordingly.) If a primitive node has an associated transformation node with a non-identity 
+transformation matrix, that matrix will be stored in the primitive matrices section of the input structure and an 
+associated identifier (id) will be provided to the primitive. The default id is 0 which points to an identity transformation 
+matrix. The inverse of the primitive matrix is computed and the first three rows of it will be stored for further field 
+computations. To transform the axis-aligned bounding boxes of the primitives the full forward transformation matrix will 
+be stored in the box matrices section of the structure and it can be accessed using the same id provided for the primitive matrix.
+Figure (\ref{fig:datastructure}) depicts this pointerless representation in details.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1.0\linewidth]{figures/gpupoly/lineartree.pdf}
+  \caption{\label{fig:datastructure}
+  {The compact \blob scenegraph representation for GPU polygonization and tetrahedralization algorithms. The structure is 
+  aligned at 16 bytes (4 floats). 1- The header. 2- Skeletal implicit primitives. 3- Operators. 4- Affine transformation 
+  nodes. 5- Control points for sketched objects. Refer to section \ref{sec:datastructure} for details.}
+}
+\end{figure}
+
+Each input data-structure is numbered in figure (\ref{fig:datastructure}) for further reference. We review the details in the following:
+\begin{enumerate}
+ \item The header section defines the lower and upper corner of the axis-aligned bounding box enclosing the entire model, 
+ i.e. the convex hull of the input \blob. The header also contains the count of primitives, operators and the transformation 
+ nodes. The id associated with the root operator of the tree is also defined in the header.
+ 
+ \item The definition of each primitive is encoded in 6 texels. The $TP$ field in the first texel numerically encodes the 
+ type of skeletal primitive. The other three fields in this texel are $MX$, $PR$ and $SB$ that link this primitive to its inverse 
+ transformation matrix, the parent and the sibling elements respectively. The following texels define the position, 
+ direction, skeleton-specific parameters and the color of the primitive. For the primitives that are 
+ computed from sketched control points (e.g. the thin-plate spline primitives \cite{Turk1999, Grasberger}) the indices to the 
+ associated first and last control points are stored in the last texel.
+
+ \item A \blob operator is defined in 4 texels. The type of the operator is defined first in the $TP$ field. 
+ The following fields define the left and right children, in case all the children are primitives and their indices are in 
+ consecutive order (e.g. a range); $LC$ and $RC$ are the indices to the first and last children respectively. This situation 
+ can happen if an operator is applied to a list of consecutive primitives, e.g. a global union operator.  The $NX$ 
+ field is related to our stackless \blob traversal algorithm which is explained in the following sections and defines the next 
+ operator node in the \blob traversal route. The operator-specific parameters and its axis-aligned bounding box are stored next. 
+ The $F^*$ flag provides more control over the operator and the definition of its bits can be found at the bottom of figure
+ \ref{fig:datastructure}. Bits 1 and 0 are set in case the left child or the right child of the current node are operators as well. Bit 2 is 
+ set if the $LC$ and $RC$ indices are actually defining a range of skeletal primitives as explained earlier. In this case the 
+ first two fields will be set to zero. If the unary flag is set then the operator has only one child which stored in the $LC$ field.  
+ Bit 4 is set when the current operator appears as a right node for its parent. Bit 5 is the break route flag and is discussed further 
+ in our stackless \blob routing algorithm. The rest of the bits are reserved for future use. 
+ 
+ 
+ \item As mentioned above the inverse of the transformation matrices are computed and the first three rows are stored in our input 
+ structure for field computation purposes. The elements are depicted in the format of [row][column]. The forward transformation is 
+ stored as a 4x4 matrix in a separate input structure for performance reasons. 
+ 
+ \item The control points associated with the sketched primitives are all stored in this section. Each control point is defined with 
+ their XYZ coordinate and an associated weight value. 
+\end{enumerate}
+
+\section{Memory foot prints}\label{sec:memory}
 After analyzing the performance of our OpenCL kernels, register spilling often found to be the major cause for many latencies. Resorting to shared memory spaces, reducing 
 number of intermediate variable in field-evaluation kernels and avoiding loop unrolling in some cases helped to optimize the performance. Upon every
 change in the input \blob the scene-graph is compacted and transferred from main memory to the GPU. Currently the maximum number of nodes is set at 64K which covers
 all of the complex cases we modelled for this thesis. However, for larger \blob models  we can easily increase this amount to support them. The memory footprint of 
-our current \blob representation is summarized in table \ref{table:memfootprint}).
+our current \blob representation is summarized in table \ref{table:memfootprint}. Each row in the table represents a \blob with a specific number of nodes.
+Starting from the simplest \blob with only one node (e.g. a sphere primitive) to the most complex \blob with one million nodes. The middle columns in the 
+table are the break down of the required memory size per each component in the compacted \blob data structure.
 
 \begin{table}[H]
 \begin{center}
@@ -211,17 +216,21 @@ our current \blob representation is summarized in table \ref{table:memfootprint}
 
 \section{Stackless \blob traversal}
 \label{sec:stackless}
-In this section we describe our novel stackless \blob traversal algorithm that completely eliminates the need to maintain a stack during a \blob
-traversal and that reduces the number of traversal steps per fieldvalue evaluation. While our multicore algorithm presented in the previous chapter 
-benefits moderately from the stackless approach, it improves GPU performance significantly. In high performance rendering algorithms the use of 
-hierarchical spatial data structures for acceleration reasons is common. Vising nodes in such structures requires stack-based traversal 
-algorithms. Unfortunately, even the latest GPU architectures are poorly suited for implementing such algorithms. 
+In this section we describe our novel stackless \blob traversal algorithm. 
+Without a stack to be maintained the \blob traversal incurs less memory footprint. When dealing with small 
+local memory available per each thread on the GPU this reduction in memory usage improves the performance of the 
+running kernels significantly.
+
+In high performance rendering algorithms the use of hierarchical spatial data structures for acceleration reasons 
+is common. Vising nodes in such structures requires stack-based traversal algorithms. Unfortunately, even the latest 
+GPU architectures are poorly suited for implementing such algorithms. 
 
 
-A complex \blob scene-graph data structure may contain thousands of primitives and operators which can lead to deep tree structures. The fieldvalue 
-evaluation process has two stages in the original stack-based algorithm: A ``down traversal'' followed by an ``up traversal''. During the down traversal stage 
-all operators starting from the root node are visited and pushed onto an operators stack until a leaf node (primitive) is reached at which point the 
-field due to the primitive is computed and pushed onto a separate fields stack and the next stage which is the up traversal begins.
+A complex \blob scene-graph data structure may contain thousands of primitives and operators which can lead to deep tree structures. 
+In the original stack-based traversal algorithm, the fieldvalue evaluation process has two stages: A ``down traversal'' followed by an ``up traversal''. 
+During the down traversal stage all operators starting from the root node are visited and pushed onto an operators stack until a leaf node (primitive) 
+is reached at which point the field due to the primitive is computed and pushed onto a separate fields stack and the next 
+stage which is the up traversal begins.
 
 During the up traversal stage the operators are popped out of the stack and per each child an associated field is popped from the fields stack for the 
 operator to combine them in its own specific way. The resulting field is again pushed back on the fields stack.  This process continues until the 
@@ -250,7 +259,11 @@ Our algorithm is based on the neighbor cell-links concept in the stackless trave
 }
 \end{figure}
 
-We start by computing a route to visit all nodes in the \blob. This process is performed once and is not a bottleneck in the system.
+In a preprocessing stage we compute a route to visit all nodes in the \blob. 
+This process is performed only once and is not a bottleneck in the system.
+After this stage completes a complete \blob traversal route is encoded into the data-structure and will be used by the GPU kernels for rendering.
+The following steps are performed for this stage: 
+
 Using the naive \blob traversal algorithm the nodes are visited from root to leaves. Two stacks are maintained in this process, an
 operators stack $S1$ and a \text{break} nodes stack $S2$. The latter is defined in the following:
 
@@ -267,9 +280,13 @@ operators stack $S1$ and a \text{break} nodes stack $S2$. The latter is defined 
   The next node for $B$ is set to the current node.
  
   
- \item The process is continued until $S1$ is emptied.
+ \item This process is continued until $S1$ is emptied.
 \end{enumerate}
 
+
+%add an algorithm listing for this
+
+%describe what happens on the GPU as well
 
 Figure \ref{fig:stackless}, shows the final route for a sample \blob. The benefits of this type of routing encoded into the tree
 is that there is no need for storing a deep stack for tree traversals. The following listing shows the prototypes of the OpenCL 
@@ -279,6 +296,7 @@ The structure of the input \blob is break down into several arrays of four float
 primitives and matrices. Refer to section \ref{sec:datastructure} for a full description of these fields. The matrices array 
 stores the input transformation nodes that are associated with primitives.
 
+%remove the code
 \pagebreak
 \begin{lstlisting}[frame=single]
 //Computes the field at point v due to a skeletal primitive. 
@@ -492,7 +510,7 @@ locations) in our implementation.
   \centering
   % the following command controls the width of the embedded PS file
   % (relative to the width of the current column)
-  \includegraphics[width=1.0\linewidth]{figures/gpupoly/breakdownpoly.pdf}
+  \includegraphics[width=0.8\linewidth]{figures/gpupoly/breakdownpoly.pdf}
   \caption{\label{fig:breakdownpoly}
   {Polygonization time breakdown in milliseconds for the three models shown in the previous section. Vertex processing is the most compute-intensive
   stage due to the Newthon-Raphson root finding method employed and the evaluation of colors and normals which require additional traversals.

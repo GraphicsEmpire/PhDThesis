@@ -73,16 +73,24 @@ blade endpoints shown in purple. The first intersection between the recorded tra
 beginning of the cutting process. When the tool completely traverses the model the system computes the cutting
 configurations as described below. 
 
-\begin{figure}[H]
+\begin{figure}
+\centering
+\begin{subfigure}{.5\textwidth}
   \centering
-  % the following command controls the width of the embedded PS file
-  % (relative to the width of the current column)
-  \includegraphics[width=0.6\linewidth]{figures/cutting/trajectory03.png}
-  \includegraphics[width=0.6\linewidth]{figures/cutting/trajectory04.png}
-  \caption{\label{fig:sweepsurf}
-  {The cut trajectory in blue and the sweep-surface shown in pink. The scalpel passes through the shell model for cutting.}
-}
+  \includegraphics[width=0.8\linewidth]{figures/cutting/trajectory03.png}
+  \caption{The trajectory of the cutting tool}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=0.8\linewidth]{figures/cutting/trajectory04.png}
+  \caption{The shell model after cut}
+  \label{fig:sub2}
+\end{subfigure}
+\caption{The cut trajectory in blue and the sweep-surface shown in pink. The scalpel passes through the shell model for cutting.}
+\label{fig:test}
 \end{figure}
+
 
 The following steps are performed to complete the cut induced by the scalpel on the mesh:
 

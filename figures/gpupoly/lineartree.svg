@@ -9,11 +9,11 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="744.09448819"
-   height="1052.3622047"
+   width="711.09351"
+   height="341.09354"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
+   inkscape:version="0.48.4 r9939"
    sodipodi:docname="lineartree.svg">
   <defs
      id="defs4">
@@ -111,23 +111,33 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.7115604"
-     inkscape:cx="227.8876"
-     inkscape:cy="950.54328"
+     inkscape:zoom="1.3557802"
+     inkscape:cx="267.86301"
+     inkscape:cy="127.32256"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
-     inkscape:window-width="1600"
-     inkscape:window-height="824"
-     inkscape:window-x="0"
-     inkscape:window-y="174"
+     inkscape:window-width="1615"
+     inkscape:window-height="1026"
+     inkscape:window-x="65"
+     inkscape:window-y="24"
      inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:snap-to-guides="true">
+     inkscape:snap-to-guides="true"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0">
     <inkscape:grid
        type="xygrid"
-       id="grid2997" />
+       id="grid2997"
+       empspacing="5"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true"
+       originx="-19.406474px"
+       originy="-699.50001px" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -144,7 +154,8 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(-19.406474,-11.768657)">
     <text
        xml:space="preserve"
        style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
@@ -153,7 +164,9 @@
        id="text4389"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
-         id="tspan4391" /></text>
+         id="tspan4391"
+         x="114.14724"
+         y="33.118263" /></text>
     <text
        xml:space="preserve"
        style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
@@ -162,7 +175,9 @@
        id="text6496"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
-         id="tspan6498" /></text>
+         id="tspan6498"
+         x="285.71429"
+         y="341.64789" /></text>
     <flowRoot
        xml:space="preserve"
        id="flowRoot3076"
