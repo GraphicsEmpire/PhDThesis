@@ -21,7 +21,7 @@ as are free-form volume deformations and constructive solid geometry operations 
  such as detecting contact, and warping surfaces accordingly (see  \cite{Grascuel1997}),  can easily be represented as nodes in the \blobns. 
 
  An incremental, sketch based \blob system was built by Schmidt \etal \cite{Schmidt2006}, promoting flexibility and modular design for the creation of complex models, 
-and most of the earlier problems with the methodology have been overcome \cite{Bernhardt2010a}. Although direct manipulation 
+and most of the earlier problems with the methodology have been overcome \cite{Bernhardt2010}. Although direct manipulation 
 is possible  \cite{Schmidt2006},  very complex models can only be visualized interactively as coarse meshes. 
 Hence the need for a faster polygonizer. The \blob facilitates incremental modelling, a strategy that promotes flexibility and modular design 
 for creating  complex models. 
@@ -106,7 +106,7 @@ enhance the cell classification phase in MC. Their method shows a speedup order 
 
 
 % DirectX$^{\textregistered}$ 10 is not needed
-Tatarchuk \etal presented an iso-surface extraction algorithm implemented using DirectX \cite{tatarchuk2008advanced}. They used graphics 
+Tatarchuk \etal presented an iso-surface extraction algorithm implemented using DirectX \cite{Tatarchuk2008}. They used graphics 
 hardware to visualize medical data. They maximized utilization of SIMD units on the GPU by separating their polygonization (which is a 
 hybrid of marching cubes and marching tetrahedra) into two phases: Fast cube tetrahedralization and a marching tetrahedra pass. Each input 
 voxel position is dynamically computed in the vertex shader, then they used the geometry shader and stream-out features of DirectX 10 to 
@@ -213,7 +213,7 @@ monitoring processors and starting new tasks on idle cores automatically (work-s
 \end{figure}
 
 \subsection{BlobTree Linearization}\label{sec:linearization}
-The first step in our algorithm is the \blob reduction and pruning as suggested by Fox \etal \cite{Fox2001}.
+The first step in our algorithm is the \blob reduction and pruning as suggested by Fox \etal \cite{Fox2002}.
 In the second step, using the same linearization algorithm proposed for quadtrees \cite{Lee2000}; the \blob is converted into 
 a pointerless representation to achieve cache-memory efficiency by keeping all input data structures at 
 aligned memory addresses and fitting the entire \blob model into the last level cache memory of the processor. 

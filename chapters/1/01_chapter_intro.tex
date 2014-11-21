@@ -17,7 +17,7 @@ complex task and can be solved in interactive time only on models composed by a 
 such as cut and lacerations, makes the simulation model more complex. In modern interactive simulation and modelling environments the ability to 
 cut 3-dimensional geometry in real-time is of fundamental importance. This creates the need for efficient cutting algorithms that process the 
 underlying representation. In surgery simulation, interactive cutting algorithms enable the dynamic simulation of scalpel intersections that open 
-immediately behind the scalpel \cite{Nienhuys2001}. Cutting a volumetric mesh under deformation is a non-trivial problem, due to several conflicting
+immediately behind the scalpel \cite{Nienhuys2001a}. Cutting a volumetric mesh under deformation is a non-trivial problem, due to several conflicting
 requirements. On the one hand, the cutting process should not create badly shaped elements, which could cause numerical instabilities during deformation
 calculation. On the other hand cut trajectory should be closely approximated for realistic appearance. So far, most methods have concentrated only on 
 one of these problems. 
@@ -27,12 +27,12 @@ Therefore the following major problems are identified in the surgical simulation
 \begin{itemize}
  \item Modelling complex tissues that are readily available for simulation \cite{Nealen2006,Meier2005,Gibson1997a}.
  \item Real-time visualization of those tissues \cite{Mario2010PolygonMesh,Bloomenthal1997}.
- \item Performing interactive topological modifications on complex models while under deformation \cite{Jin2013,Wu2011,Courtecuisse2010a,Jerabkova2010}. 
+ \item Performing interactive topological modifications on complex models while under deformation \cite{Jin2013, Wu2011, Courtecuisse2010, Jerabkova2010}. 
 \end{itemize}
 
 We present a comprehensive solution to these problems as following. 
 First, our proposed modelling solution captures the key advantages found in volumetric modelling approaches using 
-implicit surfaces \cite{Bloomenthal1997, Wyvill1986, Wyvill1999, Wyvill1996, Wyvill1997, Schmidt2006, Bernhardt2010a}. Automatic blending and compact 
+implicit surfaces \cite{Bloomenthal1997, Wyvill1986, Wyvill1999, Wyvill1996, Wyvill1997, Schmidt2006, Bernhardt2010}. Automatic blending and compact 
 representation are the major benefits of using implicit surfaces for modelling. In addition, the ability to perform inside-outside tests 
 easily is an inherent advantage in implicit models when implementing physically based simulations requiring collision tests. 
 The \blob \cite{Wyvill1999} combined blending, affine transformations and constructive solid geometry (CSG) operators in a 

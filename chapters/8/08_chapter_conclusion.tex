@@ -13,20 +13,24 @@ The following contributions were made:
  \item An algorithm for interactive polygonization of implicit surfaces on multi-core architectures with 
  SIMD instructions. 
  
- \item An optimized GPU-accelerated algorithm for high-performance polygonization of implicit surfaces  on many-core architectures. 
+ \item An optimized GPU-accelerated algorithm for high-performance polygonization of implicit surfaces 
+ on many-core architectures. 
  
- \item A novel mesh data-structure suitable for storing dynamic meshes on the GPU to support realtime  modifications during cutting
+ \item A novel mesh data-structure suitable for storing dynamic meshes on the GPU to support realtime 
+ modifications during cutting
  
  \item Smooth, interactive cutting for complex elastic and rigid tissues 
- % \item A novel technique for collision detection using implicit fields which is used in our system to detect %the intersection of the scalpel tool with the volume mesh in real-time.  
+ 
+% \item A novel technique for collision detection using implicit fields which is used in our system to detect 
+%the intersection of the scalpel tool with the volume mesh in real-time. 
+ 
 \item A real-time Craniotomy simulation for neurosurgery and biopsy simulations.
 
 \end{enumerate} 
 
 % 1. modelling framework
-Our modelling framework enables physically-based animation of deformable models 
-during and after their design completes. This is better than what has been done 
-in Shapeshop by Schmidt \etal \cite{Schmidt2006b}.  
+Our modelling framework enables physically-based animation of deformable models. 
+This is better than what has been done by Cani \etal \cite{Grascuel1997}.  
 
 % 2. SIMD polygonization method
 Our SIMD polygonization method is peer reviewed \cite{Shirazian2012}. 
@@ -46,17 +50,17 @@ system. This result is better than the work of \cite{Knoll2007, Yang2010, singh2
 An intuitive volumetric mesh data-structure is proposed which is suitable for storing dynamic meshes on 
 the GPU to support realtime modifications during cutting. Our cutting results show that the presented 
 data-structure is more performant and can benefit the related work in this domain 
-\cite{Wu2004,Wu2005, Courtecuisse2010a}.
+\cite{Wu2004a, Wu2005, Courtecuisse2010}.
 
 % 5. cutting contribution how does it compare to previous work
 Our proposed GPU-based data-structure enables real-time updates of the volumetric meshes upon 
 cutting. Our cutting algorithm as shown in section \ref{sec:cutalg} is interactive for approximately 100,000 finite 
 element cells. This is sufficient for highly complex brain surgery simulations. The resulting finite element 
 cells are of high quality (the tetrahedral cells are not flat or wedge-shaped) as shown in section \ref{sec:cutres}. 
-This is better than what has been done in the work of Courtecuisse \etal \cite{Courtecuisse2010a}.
+This is better than what has been done in the work of Courtecuisse \etal \cite{Courtecuisse2010}.
 The cut edges are smooth, not jagged and a minimal amount of tetrahedral elements are 
 created as the result of elements subdivision and this is better than the results published by Courtecuisse
-\etal and Steinemann \etal \cite{Courtecuisse2010a, Steinemann}. 
+\etal and Steinemann \etal \cite{Courtecuisse2010, Steinemann}. 
 
 
 % 7. Craniotomy simulation
@@ -67,7 +71,7 @@ brain data-set published by Fang \etal \cite{fang2010mesh}.
 Given the large number of finite element cells in the brain mesh (around 100,000), our 
 simulation still runs at interactive rates and the cutting output is smooth for a high-quality simulation 
 as shown in section \ref{sec:craniotomy}. Colchester \etal used superimposed surface mesh for 
-guiding a Craniotomy simulation \cite{Coichester}. Abe \etal used plastic skull models for 
+guiding a Craniotomy simulation \cite{Colchester1994}. Abe \etal used plastic skull models for 
 training this procedure \cite{Abe1998}. To the best of our knowledge our proposed method is the only 
 physically-based simulation for this specific procedure. 
 

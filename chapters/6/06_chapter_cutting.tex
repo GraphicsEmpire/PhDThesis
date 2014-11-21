@@ -1,18 +1,18 @@
 \startchapter{Real-time Cutting}
 \label{chapter:Cutting}
 One of the main objectives of a virtual reality based surgical simulation system is the removal of pathologic tissue 
-\cite{Steinemann, Nienhuys2001a}. Cutting imposes many challenges in the development of a robust, interactive surgical 
-simulation, not only because of the nonlinear material behavior exhibited by soft tissue but also due to the
-complexity of introducing the cutting-induced discontinuity. In most publications, the progressive surgical cutting is modelled
-by the conventional finite element (FE) method, in which the high computational cost and error accumulation due to re-meshing constrain 
-the computational efficiency and accuracy \cite{Steinemann, Courtecuisse2010a}. 
+\cite{Steinemann, Nienhuys2001a}. Cutting imposes many challenges to the development of a robust, interactive surgical 
+simulation, not only because of the nonlinear material behavior exhibited by soft tissue, but also due to the
+% complexity of introducing the cutting-induced discontinuity. 
 
-We developed our new cutting approach in the context of a human skull craniotomy simulation. When an abnormality of the brain is suspected, 
-Stereo-tactic (probing in three dimensions) brain needle biopsy is performed and guided precisely by a computer system to avoid 
+We developed our new volumetric mesh cutting system named ``VolCut'' in the context of a human skull craniotomy simulation. When an abnormality of the brain is suspected, 
+Stereotactic \footnote{Stereotactic surgery or stereotaxy is a minimally invasive form of surgical intervention which makes use of a three-dimensional 
+coordinate system to locate small targets inside the body and to perform on them some action such as ablation, biopsy, lesion, injection, stimulation, 
+implantation, radiosurgery, etc.} brain needle biopsy is performed and guided precisely by a computer system to avoid 
 serious complications. A small hole is drilled into the skull, and a needle is inserted into the brain tissue guided by computer-assisted 
 imaging techniques (CT or MRI scans). The actual biopsy process can not be seen by the surgeon. For this reason,
 non-progressive cutting, where a tetrahedral element is decomposed after the sweep surface traverses the tetrahedral elements, is a reasonable
-approximation for that application. Also, in the current stage, we do not model any haptic interaction of the cutting tool with the 
+approximation for that application. Also, in the current stage of our system, we do not model any haptic interaction of the cutting tool with the 
 deformable object during a cut. 
 
 
@@ -20,16 +20,16 @@ deformable object during a cut.
 A number of approaches has been proposed by the computer graphics community to enable cutting of deformable and rigid models. 
 Except for a few methods most of them use tetrahedral meshes for the volumetric mesh representation. 
 Bielser \etal performed an adaptive refinement of the tetrahedral elements cut by a virtual scalpel \cite{Bielser1999}.
+In another work Bielser \etal presented a progressive approach to cutting \cite{Bielser2003}, where the decomposition of 
+a tetrahedron is changed depending on the movement of the cutting tool inside an element. However, the approach is highly 
+non-trivial to implement and also poses some stability problems due to badly-shaped elements.
 
 Mor \etal tried to reduce the number of sub-elements created while cutting tetrahedral meshes \cite{Mor2000}.
 One of the major issues in cutting is the creation of ill-shaped elements i.e. skinny elements, which can adversely affect the
-performance and stability of the system solver. Some works attempted to avoid such elements via mesh alignment techniques 
-\cite{Nienhuys2001a, Steinemann2006}. Other methods tried to solve the issue by removing them completely.
+performance and stability of the system solver. Some work attempted to avoid such elements via mesh alignment techniques 
+\cite{Nienhuys2001b, Steinemann2006}. Other methods tried to solve the issue by removing them completely which resulted in 
+volume loss and jagged lines along the cut surface. 
 
-Jin \etal proposed a meshless total Lagrangian adaptive dynamic relaxation cutting algorithm to predict the steady-state 
-responses of soft tissue \cite{Jin2013}. A cloud of points is used for discretization and approximation of the deformation 
-field within the continuum without generation of finite element meshes. They didn't report 
-any performance measurements and the quality of the cuts could not be verified with the simple truth cube model they reported in their paper.
  
 Wu \etal \cite{Wu2011} proposed an algorithm for 3D mesh cutting using a combination of the adaptive octree refinement with an iterative composite
 element hierarchy to enable simulating high-resolution cuts with a small number of degrees of freedom (DOFs). 
@@ -37,17 +37,22 @@ They used the dual contouring method \cite{Ju2002} to keep the sharp creases alo
 their method is not scalable and has yet to become an interactive cutting approach.
 
 In a closely related work Courtecuisse \etal presented a soft-tissue cutting system with haptic 
-feedback \cite{Courtecuisse2010a}. Their cutting strategy follows Mor \etal  \cite{Mor2000} work and 
+feedback \cite{Courtecuisse2010}. Their cutting strategy follows Mor \etal  \cite{Mor2000} work and 
 suffers from jagged lines along the cut surface as shown in their examples of a laparoscopic hepatecotomy.
-The progressive cutting is not supported in their system and as most of the other works in this area they produce too many
+Progressive cutting, a feature that enables cutting the volume elements as soon as they become in contact with 
+the scalpel, is not supported in their system and as most of the other works in this area they produce too many
 new nodes when subdividing cut elements.
 
-Jerabkova \etal proposed a solution to ill-shaped elements problem by using hexahedral elements instead of 
+Jerabkova \etal proposed a solution to the ill-shaped elements problem by using hexahedral elements instead of 
 tetrahedra \cite{Jerabkova2010}. Their approach relies on fine-level voxels to model object surface and simulate cutting. 
 The volume data requires more memory space than traditional, surface-based models. Cutting is performed by
 removing voxels. For sufficiently small voxels this typically remains unnoticeable but it may result in 
 significant volume loss in case of a large number of cuts. 
 
+Jin \etal proposed a meshless total Lagrangian adaptive dynamic relaxation cutting algorithm to predict the steady-state 
+responses of soft tissue \cite{Jin2013}. A cloud of points is used for discretization and approximation of the deformation 
+field within the continuum without generation of finite element meshes. They didn't report any performance measurements 
+and the quality of the cuts could not be verified with the simple truth cube model they reported in their paper.
 
 Sifakis \etal \cite{Sifakis2007} proposed a geometric algorithm for placing cracks and incisions on 
 tetrahedralized deformable objects. Their method is similar to the virtual node algorithm in that they avoid 
@@ -65,15 +70,33 @@ In the following sections we provide an overview of the system and the data stru
 and our cutting algorithm. The chapter is concluded by the analysis of the simulation results.
 
 \section{Overview}
-The physics simulation in our system uses tetrahedral meshes to compute deformations. In this section,
-we present a GPU-assisted approach to cutting tetrahedral meshes in real-time. 
-The input to our system is a cut trajectory and an edge-based data structure representing the tetrahedral mesh. 
+The physics simulation in VolCut uses tetrahedral meshes to compute deformations. In this section,
+we present our GPU-assisted approach to cutting tetrahedral meshes in real-time. 
+The input to VolCut is a cut trajectory and an edge-based data structure representing the tetrahedral mesh. 
+
+The tetrahedral mesh itself is extracted from the \blob model that is created using the incremental modelling 
+system described in section \ref{sec:implicitmodellingintro}. The complete process is summarized below:
+
+\begin{itemize}
+ \item The user models the elastic tissue using the \blob approach (section \ref{sec:implicitmodellingintro})
+ \item The proposed GPU-accelerated polygonization algorithm provides real time updates for the modifications 
+ that are made to the model throughout the design process (section \ref{sec:surfextraction})
+ 
+ \item The final model is converted to a tetrahedral mesh with the algorithm presented by Si \etal \cite{Si2006a}.
+ This is a one-time process and is not a bottleneck in the system. The triangle mesh extracted in the previous stage is 
+ used as an input to the tetrahedralization algorithm. The output is a volumetric tetrahedral mesh. 
+ 
+ \item Our physics simulation handles the dynamic behavior of the model and handles the collisions with other
+ objects in the environment including the scalpel. 
+\end{itemize}
+
+
 As shown in figure \ref{fig:sweepsurf}, the user moves the cutting tool and the system records the path of the 
 blade endpoints shown in purple. The first intersection between the recorded trajectory and the model marks the 
 beginning of the cutting process. When the tool completely traverses the model the system computes the cutting
 configurations as described below. 
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
@@ -88,24 +111,25 @@ configurations as described below.
   \label{fig:sub2}
 \end{subfigure}
 \caption{The cut trajectory in blue and the sweep-surface shown in pink. The scalpel passes through the shell model for cutting.}
-\label{fig:test}
+\label{fig:sweepsurf}
 \end{figure}
 
 
 The following steps are performed to complete the cut induced by the scalpel on the mesh:
 
 \begin{enumerate}
- \item Using the GPU-accelerated algorithm the intersection of the sweep-surface and all the edges of the mesh 
- are computed. The output of this stage is a list of cut-edges and their associated intersection points. 
+ \item Using the GPU-accelerated algorithm described in section \ref{sec:CuttingEdgeIntersections}, the intersection of the 
+ sweep-surface and all the edges of the mesh are computed. The output of this stage is a list of cut-edges and their associated 
+ intersection points. 
  
  \item A GPU kernel function is used to compute the distance of the nodes in the cut-edges and the end points of 
- the cut tool. This way the nodes that are too close to the sweep-surface are identified and a different configuration 
+ the cut tool (section \ref{sec:CuttingProduceCutNodeList}). This way the nodes that are too close to the sweep-surface are identified and a different configuration 
  is used to produce subdivided elements in the next stage to avoid ill-shaped elements. The output of this stage is 
  a list that associates edges with their cut-nodes.
  
- \item Using a look-up table all the cut tetrahedra are decomposed into sub-elements
+ \item Using a look-up table all the cut tetrahedra are decomposed into sub-elements (section \ref{sec:cutconfigs}). 
  
- \item The nodes identified to be close enough to the cut trajectory are snapped to the sweep surface
+ \item The nodes identified to be close enough to the cut trajectory are snapped to the sweep surface.
  
  \item The solver system is synchronized with the latest mesh changes, all the mass, damping and stiffness 
  matrices are updated.
@@ -135,9 +159,7 @@ and $F_0$ to $F_3$ are the faces of the element.
 In a complex mesh of tetrahedral elements accessing each of these components is a necessary requirement for 
 implementing any topological modifications. Therefore the main module in our cutting algorithm is an edge-based
 data structure that maps tetrahedral elements to their associated faces and the faces to their associated edges and
-finally the edges to their nodes. 
-
-The minimal set of operations frequently used by most algorithms are as following \cite{Mario2010PolygonMesh}:
+finally the edges to their nodes. The minimal set of operations frequently used by most algorithms are as following:
 
 \begin{itemize}
  \item Access to individual vertices, edges, faces and tetrahedral elements. This includes the enumeration of 
@@ -247,7 +269,7 @@ In the next section we describe the cutting algorithm which is based on the edge
 \label{sec:cutalg}
 Our cutting algorithm follows the same strategy presented by Ganovelli \etal \cite{Ganovelli2000} which suggests use of lookup tables to 
 handle different configurations. We also applied the optimizations suggested by
-Steinemann and Mor \etal \cite{Steinemann, Mor2000} to have minimal new elements added to the mesh under cut. 
+Steinemann and Mor \etal \cite{Steinemann, Mor2000} to have minimal new elements added to the mesh cut. 
 The first stage in our cutting algorithm is detecting the cut sweep-surface. The input to this stage is the cut trajectory which is a list of points
 that the scalpel passed through in Euclidean space. The cut trajectory is not collected until the axis-aligned bounding box of the cutting tool intersects
 with that of the tissue. The tissue bounding box is expanded to rule out the boundary cases where the surface of the model contacts with its own bounding 
@@ -255,6 +277,7 @@ box. In such cases the scalpel might miss the surface if the bounding box test f
 
 
 \subsection{Edge Intersections}
+\label{sec:CuttingEdgeIntersections}
 Using a GPU kernel function the intersection of the sweep-surface and all the edges of the model are computed. 
 The input to this stage is the list of edges of the model and 4 points defining the sweep-surface quadrilateral. 
 Since the intersection of a triangle and a line segment is faster to compute than a quadrilateral, we 
@@ -264,18 +287,7 @@ of our edge triangle intersection follows the Ray-Triangle intersection test giv
 
 Similar to our GPU polygonization method in section \ref{sec:surfextraction}, a prefix-sum operator counts the number
 of intersections and also compacts the resulting array of intersection points. The final output of this stage is a list
-of intersection points and the associated edge indices. The listing below shows the prototype of the kernel function in 
-OpenCL:
-
-\begin{lstlisting}[frame=single]
-//Computes the intersection of edges and sweep surface
-float sweepSurfEdgeIntersections(unsigned int countEdges,
-			         __global float4* edgeBuffer,
-				 __global float4 sweepSurface[4],
-				 __global float4* scanIntersections,
-				 __global unsigned int* scanIndices,
-				 __global unsigned int* scanFlags);
-\end{lstlisting}
+of intersection points and the associated edge indices. 
 		     
 \begin{algorithm}[H]
 \caption{\textit{EdgeIntersections} The kernel function that computes intersections of edges 
@@ -314,6 +326,7 @@ using sum-scan operators discussed in the previous chapter.
 
 
 \subsection{Produce cut-node list}
+\label{sec:CuttingProduceCutNodeList}
 Following the improvement made by Steinmann \etal \cite{Steinemann} to minimize the number of subdivided elements; 
 per each intersection point which is ``too close'' to one of the edge endpoints; 
 the sweep surface is snapped to that endpoint (see figure \ref{fig:cutnode}). The associated endpoint is also stored in a separate list called ``cut-nodes''. 
@@ -411,7 +424,7 @@ in two disjoint parts. Those cuts are summarized in table \ref{table:lutcutB}.
 
 Case Z is trivial since the cell is left intact. For case Y two tetrahedral elements are being generated and one edge is being split only. Case X is very similar to
 A in the sense that one original node is being separated from the rest of the simplex. In cases X and Y the cut-nodes are duplicated and the new cells are generated based
-on the split edges and the original nodes and their associated duplicates. Since we haven't implemented progressive cutting yet cases C, D and E are left for the future work.
+on the split edges and the original nodes and their associated duplicates. Since we haven't implemented progressive cutting yet cases C, D and E are left for future work.
 
 \begin{table}[H]
 \begin{center}
@@ -555,7 +568,7 @@ The original volumetric mesh of both of these models are extracted from their as
 algorithm presented in chapter \ref{chapter:GPUDiscretization}.
 
 As it can be seen from the results the cutting method presented in this chapter does not increase the ratio of maximum to minimum 
-volume after the cuts are being made. This means that the element subdivision stage in our system does not 
+volume after the cuts are made. This means that the element subdivision stage in our system does not 
 introduce ill-shaped elements to the mesh. The ratio of the maximum to minimum edge-length did not change drastically.
 However, a local re-meshing process after the cut specially in the vicinity of the cut region can improve the quality 
 of the mesh significantly. 
@@ -572,9 +585,9 @@ after $N$ cuts are made to the mesh.
 }
 \end{figure}
 
-Figure \ref{fig:cutting_intersected_vs_new} provides a clear understanding of how many new cells are being added to the mesh after each cut operation.
+Figure \ref{fig:cutting_intersected_vs_new} provides a clear understanding of how many new cells are added to the mesh after each cut operation.
 The blue bar in this figure shows the number of cells that are intersected with the cut surface per each cut. Following the algorithm given in 
-section \ref{sec:cutconfigs} the intersected cells are being subdivided and replaced by new set of generated cells shown in orange. 
+section \ref{sec:cutconfigs} the intersected cells are subdivided and replaced by new set of generated cells shown in orange. 
 On average the ratio of newly generated cells to intersected cells is 3.6 from these results. This is due to the fact that most of the cut configurations
 are of type A which result in a 1 to 4 subdivision. 
 
