@@ -216,6 +216,10 @@ table are the break down of the required memory size per each component in the c
 
 \section{Stackless \blob traversal}
 \label{sec:stackless}
+As shown in figure \ref{fig:TowerSNBTimeBreakDown} the major bottleneck of the algorithm presented in chapter 
+\ref{chapter:cpuPoly} is the surface extraction process. The expensive operations in that 
+stage is the computation of normals and colors which require extra field evaluations and hence performance degradation. 
+
 In this section we describe our novel stackless \blob traversal algorithm. 
 Without a stack to be maintained the \blob traversal incurs less memory footprint. When dealing with small 
 local memory available per each thread on the GPU this reduction in memory usage improves the performance of the 
@@ -224,7 +228,6 @@ running kernels significantly.
 In high performance rendering algorithms the use of hierarchical spatial data structures for acceleration reasons 
 is common. Vising nodes in such structures requires stack-based traversal algorithms. Unfortunately, even the latest 
 GPU architectures are poorly suited for implementing such algorithms. 
-
 
 A complex \blob scene-graph data structure may contain thousands of primitives and operators which can lead to deep tree structures. 
 In the original stack-based traversal algorithm, the fieldvalue evaluation process has two stages: A ``down traversal'' followed by an ``up traversal''. 
@@ -236,7 +239,7 @@ During the up traversal stage the operators are popped out of the stack and per 
 operator to combine them in its own specific way. The resulting field is again pushed back on the fields stack.  This process continues until the 
 operators stack get emptied and the final fieldvalue due to the root node is computed and returned.
 
-This naive algorithm requires many push and pop operations which limits the performance of the traversal process. The other issue relates to the 
+Performing many push and pop operations limit the performance of the traversal process. The other issue relates to the 
 inherently dynamic storage requirement for the stack itself. Although, creating a fixed-size stack is possible but since the stack size is a function of
 the count of nodes in the input \blob, this will ultimately limit the maximum number of nodes in a complex scene. If $N$ is the maximum number of nodes 
 (primitives plus operators) allowed in a \blob model then the minimum number of elements to be stored in the stack during the traversal process 
@@ -245,8 +248,15 @@ local memory available per each thread executing on the GPU. Keeping the stack i
 the access patterns from other threads in the current thread block and may impact the performance. Needless to say that implementing a stack in the global 
 video memory will require very expensive memory transfers and is not an option for a real-time rendering algorithm. 
 
-Our algorithm is based on the neighbor cell-links concept in the stackless traversal of spatial subdivision trees which is first introduced by Samet \etal 
-\cite{Samet1984,Samet1990}. Using a similar technique Popov \etal presented a stackless KD-Tree Traversal for high performance GPU ray tracing algorithm \cite{Popov2007}.
+
+Our algorithm is based on the neighbor cell-links concept in the stackless traversal of spatial subdivision trees 
+which is first introduced by Samet \etal \cite{Samet1984,Samet1990}. Using a similar technique Popov \etal presented 
+a stackless KD-Tree Traversal for high performance GPU ray tracing algorithm \cite{Popov2007}. 
+
+The algorithm is divided into two stages. A preprocessing stage to compute a traversal route for the entire 
+\blob and the GPU-based stackless traversal stage to compute the field-value due to a given point in space. 
+The following will describe these two stage in greater details.
+
 
 \begin{figure}[H]
   \centering
@@ -259,10 +269,14 @@ Our algorithm is based on the neighbor cell-links concept in the stackless trave
 }
 \end{figure}
 
-In a preprocessing stage we compute a route to visit all nodes in the \blob. 
-This process is performed only once and is not a bottleneck in the system.
-After this stage completes a complete \blob traversal route is encoded into the data-structure and will be used by the GPU kernels for rendering.
-The following steps are performed for this stage: 
+\subsubsection{Encoding traversal route}
+The first stage in our algorithm is to compute a route to visit all nodes in the \blob 
+and finally encode that route in the GPU input data-structure. This process is performed only once and is not a 
+bottleneck in the system. The one-time fixed cost paid for this stage on the CPU is regained 
+when many fieldvalue evaluations are performed in parallel on the GPU without the extra cost 
+associated with the stack storage.
+
+To compute the route the following steps are performed on the CPU side as a preprocessing stage: 
 
 Using the naive \blob traversal algorithm the nodes are visited from root to leaves. Two stacks are maintained in this process, an
 operators stack $S1$ and a \text{break} nodes stack $S2$. The latter is defined in the following:
@@ -288,56 +302,26 @@ operators stack $S1$ and a \text{break} nodes stack $S2$. The latter is defined 
 
 %describe what happens on the GPU as well
 
+\subsubsection{Up-sweep traversal on the GPU}
 Figure \ref{fig:stackless}, shows the final route for a sample \blob. The benefits of this type of routing encoded into the tree
-is that there is no need for storing a deep stack for tree traversals. The following listing shows the prototypes of the OpenCL 
-kernels to compute the field using the proposed stackless algorithm.
+is that there is no need for storing a deep stack to store the intermediate operators. Using this new approach the tree is now only evaluated 
+from bottom to top. 
 
-The structure of the input \blob is break down into several arrays of four floating point numbers, namely: headers, operators, 
-primitives and matrices. Refer to section \ref{sec:datastructure} for a full description of these fields. The matrices array 
-stores the input transformation nodes that are associated with primitives.
+The \blob root node $RT$ marks the starting point of the traversal. This field is stored in the header section of the 
+data structure as illustrated in figure \ref{fig:datastructure}. Using the new traversal route this field is set to
+the operator node 10 for the example \blob shown in figure \ref{fig:stackless}. 
 
-%remove the code
-\pagebreak
-\begin{lstlisting}[frame=single]
-//Computes the field at point v due to a skeletal primitive. 
-float PrimitiveField(unsigned int idxPrimitive, float4 v,			
-		     __global float4* operators,
-		     __global float4* primitives, 
-		     __global float4* matrices);
+In case of an operator where all its children are primitives, the field due to each child is computed before the operator evaluation. 
+The computed field is stored in the global field variable $F1$ and using the link to the next node provided in the structure ($NX$) 
+the evaluation continues to the next operator in the tree at an upper level (up-sweep). When evaluating an operator with one primitive
+child then the field due to the primitive child is computed before applying the current operator to $F1$ and performing the up-sweep (nodes 5 to 9 in 
+figure \ref{fig:stackless}).
 
-//Computes the field at point v due to an operator.
-float OpField(unsigned int idxPrimitive, float4 v,			
-	      __global float4* operators,
-	      __global float4* primitives, 
-              __global float4* matrices);
+When visiting a break node the field is computed as usual but this time it is stored in the special variable $F2$, instead. 
+In addition at a break node, the $NX$ field in the structure points to a non-parent operator (operator 4 for break node 3 in the example).
 
-
-/*The field due to a branch of the tree until a break node is reached. 
-lf and rf are the fields previously computed for the left and right branches 
-of the tree (initially zero)*/
-float BranchField(unsigned int idxBranchOp, unsigned int* lpNextOp, 
-		  bool* lpIsBreakOp, float4 v, 
-		  float lf, float rf,
-		  __global float4* headers,
-		  __global float4* operators,
-		  __global float4* primitives, 
-		  __global float4* matrices);
-		  
-/*The main field evaluation function which will call the other four functions accordingly.*/
-float Field(float4 v,			
-	    __global float4* headers,
-            __global float4* operators,
-	    __global float4* primitives, 
-	    __global float4* matrices);
-\end{lstlisting}
-
-Using this new approach the tree is now only evaluated from bottom to top. 
-The traversal operation starts by invoking the main kernel titled ``Field''. The evaluation is then handed off to the 
-``BranchField'' function with the root node passed in as the starting point of that branch (The entire \blob root node 
-is encoded in the header). The field at primitive nodes are computed by the ``PrimitiveField'' function. 
-When the fields associated with the children of an operator are available then the field due to the operator 
-itself is computed by the ``OperatorField'' function. At break nodes the ``BranchField'' function is called for the next
-unvisited branch of the tree until all nodes are evaluated for the final field.
+The process continues until the first node in the tree is evaluated at which the $F1$ and $F2$ values store the children fields for 
+their parent. The $NX$ field associated with the first node points to itself which marks the end of the traversal process.
 
 
 \section{GPU Surface Extraction Algorithm}
