@@ -253,6 +253,10 @@ Our algorithm is based on the neighbor cell-links concept in the stackless trave
 which is first introduced by Samet \etal \cite{Samet1984,Samet1990}. Using a similar technique Popov \etal presented 
 a stackless KD-Tree Traversal for high performance GPU ray tracing algorithm \cite{Popov2007}. 
 
+%Although the \blob traversal algorithm presented here is somewhat different in my approach, a similar idea was put forward 
+%by my fellow student, Herbert Grasberger, and submitted for publication. The details to be found in his thesis \cite{Grasberger2015}. 
+%The following \blob traversal stage was developed independently inspired by his draft publication.
+
 The algorithm is divided into two stages. A preprocessing stage to compute a traversal route for the entire 
 \blob and the GPU-based stackless traversal stage to compute the field-value due to a given point in space. 
 The following will describe these two stage in greater details.
