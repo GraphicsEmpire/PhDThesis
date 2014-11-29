@@ -194,7 +194,7 @@
         <relationship name="selected" type="1/1" destination="FILE" idrefs="z142"></relationship>
         <relationship name="settings" type="1/1" destination="SETTINGS" idrefs="z134"></relationship>
         <relationship name="uisettings" type="1/1" destination="UISETTINGS" idrefs="z149"></relationship>
-        <relationship name="items" type="0/0" destination="PROJECTITEM" idrefs="z125 z143 z131 z144 z132 z137 z129 z148 z127 z128 z141 z126 z140 z147 z118 z135 z130 z150 z122 z142 z123 z124"></relationship>
+        <relationship name="items" type="0/0" destination="PROJECTITEM" idrefs="z130 z144 z150 z141 z123 z124 z148 z135 z125 z131 z132 z126 z129 z127 z128 z140 z142 z143 z122 z118 z147 z137"></relationship>
     </object>
     <object type="SETTINGS" id="z134">
         <attribute name="outputdirectory" type="string"></attribute>
@@ -284,10 +284,10 @@
     </object>
     <object type="TEXFILE" id="z142">
         <attribute name="wasopen" type="bool">0</attribute>
-        <attribute name="visiblerect" type="string">{{5, 518}, {934, 521}}</attribute>
-        <attribute name="lasteditdate" type="date">438066480.56512802839279174805</attribute>
+        <attribute name="visiblerect" type="string">{{5, 478}, {934, 521}}</attribute>
+        <attribute name="lasteditdate" type="date">438898487.23858898878097534180</attribute>
         <attribute name="istext" type="bool">1</attribute>
-        <attribute name="fileloaddate" type="date">438066480.26532900333404541016</attribute>
+        <attribute name="fileloaddate" type="date">438898486.43785500526428222656</attribute>
         <attribute name="extension" type="string">tex</attribute>
         <attribute name="cursor" type="string">{3363, 0}</attribute>
         <attribute name="sortindex" type="int32">9</attribute>
@@ -376,7 +376,7 @@
         <attribute name="showlogerroritems" type="bool">1</attribute>
         <attribute name="showpdfthumbnails" type="bool">0</attribute>
         <attribute name="selectedcontrolstab" type="int16">3</attribute>
-        <attribute name="pdfviewscrollrect" type="string">{{0, 16955.723237602942}, {619.99999999987926, 1298.276762083362}}</attribute>
+        <attribute name="pdfviewscrollrect" type="string">{{0, 16955.723237602942}, {619.99999999987926, 1298.2767620926606}}</attribute>
         <attribute name="maxoutlinedepth" type="int16">7</attribute>
         <attribute name="logoutputlevel" type="int16">0</attribute>
         <attribute name="editorwidth" type="float">971</attribute>
