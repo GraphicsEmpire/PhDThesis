@@ -19,54 +19,8 @@ benefits:
  in the order of 60,000 nodes. (64,000 nodes only requires about 20MiB of video memory in our system).
 \end{itemize}
 
-In the following we review the related work in this domain and continue with a discussion in differences of many-core 
-architectures. The data-structure and the algorithm are explained in the following sections. The chapter concludes with 
+The data-structure and algorithm are explained in the following sections. The chapter concludes with 
 the results and analysis.
-
-
-
-\section{Related Work}
-GPU accelerated rendering techniques has been the topic of interest for the graphics community in the past two decades.
-Several GPU-accelerated algorithms have been proposed for fast triangulation and rendering of iso-surfaces that are defined by
-volume data-sets, algebraic surfaces and radial-basis functions. In this section we will review the most related works.
-
-Chochl{\'i}k \etal proposed a GPU accelerated polygonization algorithm for dynamically changing implicit surfaces \cite{chochlik2012gpu}. 
-Their method is based on the marching tetrahedra (MT) algorithm. The model is partitioned into cubic cells first and then each cell is 
-subdivided into 6 tetrahedra to be further processed using the GPU geometry shading stage. The vertices are marked inside if their 
-associated field is above zero and outside otherwise. A configuration index is computed per each tetrahedra based on the inside/outside 
-vertices. The triangle mesh is produced which is shaded using the fragment shader stage. No further analysis has been made on the performance 
-of their algorithm and the input models are limited to time varying simple algebraic surfaces. The used a linear interpolation root finding
-method which produces low quality output. 
-
-Buatois \etal proposed a GPU accelerated iso-surface extraction method based on MT, similar to Chochl{\'i}k \etal \cite{Buatois2006}. The 
-texture memory to transfer the position and field values of the grid vertices. They presented an analysis of the performance of their algorithm
-using a fluid simulation volume data-set. They reported that excessive texture fetches can be a bottleneck in the performance of their method.
-
-
-Tatarchuk \etal proposed a GPU iso-surface extraction algorithm which is a hybrid of marching cubes and marching tetrahedra \cite{Tatarchuk2007}. 
-They start by voxelizing an implicit grid into discrete cube cells and then convert that to a tetrahedral representation. They implemented an MT 
-algorithm on geometry shader stage of DirectX10 API. For root finding method they fitted a parabola along the intersecting edges and evaluated a 
-quadratic equation which produces a better approximation. They tested their system using the visible human volume data-set. Their method
-is limited to static volume datasets and is not usable in a data-driven setting where the topology of the underlying model changes. 
-
-With modern hardware and fast GPUs, ray tracing of implicit surfaces is the subject of much research. Knoll \etal \cite{Knoll2009} presented 
-CPU and GPU algorithms that can achieve interactive visualization for common algebraic surfaces. The surfaces used in by Knoll \etal are not 
-arbitrary implicit models but surfaces generated using traditional kernels or functions. Similar surfaces are presented by Singh and Narayanan
-for real-time ray tracing of implicit surfaces using the GPU \cite{singh2010real}. 
-
-
-Kipfer and Westermann \cite{Kipfer2005} accelerated rendering of implicit surfaces by avoiding redundant computation of edge surface intersections. 
-Our method also employs this feature to reduce the overhead. They also use features of the GPU to reformulate the iso-surface identification and reduces 
-numerical computations and memory access operations. They used a span-space data-structure to avoid processing non surface intersecting elements.
-
-Kanai \etal \cite{Kanai2006a} proposed a rendering method for sparse low-degree implicit surfaces (SLIM) using ray casting approach. The ray and IS intersection
-test has been carried out on the fragment processing stage. They employed level of detail rendering and view frustum culling to speedup the rendering. 
-The coefficients for the IS are passed in using textures. They reported high quality and interactive rates for several models. The large number of processed
-fragments is the bottleneck in this process and models with lower number of nodes could be rendered slower than more complex models that cover less fragments.
-Although Kanai \etal's work is data-driven but the increasing cost of fragment processing is the main bottleneck in their system. Also since they are not
-producing any mesh the computations will be lost after rendering.
-
-
 
 %Another requirement for the tetrahedral mesh generation is that the triangular surface mesh should be the boundary surface of the tetrahedral mesh. This is needed since 
 %after applying the displacements to the volumetric tetrahedral elements the surface vertices should be displaced as well.

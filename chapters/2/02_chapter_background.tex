@@ -3,16 +3,16 @@
 
 \newlength{\savedunitlength}
 \setlength{\unitlength}{2em}
-This chapter provides a short summary of the material which is relevant to the subject of this research. Starting with the concepts underlying 
-implicit and deformable tissue modelling and an outline of continuum mechanics and finite element concepts, the chapter will conclude by reviewing closely related 
-deformable models presented in the literature. 
+This chapter provides a short summary of the material which is relevant to the subject of this research. 
+We describe the concepts underlying implicit modelling, CPU and GPU architectural differences and 
+scalability issues. The chapter concludes with a review of the related work in this domain.
 
 \section{Implicit Modelling}
 \label{sec:implicitmodellingintro}
-Implicit surfaces are two-dimensional, geometric shapes that exist in three dimensional space; they can be defined based on discrete data, 
-radial basis functions, offset surfaces, algebraic surfaces, level sets or distance fields to skeletal geometric primitives \cite{Bloomenthal1997}.
-Independently of its origin, an implicit surface can be defined as a level-set function $F:\mathbb{R}^3 \rightarrow \mathbb{R}$ where the surface 
-and the volume can be defined as following:
+Parametric surfaces such as Bezier patches has a generative form that enables 
+two dimensional iteration over the surface directly. However, in the case of implicit models, 
+the surface is surrounded by the object's volume and an extraction process is required to 
+access the final surface. The formal definition of the surface and volume in this case is as following:
 
 \begin{equation}
 S = \left\{M = (x,y,z) \in \mathbb{R}^3 | F(x,y,x) = c\right\}
@@ -22,8 +22,9 @@ S = \left\{M = (x,y,z) \in \mathbb{R}^3 | F(x,y,x) = c\right\}
 V = \left\{M = (x,y,z) \in \mathbb{R}^3 | F(x,y,x) \geq c\right\}
 \end{equation}
 
-$c$ is a constant and is called the \textit{iso-value} which is set to $0.5$ in our system. For each point in space if the field is greater than
-$c$ the point is considered inside the model otherwise outside. 
+Function $F$ computes the field value at a certain position.  $c$ is a constant and is called the \textit{iso-value} 
+which is set to $0.5$ in our system. For each point in space if the field is greater than $c$ the point is 
+considered inside the model otherwise outside. 
 
 Most of the primitives used in the \blob are built from geometric skeletons, which are incorporated in many implicit modelling software packages 
 such as BlobTree.net \cite{Groot2008} or ShapeShop \cite{Schmidt2006}. They are ideally suited to prototype shapes of arbitrary topology 
@@ -226,449 +227,221 @@ linked volumes describe earlier in section \ref{sec:linkedvolumes}. Cutting mode
 minimizing the number of newly created tetrahedrons in such a situation the corresponding increase of nodes in significant and directly hits the
 performance of the system. The performance of the model depends on the resolution of the mesh in this case \cite{picinbono2000real}. 
 
+%-------------------------------------------------------------------------
+\section{Related Work}
+\label{sec:relatedwork}
 
-\section{Continuum Mechanics Concepts} 
-Continuum biomechanics for soft tissue simulation deals with the movement of soft materials when subjected to applied forces \cite{Sifakis2012}. 
-The motion of a continuous and deformable solid can be described by a continuous displacement field resulting from a set of 
-forces acting on the solid body. A displacement \textit{field} implies a continuous variation of displacement with position. 
-The continuous displacement field can be time-independent or time-dependent. The initial unloaded state of material is referred to 
-as the \textit{reference} or \textit{undeformed} state as the displacements are zero everywhere. The material then reconfigures due to 
-applied loads and reaches an equilibrium state referred to as \textit{deformed} state. The concepts of \textit{strain}, a measure of length
-change or displacement gradient, and \textit{stress}, the force per unit area on an infinitesimally small plane surface within the material, 
-are of fundamental importance for continuum biomechanics of soft tissues. 
-
-The formulation of models in continuum mechanics consists of three parts:
-
-\begin{enumerate}
- \item Kinematics: Geometric description of the deformation
- \item Dynamics: A formulation of the equations of motion
- \item Constituitive formulation: Description of the material properties
-\end{enumerate}
-
-\section{Deformation map and deformation gradient}
-Our initial objective is to provide a concise mathematical description of the deformation that an elastic body has sustained. This formulation will 
-lay the foundation for appropriate representations of other physical properties such as force and energy. We begin by placing the undeformed elastic 
-object in a coordinate system, and denote by $\Omega$ the volumetric domain occupied by the object. This domain will be referred to as the reference 
-(or undeformed) configuration, and we follow the convention that capital letters $\vec{X} \in \Omega$ are used when referring to individual material
-points in this undeformed shape. Note that the precise position and orientation of the undeformed elastic body within the reference space is not important 
-and can be chosen at will, as long as the shape of the object corresponds to a rest configuration
-
-When the object undergoes deformation, every material point $\vec{X}$ is being displaced to a new deformed location as seen in figure 2.1 (top) which is, 
-by convention, denoted by a lowercase variable $\vec{x}$. The relation between each material point and its respective deformed location is captured by 
-the deformation function $\vec{\phi} : \mathbf{R}^3 \rightarrow \mathbf{R}^3$ which maps every material point $\vec{X}$ to its respective deformed 
-location $\vec{x}=\vec{\phi}(\vec{X})$.
-
-An important physical quantity derived directly from $\vec{phi}(\vec{X})$, whose utility will become apparent in the next sections, is the deformation 
-gradient tensor $\mathbf{F} \in \mathbf{R}^{3 \times 3}$. If we write $\vec{X} =(X_1,X_2,X_3)^T $ and 
-$\vec{\phi}(\vec{X})=(\phi_1(\vec{X}), \phi_2(\vec{X}), \phi_3(\vec{X}))^T$ for the three components of the vector-valued function $\vec{\phi}$,
-the deformation gradient is written as: 
-
-\begin{equation}
- \mathbf{F} := \frac{\partial(\phi_1, \phi_2, \phi_3)}{\partial (X_1, X_2, X_3)}= 
- \left(\begin{array}{ccc} 
-      \partial \phi_1/\partial X_1 & \phi_1/\partial X_2 & \phi_1/\partial X_3 \\
-      \partial \phi_2/\partial X_1 & \phi_2/\partial X_2 & \phi_2/\partial X_3 \\
-      \partial \phi_3/\partial X_1 & \phi_3/\partial X_2 & \phi_3/\partial X_3 
-      \end{array} \right)
-\end{equation}
+In the following we review the related work associated with the major contributions of our research. 
+The surface extraction methods that attempted to enhance the performance of the 
+sampling process on multi-core CPU processors are reviewed first. Some others attempted to exploit the processing 
+power on the GPU and mapped the same problem to many-core processors. Later 
+the previously proposed algorithms for cutting volumetric meshes and the application of this framework 
+in a surgical simulation (Craniotomy) are studied. 
 
 
+\subsection{Surface extraction methods}
+Several methods for polygonization of implicit surfaces have been proposed which can be 
+classified based on speed, accuracy of the output mesh or quality.  Comparing these methods in terms of performance reveals that space 
+partitioning methods are the fastest and the most popular. The paper \cite{Wyvill1986} was the first to introduce a method for finding 
+iso-surfaces using uniform space subdivision into cubic cells. A seed cell on the surface was found by starting at a vertex close to 
+each primitive and evaluating the field at cell vertices along each of the three axes to find a surface crossing. Vertices inside the 
+volume were classified as `hot' and `cold' outside. A hash table was used to keep track of processed cells to avoid redundant field 
+evaluations and to avoid storing any cells that did not contain part of the surface. Only adjacent cells that share an intersecting edge 
+with their parent were processed, and a second cubic subdivision served to reduce the number of primitives considered in each field evaluation. 
+Ambiguous cases were ameliorated by taking another sample from the center of the face.
+A similar method was later introduced as Marching Cubes in \cite{Lorensen1987}. The main difference between the two algorithms was that 
+Lorenson \etal applied their method to discrete volume data instead of sampling a continuous function and in Lorenson's method
+the space was completely partitioned into cubic voxels and all cubes were visited.
 
-or, in index notation $F_{ij} = \phi_{i,j}$. That is, F is the Jacobian matrix of the deformation map. Note that, in general, $F$ will be spatially varying 
-across $\Omega$; in the next sections we will use the notation $F(\vec{X})$ if such dependence needs to be made explicit.
+Bloomenthal showed that the ambiguous cases can be dealt with by subdividing cells into tetrahedra \cite{Bloomenthal1994a}, and also 
+that a six tetrahedron subdivision was superior to subdividing into five \cite{guziec1995exploiting}. 
+The fact that tetrahedral simplices have 4 vertices reduces the total number of configurations to 16 (or 3 by symmetry), however, the number of 
+redundantly generated triangles as a result of this decomposition increases significantly. 
+We will refer to marching cubes and tetrahedra, with MC and MT respectively throughout this chapter.
 
-\section{Strain energy}
-When a deformable tissue undergoes some deformation the energy will be accumulated in the object which is called \textit{strain energy}: $E[\phi]$ (We 
-follow the same notation given in \cite{Sifakis2012}) The \textit{strain energy} is fully determined by the deformation map of a given configuration.
-One of the characteristics of \textit{hyperelastic} materials is that their \textit{strain energy} is independent of the prior deformation history 
-of the object. This property is closely related to the fact that the elastic forces of the \textit{hyperelastic} materials are \textit{conservative}.
-The total work done by the internal elastic forces in a deformation path depends solely on the initial and final configurations and not the path itself.
+%4. Serial Ehancements to MT and MC
+There have been many enhancements proposed for both MC and MT. Some gain advantage by classifying cubes according to different criteria
+and surface edge intersection calculation and number of field function evaluations. 
+For example, Dietrich \etal \cite{Dietrich2009}, did a statistical analysis of cube configurations in MC that are responsible for most 
+of the degenerate triangles in the output mesh. Their algorithm avoids those cube configurations by inserting an extra vertex into the 
+cell when generating triangles as was done in \cite{Wyvill1986} where an extra sample was taken.
+This reduces the statistical occurrence of the problem.
 
-When applying forces on a deformable tissue, different regions of the tissue will undergo shape changes of different severity. Thus, in order to compute the 
-strain energy we start from a local view of the deformations. An \textit{energy density} function $\Psi[\phi; \vec{X}]$ measures the strain energy 
-\textit{per unit of undeformed volume} on an infinitesimal domain $dV$ around the material point $\vec{X}$. The total energy of the deforming body is then 
-computed by integrating the energy density function over the entire domain $\Omega$:
+Triquet \etal \cite{Triquet2003} enhanced MT by applying time-stamps on calculated values and using hash tables for retrieving them. They
+also pre-computed surface vertices along crossing edges which are shared with adjacent voxels and referenced previously calculated
+values to avoid re-evaluating them. This latter enhancement was also done in Bloomenthal's polygonizer \cite{Bloomenthal1994a}
+and was a fairly common feature of implicit surface polygonizer's of the 1990s.
 
-\begin{equation}
-  E[\phi]=\int_\Omega\Psi[\phi;\vec{X}]d\vec{X}
-\end{equation}
+%5. Parallel Enhancements on CPU
+Beside enhancing serial algorithms some attempts were made to increase the performance of MC by dividing the workload between
+multiple CPUs or on a network grid of computers. Mackerras proposed an MIMD implementation of MC algorithm \cite{mackerras1992fast}. 
+The bounding volume is divided into uniform blocks and each processor runs a serial implementation of MC on one or more blocks. They 
+reported that because of efficient usage of cache their method showed a speed-up greater than the total number of physical
+processors involved. Hansen and Hinker presented a parallel implementation of MC \cite{hansen1992massively}. They labeled each cube
+with a virtual processor identifier to avoid complexities in communicating between processors, then each cube is processed
+independently. They reported linear speed-up by increasing the number of physical processors. Their method spends constant time on
+each processor regardless of the number of polygons in a cubic cell.
 
-%todo: Add some examples for the strain energy formula
+%6. GPU polygonizers
+The advent of shader programs and GPGPU computing interested some to port serially computationally intensive programs to the GPU. 
+Space partitioning methods like MC and MT are good candidates for these devices since each cell (either tetrahedra or
+cube) can represent an independent volume to be processed on a separate SIMD core. 
 
-We survey a number of different simulated materials and describe how their physical properties are encoded in their respective governing equations. The 
-\textit{constitutive model} is the mathematical description of the physical characteristics of a given material and includes the equations that relate
-stimuli (e.g. deformations) to the material response which can be the force, stress or energy they trigger. 
+%Kipfer and Westerman paper
+Kipfer and Westermann proposed a GPU-accelerated Marching Tetrahedra algorithm that stores the topology of the
+surface on the GPU \cite{Kipfer2005}. They used a span-space interval tree to cull tetrahedral elements that don't intersect with the 
+surface. Caching edge-surface intersections helped them to avoid redundant calculations. For computing edge-surface intersections they used
+linear interpolation for finding roots along each edge which is less accurate and degrades the quality of the output mesh.  
 
-\section{Strain Computation}
-In principle, an explicit formula that relates $\Psi$ and $\vec{F}$ would be perfectly adequate as a constitutive equation. The challenge, with designing
-constitutive models in this fashion is that using the raw elements of the matrix $F$ can be a very unintuitive way to argue about the flavor and severity
-of a given deformation. It is possible that a certain material's response is dominated by its affinity for volume conservation, while a different material
-might prioriatize resistance to shear. Metrics such as ``The ratio of the volumetric expansion'' or ``the shear angle'' would be much more effective in 
-expressing the severity of the types of deformation that are most relevant to such materials. As a consequence, it is common for the design process for 
-constitutive models to define certain intermediate quantities such as strain measures and invariants which are derived from F, yet capture the specific 
-traits of the deformation that the energy or stress values depend on more concisely than the deformation gradient itself.
-
-
-A strain measure is intended to be a quantitative descriptor for the severity of a given deformation, i.e. a way to gauge how far this configuration is 
-from a rest configuration. For this reason, although strain measures are derived from the deformation gradient, they strive to retain as much information 
-from it that is relevant to assessing deformation magnitude while disregarding any information contained in it that is unrelated to shape change. 
-The deformation gradient contains all the information necessary to determine how a small neighborhood of a material point deforms. One would like, 
-however, to distinguish between two important cases, namely, those in which the neighborhood of a point has just undergone a rigid motion and, on the other 
-hand, those in which the neighborhood has undergone a true change of shape or of size. In the first case, the deformation gradient would correspond to a 
-pure rotation. Mathematically, this phenomenon manifests itself in the fact that the matrix representing the deformation gradient $\mathbf{F}$ is a so called
-\textit{orthogonal} matrix. An orthogonal matrix $\mathbf{R}$ is characterized by the property that its inverse, $\mathbf{R}^{-1}$, is equal to its transpose,
-$\mathbf{R}^T$. For a pure rotation (as opposed to a reflection) the determinant of an orthogonal matrix is equal to +1 (instead of -1 for a combined rotation
-and reflection). The question is: given an arbitrary $\mathbf{F}$, is it possible to separate the part that corresponds to a pure rotation from the part 
-representing a true change of shape and/or of size? The answer to this question is given by a remarkable theorem in algebra known as the 
-\textit{polar decomposition theorem}. It asserts that every non-singular matrix $\mathbf{F}$ can be uniquely decomposed into the product of an orthogonal 
-matrix $R$ and a positive definite symmetric matrix $U$, as follows:
-
-\begin{equation}
-\mathbf{F} =  \mathbf{R}\mathbf{U}
-\end{equation}
-
-A positive definite symmetric matrix (namely, one with all positive eigenvalues) can be shown to represent pure elongations or contractions along three 
-mutually perpendicular axes (the so-called \textit{principal axes}) \cite{fung2001classical}.
-
-Consider the Green strain tensor $\mathbf{E} \in \mathbf{R}^{3\times 3}$, defined as:
-
-\begin{equation}
-\mathbf{E} = \frac{1}{2}(\mathbf{F}^T\mathbf{F}-\mathbf{I}).
-\end{equation}
-
-These axes, defined in the point at the reference configuration, are the \textit{eigenvectors} of the symmetric matrix:
-
-\begin{equation}
-\mathbf{C} =  \mathbf{F}^T\mathbf{F}
-\end{equation}
-
-known as the \textit{right Cauchy-Green tensor}. It is related to $\textbf{U}$ by the equation $\mathbf{C}=\mathbf{U}^2$.
-From the preceding considerations, it follows that the neighborhood of a material point will undergo a pure rotation if, 
-and only if, $\mathbf{C}=\mathbf{U}=\mathbf{I}$. Otherwise, there will be a genuine change of size and/or shape. 
+%Johansson paper
+Johansson \etal accelerated iso-surface extraction using graphics hardware \cite{Johansson2006}. They stored MC cases on the GPU 
+and used a vertex program to compute surface intersection points. They used a span-space data-structure similar to \cite{Cignoni1997} to
+enhance the cell classification phase in MC. Their method shows a speedup order of 13 over the naive algorithm.  
 
 
-It is convenient, therefore, to introduce the following measure of \textit{strain}, sometimes called the \textit{Lagrangian 
-strain tensor}: 
+% DirectX$^{\textregistered}$ 10 is not needed
+Tatarchuk \etal presented an iso-surface extraction algorithm implemented using DirectX \cite{Tatarchuk2008}. They used graphics 
+hardware to visualize medical data. They maximized utilization of SIMD units on the GPU by separating their polygonization (which is a 
+hybrid of marching cubes and marching tetrahedra) into two phases: Fast cube tetrahedralization and a marching tetrahedra pass. Each input 
+voxel position is dynamically computed in the vertex shader, then they used the geometry shader and stream-out features of DirectX 10 to 
+tessellate voxels into six tetrahedra spanning the voxel cube. However their method is limited to medical volume datasets.
+
+%Parallel Polygonization
+An adaptive parallel polygonization method is proposed by Yang \etal \cite{Yang2010}. They enhanced the Araujo's method 
+\cite{Rodriguesdearaujo2005} by dividing the bounding box of the model into eight parts and then processing them in parallel.
+For each part, their method find a seed point on the surface and increasingly expand it to form a 
+local mesh for the part by using the surface tracking approach. Using local curvature of the implicit 
+surface, their method produces triangles of varying sizes. However, their method is not scalable since 
+it can not guarantee finding a seed point per each sub box in case the number of sub boxes increases. 
+They reported very slow rendering times even for the simple models that they have tested their system with. 
 
 
-\begin{equation}
-\mathbf{E} = \frac{1}{2}(\mathbf{C} - \mathbf{I})
-\end{equation}
+In a similar work Knoll \etal \cite{Knoll2007} proposed interactive raytracing of arbitrary implicits with 
+SIMD interval arithmetic. They used SSE instructions for fast computation of interval arithmetic 
+and ray traversal algorithm. However, their method is restricted to static implicit functions and 
+algebraic surfaces.
 
-This tensor has the property of vanishing if, and only if, there is no strain (change of shape and/or size) at the points in question.
-Again there are no limitations whatsoever to the magnitude of the derivatives of the displacements used to calculate the Lagrangian
-strain tensor. 
+None of the proposed methods above used a modelling framework to define their input data in a hierarchical structure similar to 
+the \blobns. Their method is either limited to volume data or an algebraic implicit function to represent the underlying volume. 
+In a closely related work, Schmidt \etal \cite{SWG2005} used a field caching mechanism inside the \blob to perform fast potential field 
+reconstruction without traversing the entire tree. They used a trilinear reconstruction filter for field value and a triquaratic filter
+for gradient interpolation. They evaluated cache efficiency by polygonizing a \blob model once using cache nodes and the other time 
+without. They reported up to 16 times speedup for polygonizing a model with different resolutions. However, their method is not scalable since 
+the cache nodes cannot be updated from different processing threads without using locking
+mechanisms or a data race condition can occur. 
 
+\subsection{GPU-Accelerated rendering of implicits}
+GPU accelerated rendering techniques has been the topic of interest for the graphics community in the past two decades.
+Several GPU-accelerated algorithms have been proposed for fast triangulation and rendering of iso-surfaces that are defined by
+volume data-sets, algebraic surfaces and radial-basis functions. In this section we will review the most related works.
 
-\section{Linear Elasticity}
-The simplest practical constitutive model is linear elasticity, defined in terms of the strain energy density as:
+Chochl{\'i}k \etal proposed a GPU accelerated polygonization algorithm for dynamically changing implicit surfaces \cite{chochlik2012gpu}. 
+Their method is based on the marching tetrahedra (MT) algorithm. The model is partitioned into cubic cells first and then each cell is 
+subdivided into 6 tetrahedra to be further processed using the GPU geometry shading stage. The vertices are marked inside if their 
+associated field is above zero and outside otherwise. A configuration index is computed per each tetrahedra based on the inside/outside 
+vertices. The triangle mesh is produced which is shaded using the fragment shader stage. No further analysis has been made on the performance 
+of their algorithm and the input models are limited to time varying simple algebraic surfaces. The used a linear interpolation root finding
+method which produces low quality output. 
 
-\begin{equation}
-\label{eq:linearelasticity}
- \Psi(\mathbf{F}) = \mu\boldsymbol{\epsilon}:\boldsymbol{\epsilon} + \frac{\lambda}{2}tr^2(\boldsymbol{\epsilon})
-\end{equation}
-
-where $\boldsymbol{\epsilon}$ is the small strain tensor and $\mu$, $\lambda$ are the \textit{Lame coefficients}, which are related to
-the material properties of \textit{Young's modulus k} (a measure of stretch resistance) and \textit{Poisson's ratio} $\nu$ (a 
-measure of incompressibility) as:
-
-\begin{align*}
-\mu=\frac{k}{2(1+\nu)} \hspace{10 mm} \lambda=\frac{k\nu}{(1+\nu)(1-2\nu)}
-\end{align*}
-
-The relation between the Piola stress $\mathbf{P}$ and $\mathbf{F}$ can be derived as follows:
-
-\begin{gather*}
-\delta \boldsymbol{\epsilon} =\frac{1}{2}(\delta\mathbf{F} + \delta\mathbf{F}^T)=Sym\left\{\delta\mathbf{F}\right\}  \\
-\boldsymbol{\epsilon}:\delta\boldsymbol{\epsilon}=\boldsymbol{\epsilon}:Sym\left\{\delta\boldsymbol{F}\right\}=\epsilon:\delta\boldsymbol{F} \hspace{10 mm}
-tr(\delta\boldsymbol{\epsilon})=\boldsymbol{I}:Sym\left\{\delta\boldsymbol{F}\right\}=\boldsymbol{I}:\delta\boldsymbol{F} \\
-\delta\Psi=2\mu\boldsymbol{\epsilon}:\delta\boldsymbol{\epsilon}+\lambda tr(\boldsymbol{\epsilon})  tr(\delta\boldsymbol{\epsilon})=[2\mu\boldsymbol{\epsilon}+\lambda tr(\boldsymbol{\epsilon})]\boldsymbol{I}:\delta\boldsymbol{F}\\
-Thus \hspace{10 mm} \boldsymbol{P}=2\mu\boldsymbol{\epsilon}+\lambda tr(\boldsymbol{\epsilon})\boldsymbol{I}
-\end{gather*}
-
-after one final substitution for $\boldsymbol{\epsilon}$ and a few algebraic reductions:
-
-\begin{align*}
-  \boldsymbol{P}(\boldsymbol{F})=\mu(\boldsymbol{F} + \boldsymbol{F}^T-2\boldsymbol{I})+\lambda tr(\boldsymbol{F} - \boldsymbol{I})\boldsymbol{I}
-\end{align*}
-
-These expressions allow us to make the following observations:
-
-\begin{itemize}
- \item The stress $\boldsymbol{P}$ is a \textit{linear} function of the deformation gradient. As a result, this constitutive model is characterized by a significantly
-lower computational cost that other, nonlinear materials. 
-
-\item Since the small strain tensor was designed to be accurate exclusively in a small deformation scenario, it is more appropriate to use linear elasticity when the magnitude
-of motion is small. For example, a rigid motion $\vec{\phi}(\vec{X})=\boldsymbol{R}\vec{X}+\vec{t}$ would generally produce a non-zero strain 
-$\epsilon = \frac{1}{2}(\boldsymbol{R}+\boldsymbol{R}^T)-\boldsymbol{I}$ and ultimately a non-zero stress, even though no shape change has taken place. 
-\end{itemize}
-
-\section{St. Venant-Kirchhoff model}
-With the understanding that the small strain tensor is a mere approximation of the rotationally invariant Green strain $\boldsymbol{E}$, it 
-makes sense to attempt an improvement of the linear elasticity model by using $\boldsymbol{E}$ in the place of $\boldsymbol{\epsilon}$ is equation
- (\ref{eq:linearelasticity}):
-
- \begin{equation}
- \Psi(\mathbf{F}) = \mu\boldsymbol{E}:\boldsymbol{E} + \frac{\lambda}{2}tr^2(\boldsymbol{E})
- \end{equation}
-
-This constitutive model is recognized as \textit{St. Venant-Kirchhoff} material, and is the first truely nonlinear material we will examine. The first
-Piola-Kirchhoff stress tensor can be computed via a process similar to the one followed for linear elasticity:
-
-\begin{gather*}
-  \delta\boldsymbol{E}=\frac{1}{2} (\delta\boldsymbol{F}^T\boldsymbol{F}+ \boldsymbol{F}^T\delta\boldsymbol{F})=Sym\left\{\boldsymbol{F}^T\delta\boldsymbol{F}\right\}\\
-  \boldsymbol{E}:\delta\boldsymbol{E}=\boldsymbol{E}:\left\{\boldsymbol{F}^T\delta\boldsymbol{F}\right\}=\left\{\boldsymbol{FE}\right\}:\delta\boldsymbol{F}
-  \hspace{10 mm} tr(\delta\boldsymbol{E})=\boldsymbol{I}:\left\{\boldsymbol{F}^T\delta\boldsymbol{F} \right\}=\boldsymbol{F}:\delta\boldsymbol{F}\\
-  \delta\Psi=2\mu\boldsymbol{E}:\delta\boldsymbol{E}+\lambda tr(\boldsymbol{E})tr(\delta\boldsymbol{E})=\boldsymbol{F}\left[2\mu\boldsymbol{E}+\lambda tr(\boldsymbol{E}) \boldsymbol{I} \right]:\delta\boldsymbol{F}
-\end{gather*}
+Buatois \etal proposed a GPU accelerated iso-surface extraction method based on MT, similar to Chochl{\'i}k \etal \cite{Buatois2006}. The 
+texture memory to transfer the position and field values of the grid vertices. They presented an analysis of the performance of their algorithm
+using a fluid simulation volume data-set. They reported that excessive texture fetches can be a bottleneck in the performance of their method.
 
 
-\begin{equation}
-\label{eq:venantkirchhoff}
-Thus \hspace{10 mm} \boldsymbol{P}(\boldsymbol{F})=\boldsymbol{F}\left[2\mu\boldsymbol{E}+\lambda tr(\boldsymbol{E})\boldsymbol{I}\right]. 
-\end{equation}
+Tatarchuk \etal proposed a GPU iso-surface extraction algorithm which is a hybrid of marching cubes and marching tetrahedra \cite{Tatarchuk2007}. 
+They start by voxelizing an implicit grid into discrete cube cells and then convert that to a tetrahedral representation. They implemented an MT 
+algorithm on geometry shader stage of DirectX10 API. For root finding method they fitted a parabola along the intersecting edges and evaluated a 
+quadratic equation which produces a better approximation. They tested their system using the visible human volume data-set. Their method
+is limited to static volume datasets and is not usable in a data-driven setting where the topology of the underlying model changes. 
 
-This is a rotationally invariant model; deformations that differ by a rigid body transformation are guaranteed to have the same strain energy. As a 
-consequence a St. Venant-Kirchhoff material exhibits plausible material response in many large deformation scenarios where linear elasticity would 
-not be applicable. Equation (\ref{eq:venantkirchhoff}) indicates that stress is a 3rd degree polynomial function of the components of $\boldsymbol{F}$; 
-after discretization, nodal forces will likewise be expressed as cubic polynomials of nodal positions.
-Although the St. Venant-Kirchhoff model offers significant benefits over a linear elastic model, its scope is limited to a certain degree due to its 
-poor resistance to forceful compression: as a St. Venant-Kirchhoff elastic body is compressed, starting from its undeformed configuration, it reacts 
-with a restorative force which initially grows with the degree of compression. However, once a critical compression threshold is reached 
-($\approx 58\%$ of undeformed dimensions, when compression occurs along a single axis) the strength of the restorative force reaches a maximum. Further
-compression will be met with decreasing resistance, in fact the restorative force will vanish as the object is compressed all the way down to zero volume 
-(an indication of this is that when $\boldsymbol{F} = 0$ we also have $\boldsymbol{P} = 0$). Continued compression past the point of zero volume (forcing the material to invert) will 
-then create a restorative force that pushes the body towards complete inversion (reflection) along one or more axes. In practical computer simulation 
-examples this behavior often manifests itself as a tendency of the material to locally tangle and invert itself when subjected to strong compressive forces 
-or kinematic constraints.
+With modern hardware and fast GPUs, ray tracing of implicit surfaces is the subject of much research. Knoll \etal \cite{Knoll2009} presented 
+CPU and GPU algorithms that can achieve interactive visualization for common algebraic surfaces. The surfaces used in by Knoll \etal are not 
+arbitrary implicit models but surfaces generated using traditional kernels or functions. Similar surfaces are presented by Singh and Narayanan
+for real-time ray tracing of implicit surfaces using the GPU \cite{singh2010real}. 
+
+
+Kipfer and Westermann \cite{Kipfer2005} accelerated rendering of implicit surfaces by avoiding redundant computation of edge surface intersections. 
+Our method also employs this feature to reduce the overhead. They also use features of the GPU to reformulate the iso-surface identification and reduces 
+numerical computations and memory access operations. They used a span-space data-structure to avoid processing non surface intersecting elements.
+
+Kanai \etal \cite{Kanai2006a} proposed a rendering method for sparse low-degree implicit surfaces (SLIM) using ray casting approach. The ray and IS intersection
+test has been carried out on the fragment processing stage. They employed level of detail rendering and view frustum culling to speedup the rendering. 
+The coefficients for the IS are passed in using textures. They reported high quality and interactive rates for several models. The large number of processed
+fragments is the bottleneck in this process and models with lower number of nodes could be rendered slower than more complex models that cover less fragments.
+Although Kanai \etal's work is data-driven but the increasing cost of fragment processing is the main bottleneck in their system. Also since they are not
+producing any mesh the computations will be lost after rendering.
+
+\subsection{Volume mesh cutting}
+A number of approaches has been proposed by the computer graphics community to enable cutting of deformable and rigid models. 
+Except for a few methods most of them use tetrahedral meshes for the volumetric mesh representation. 
+Bielser \etal performed an adaptive refinement of the tetrahedral elements cut by a virtual scalpel \cite{Bielser1999}.
+In another work Bielser \etal presented a progressive approach to cutting \cite{Bielser2003}, where the decomposition of 
+a tetrahedron is changed depending on the movement of the cutting tool inside an element. However, the approach is highly 
+non-trivial to implement and also poses some stability problems due to badly-shaped elements.
+
+Mor \etal tried to reduce the number of sub-elements created while cutting tetrahedral meshes \cite{Mor2000}.
+One of the major issues in cutting is the creation of ill-shaped elements i.e. skinny elements, which can adversely affect the
+performance and stability of the system solver. Some work attempted to avoid such elements via mesh alignment techniques 
+\cite{Nienhuys2001b, Steinemann2006}. Other methods tried to solve the issue by removing them completely which resulted in 
+volume loss and jagged lines along the cut surface. 
 
  
-\section{Corotated linear elasticity}
-The use of the quadratic Green strain in the St. Venant-Kirchhoff guaranteed the rotational invariance of the constitutive model. At the same time, 
-the increased complexity inherent in highly nonlinear materials leads to unintended side effects, such as the non-physical zero stress configurations 
-of St. Venant-Kirchhoff materials under extreme compression. Corotated linear elasticity is a constitutive model that attempts to combine the simplicity 
-of the stress-deformation relationship in a linear material with just enough nonlinear characteristics to secure rotational invariance.
-Using the polar decomposition $\boldsymbol{F} = \boldsymbol{R}\boldsymbol{S}$ we construct a new strain measure as
-$\boldsymbol{\epsilon}_c = \boldsymbol{S} − \boldsymbol{I}$, which is linear on the symmetric tensor $\boldsymbol{S}$ obtained by factoring away
-the rotational component of $\boldsymbol{F}$. Replacing the small strain tensor in equation (\ref{eq:linearelasticity}) we obtain the energy for corotational 
-elasticity:
+Wu \etal \cite{Wu2011} proposed an algorithm for 3D mesh cutting using a combination of the adaptive octree refinement with an iterative composite
+element hierarchy to enable simulating high-resolution cuts with a small number of degrees of freedom (DOFs). 
+They used the dual contouring method \cite{Ju2002} to keep the sharp creases along the cut. Due to the high computational cost and naive implementation 
+their method is not scalable and has yet to become an interactive cutting approach.
 
-\begin{equation}
-\label{eq:CorotatedEnergyDensity}
-  \Psi(\boldsymbol{F})=\mu\boldsymbol{\epsilon}_c:\boldsymbol{\epsilon}_c+\frac{\lambda}{2} tr^2(\boldsymbol{\epsilon}_c)=
-  \mu\|\boldsymbol{S} - \boldsymbol{I} \|^2_F+(\lambda/2)tr^2(\boldsymbol{S}-\boldsymbol{I})
-\end{equation}
+In a closely related work Courtecuisse \etal presented a soft-tissue cutting system with haptic 
+feedback \cite{Courtecuisse2010}. Their cutting strategy follows Mor \etal  \cite{Mor2000} work and 
+suffers from jagged lines along the cut surface as shown in their examples of a laparoscopic hepatecotomy.
+Progressive cutting, a feature that enables cutting the volume elements as soon as they become in contact with 
+the scalpel, is not supported in their system and as most of the other works in this area they produce too many
+new nodes when subdividing cut elements.
 
-which can be equivalently written in any of the following ways:
+Jerabkova \etal proposed a solution to the ill-shaped elements problem by using hexahedral elements instead of 
+tetrahedra \cite{Jerabkova2010}. Their approach relies on fine-level voxels to model object surface and simulate cutting. 
+The volume data requires more memory space than traditional, surface-based models. Cutting is performed by
+removing voxels. For sufficiently small voxels this typically remains unnoticeable but it may result in 
+significant volume loss in case of a large number of cuts. 
 
-\begin{align}
-\label{eq:CorotatedEnergyDensitySVD}
-\Psi(\boldsymbol{F})=\mu\|\boldsymbol{F} - \boldsymbol{R}\|^2_F+(\lambda/2) tr^2(\boldsymbol{R}^T\boldsymbol{F}-\boldsymbol{I}) \nonumber \\
-\Psi(\boldsymbol{F})=\mu\|\boldsymbol{\Sigma} - \boldsymbol{I} \|^2_F+(\lambda/2) tr^2(\boldsymbol{\Sigma} - \boldsymbol{I})
-\end{align}
+Jin \etal proposed a meshless total Lagrangian adaptive dynamic relaxation cutting algorithm to predict the steady-state 
+responses of soft tissue \cite{Jin2013}. A cloud of points is used for discretization and approximation of the deformation 
+field within the continuum without generation of finite element meshes. They didn't report any performance measurements 
+and the quality of the cuts could not be verified with the simple truth cube model they reported in their paper.
 
-where $\Sigma$ is the diagonal matrix with the singular values of $\boldsymbol{F}$, from the Singular Value Decomposition 
-$\boldsymbol{F} = \boldsymbol{U\Sigma V}^T$. We can show that the 1st Piola-Kirchhoff stress tensor for corotated linear elasticity is given by:
- 
-%(\boldsymbol{F})=
-%\boldsymbol{R} \left[ 2\mu\boldsymbol{\epsilon}_c \right]
- 
-\begin{gather*}
-\boldsymbol{P}(\boldsymbol{F})=\boldsymbol{R} \left[ 2\mu \boldsymbol{\epsilon}_c + \lambda tr(\boldsymbol{\epsilon_c}) \boldsymbol{I} \right]=
-\boldsymbol{R} \left[ 2\mu (\boldsymbol{S - I}) + \lambda tr(\boldsymbol{S - I}) \boldsymbol{I} \right] \\
-= 2 \mu (\boldsymbol{F-R}) + \lambda tr(\boldsymbol{R}^T\boldsymbol{F} - \boldsymbol{I})\boldsymbol{R}
-\end{gather*}
+Sifakis \etal \cite{Sifakis2007} proposed a geometric algorithm for placing cracks and incisions on 
+tetrahedralized deformable objects. Their method is similar to the virtual node algorithm in that they avoid 
+sliver elements and their associated stringent timestep restrictions. Producing ill-conditioned triangles on 
+the material surface can have a negative effect on collision handling specially in case of a self collision.
+Also in their system a cut that partially intersects a tetrahedron without separating it into disconnected 
+fragments will not allow the material to separate within that embedding tetrahedron.
 
-The motivation behind corotational elasticity is to mimic what linear elasticity would have been, if the undeformed configuration had been rotated in the same way
-as encoded in the rotational factor $\boldsymbol{R}$ from the polar decomposition. In situations where the value of $\boldsymbol{R}$ varies across the domain, 
-making the transition from linear to corotated elasticity is more complex than a change of variables due to a constant rotation of the undeformed configuration. 
-From a computational cost perspective, the overhead of corotated vs. linear elasticity includes the cost of the polar decomposition, and the need to employ nonlinear
-solvers for certain types of simulation. 
+Steinemann \etal \cite{Steinemann} created a hysteroscopy simulator and minimized the number of added elements 
+after a tetrahedral subdivision by cutting along existing edges and faces. The problem with their system is that
+the result of the cutting is produced only after it has been completed and this leads to a delay in the system. 
+Unfortunately they didn't report any performance statistics of their algorithm. 
 
-\section{Isotropic Materials}
-The two mentioned constitutive material models so far have been constructed to be rotationally invariant. This property can be formally defined using a pair of 
-deformation maps $\vec{\phi_1}(\vec{X})$ and $\vec{\phi_2}(\vec{X})$, that differ only by a rigid transform, specifically:
+In the following sections we provide an overview of the system and the data structures involved in the process 
+and our cutting algorithm. The chapter is concluded by the analysis of the simulation results.
 
-\begin{equation}
-\label{eq:rigidbodytransform}
- \vec{\phi_2}(\vec{X}) = \boldsymbol{R} \vec{\phi_1}(\vec{X}) + \vec{t}, \hspace{5mm} \text{where $\boldsymbol{R}$ is a $3\times 3$ rotation matrix}
-\end{equation}
+\subsection{Applications in Surgical Simulation}
+Abe \etal fabricated plastic skull models of seven individual patients by stereolithography from three-dimensional
+data based on computed tomography (CT) bone images \cite{Abe1998}. Surgical approaches and areas of craniotomy were 
+evaluated using the fabricated skull models. They reported a better understanding of anatomic relationships, preoperative
+evaluation of the proposed procedure and improved educational experiences for the residents and medical staff as the benefits of 
+their system. They also reported that the time and cost of making such models are the main disadvantages of using them.
 
-A constitutive model is rotationally invariant if and only if it guarantees that the strain energy will satisfy $E\left[ \phi_1 \right] = E\left[ \phi_2 \right]$
-for any such deformation pair. An equivalant definition can be provided for the hyperelastic materials based on the strain energy density function. 
-After computing the gradients we can see that any two deformations that satisfy equation (\ref{eq:rigidbodytransform}) will have deformation gradient related as
-$\boldsymbol{F}_2=\boldsymbol{R}\boldsymbol{F}_1$. The energy density associated with these deformations must satisfy $\Psi(\boldsymbol{F}_1)=\Psi(\boldsymbol{F}_2)$,
-leading to the following equivalant definition of rotational invariance:\\
+Wong \etal loaded patient specific CT scans of cranial bone and CT angiography of intracranial circulation
+into the Dextroscope workstation supplied by Volume Interactions Pte. Ltd \cite{Wong2007}. They showed various 
+use-cases of the zoom, rotate, move and crop functions of the Dextroscope to visualize various angles of 
+positioning the craniotomy. However, their system does not provide a physically-based simulation of the procedure. 
 
-\textbf{Definition:} A hyperelastic constitutive model is \textit{rotationally invariant} if and only if the energy density satisfies
+Stadie \etal performed a study on the effectiveness of virtual reality systems for placing the craniotomies 
+in minimally invasive procedures \cite{Stadie2011}.  They used the Dextroscope and RadioDexter workstations 
+supplied by Volume Interactions Pte. Ltd. to visualize and annotate the 3D VR models. 
+Those systems are also used to measure the curvilinear distances of the proposed craniotomy centers on the 
+patients skull model but they can not perform a cutting procedure on the input VR models.
 
-\begin{gather*}
-  \Psi(\boldsymbol{RF})=\Psi(\boldsymbol{F})
-\end{gather*}
 
-for any value of the deformation gradient $\boldsymbol{F}$ and any $3 \times 3 $ rotation matrix $\boldsymbol{R}$.
-One of the consequences of this definition is that the strain energy in rotationally invariant models can be written
-as a function of the symmetric factor $\boldsymbol{S}$ from the polar decomposition of $\boldsymbol{F} = \boldsymbol{RS}$, since:
-
-\begin{gather*}
-  \Psi(\boldsymbol{F}) = \Psi(\boldsymbol{RS}) = \Psi(\boldsymbol{S})
-\end{gather*}
-
-Corotated elasticity defined $Psi$ as a direct function of $\boldsymbol{S}$ (see equation \ref{eq:CorotatedEnergyDensity}). 
-The need to compute polar decomposition may be avoided if we are able to express $\Psi$ as a function of some other intermediate
-quantity, which is also a function of $\boldsymbol{S}$, yet also computable without an explicit polar decomposition. For instance, 
-St. Venant-Kirchhoff materials defined the energy density as a function of the Green strain 
-$\boldsymbol{E} = \frac{1}{2}(\boldsymbol{S}^2 - \boldsymbol{I})$, which although fully determined by $S$ can also br computed without 
-an explicit polar decomposition as $\boldsymbol{E} = \frac{1}{2}(\boldsymbol{F}^T\boldsymbol{F} - \boldsymbol{I})$.
-
-One of the distinct properties of constitutive models such as St.Venant-Kirchhoff and Corotated Linear elasticity is their \textit{isotropy}.
-In simple terms, a material is isotropic if its resistance to deformation is the same along all possible orientations that such deformation 
-may be applied. Rubber and metal would be examples of isotropic materials, as they do not exhibit any particular direction/orientation along
-which are softer or stiffer. Steel-reinforced concrete would be an example of an anisotropic material, as its resistance to deformation is 
-notably different along the direction of the steel supports, compared to a direction perpendicular to them. Human muscles are also quoted 
-as an anisotropic structure, as a distinct material response is observed along the direction aligned with muscle fibers.
-
-Isotropy is a property that is assessed on a local scale, as it is always possible to generate directional features in larger structures by 
-arranging material in specific ways. In terms of quantitative criterion for isotropy, we can think of an infinitesimal \textit{spherical} 
-volume of material $dV$, and consider the strain energy resulting from a prescribed deformation. Now, consider the scenario where we first 
-transform the sphere $dV$ by \textit{rotating it about its center} and then apply the same deformation. In an isotropic material both
-scenarios would lead to the same strain energy. This is concretely expressed using the strain energy function as follow:\\
-
-\textbf{Definition:}A hyperelastic constitutive model is \textit{isotropic} if and only if the strain energy density satisfies
-
-\begin{gather*}
- \Psi(\boldsymbol{FQ}) = \Psi(\boldsymbol{F})
-\end{gather*}
-
-for any value of the deformation gradient $\boldsymbol{F}$ and any $3 \times 3$ rotation matrix $\boldsymbol{Q}$. A material that is both 
-rotationally invariant and isotropic would satisfy
-
-\begin{gather*}
- \Psi(\boldsymbol{RFQ})=\Psi(\boldsymbol{F})
-\end{gather*}
-
-for arbitrary rotations $\boldsymbol{R}$ and $\boldsymbol{Q}$.\\
-
-Using the Singular Value Decomposition $\boldsymbol{F} = \boldsymbol{U\Sigma V^T}$ we conclude that rotationlly invariant, isotropic materials satisfy:
-
-\begin{gather*}
- \Psi(\boldsymbol{F})=\Psi(\boldsymbol{U\Sigma V^T}) = \Psi(\boldsymbol{\Sigma}).
-\end{gather*}
-
-While the strain energy for rotationally invariant materials was a function only of 6 out of 9 degrees of freedom in $\boldsymbol{F}$ (those 
-captured in the symmetric $\boldsymbol{S}$), for materials that are also isotropic the energy density is actually only a function of the three 
-singular values of $\boldsymbol{F}$. Equation (\ref{eq:CorotatedEnergyDensitySVD}) shows that this is certainly the case for corotated linear 
-elasticity. St. Venant-Kirchhoff can also be shown to satisfy all criteria for isotropy, after some simple algebraic manipulations. An example 
-of a material that is rotationally invariant but \textit{not} isotropic is described by the energy:
-
-\begin{gather*}
- \Psi(\boldsymbol{F}) = \frac{k}{2}\vec{w}^T\boldsymbol{F}T\boldsymbol{F}\vec{w}
-\end{gather*}
-
-where $\vec{w}$ is a given constant vector. This material behaves like a zero rest-length spring along the direction $\vec{w}$, while it does
-not have any resistance to deformation along directions perpendicular to $\vec{w}$.
-
-It is possible to define an isotropic material as a function of $\Psi$ and $\boldsymbol{\Sigma}$ which encodes the only 3 relevant degrees of freedom
-in $\boldsymbol{F}$, this is not necessarily the preferred approach, since the overhead of an SVD decomposition would be necessary when evaluating 
-any of these quantities. St. Venant-Kirchhoff materials avoided the need for an explicit polar decomposition, by using the Green strain $E$
-to convey (qualitatively) the same information as $S$, while using a computationally inexpensive formula. For isotropic materials, the purpose is served 
-by the three isotropic invariants of the deformation gradient, which are equally expressive as the singular values, but can be computed inexpensively. 
-Invariants are denoted by $I1$, $I2$, $I3$ (or $I_1(\boldsymbol{F})$, etc., to emphasize the dependence on $\boldsymbol{F}$) and defined as:
-
-\begin{gather*}
-I_1(\boldsymbol{F})=tr(\boldsymbol{F}^T\boldsymbol{F}), \hspace{10mm}I_2(\boldsymbol{F})=tr\left[(\boldsymbol{F}^T\boldsymbol{F})^2\right], 
-\hspace{10mm}I_3(\boldsymbol{F})=det(\boldsymbol{F}^T\boldsymbol{F})=(det\boldsymbol{F})^2
-\end{gather*}
-
-Their relation to $\Sigma$ is revealed by replacing $\boldsymbol{F}$ with its SVD in the previous expressions after cancellation we obtain:
-
-\begin{gather*}
-I_1 = tr(\boldsymbol{\Sigma}^2)=\sum_{i=1}^3\sigma_i^2, \hspace{10mm}I_2=tr(\boldsymbol{\Sigma}^4)=\sum_{i=1}^3\sigma_i^4, 
-\hspace{10mm}I_3=det(\Sigma^2)=\prod_{i=1}^3\sigma_i^2
-\end{gather*}
-
-After computing the derivatives of the invariants with respect to the $F$:
-\begin{gather*}
- \delta I_1= \delta\left[tr(\boldsymbol{F}^T\boldsymbol{F})\right]=2tr(\boldsymbol{F}^T\delta\boldsymbol{F})=(2\boldsymbol{F}):\delta\boldsymbol{F}\Rightarrow
- \frac{\partial I_1}{\partial\boldsymbol{F}}=2\boldsymbol{F}\\
- \delta I_2 = \delta \left[ tr(\boldsymbol{F}^T\boldsymbol{F}\boldsymbol{F}^T\boldsymbol{F}\right)]=4tr(\boldsymbol{F}^F\boldsymbol{F}\boldsymbol{F}^T\delta\boldsymbol{F})=
- (4\boldsymbol{F}\boldsymbol{F}^T\boldsymbol{F}):\delta\boldsymbol{F} \Rightarrow \frac{\partial I_2}{\partial \boldsymbol{F}}=4\boldsymbol{F}\boldsymbol{F}^T\boldsymbol{F} \\
- \delta I_3=\delta \left[(det \boldsymbol{F})^2\right] = 2det\boldsymbol{F}.\delta\left[det \boldsymbol{F} \right] = 2(det \boldsymbol{F})^2\boldsymbol{F}^{-T}:\delta\boldsymbol{F} \Rightarrow
- \frac{\partial I_3}{\partial \boldsymbol{F}}=2I_3\boldsymbol{F}^{-T}
-\end{gather*}
-
-With these derivatives at hand, the strain energy density is provided as a function $\Psi(I_1, I_2, I_3)$. Using the chain rule we can compute the stress as:
-
-\begin{align}
- \boldsymbol{P}=\frac{\partial \Psi(I_1, I_2, I_3)}{\partial\boldsymbol{F}}=
- \frac{\partial \Psi}{\partial I_1}\frac{\partial I_1}{\partial \boldsymbol{F}}+
- \frac{\partial \Psi}{\partial I_2}\frac{\partial I_2}{\partial \boldsymbol{F}}+
- \frac{\partial \Psi}{\partial I_3}\frac{\partial I_3}{\partial \boldsymbol{F}},
- \hspace{10mm}\text{or, after substitution:}\nonumber
-\end{align}
-
-\begin{equation}
-\label{eq:stresspBasedOnInvariants}
- \boldsymbol{P}(\boldsymbol{F})=\frac{\partial \Psi}{\partial I_1}.2\boldsymbol{F} + 
- \frac{\partial \Psi}{\partial I_2}.4\boldsymbol{F}\boldsymbol{F}^T\boldsymbol{F} +
- \frac{\partial \Psi}{\partial I_3}.2 I_3\boldsymbol{F}^{-T}
-\end{equation}
-
-We note the additional invariant $J=det \boldsymbol{F}=\sqrt{I_3}$ that is often used in replacement of $I_3$ while defining certain constitutive models.
-This quantity has an important physical interpretation as it represents the \textit{fraction of volume change} due to deformation:
-a value of $J=1$ implies that volume is preserved exactly while, while $J=2$ would indicate an expansion to twice the undeformed volume and $J=0.2$
-would be a compression down to $20\%$ of the rest volume.
-
-\section{Neohookean elasticity}
-One isotropic constitutive model which is defined via isotropic invariants is \textit{Neohookean elasticity}:
-\begin{align}
-\label{eq:NeohookeanStrainEnergy}
- \Psi(I_1, J) = \frac{\mu}{2}(I_1-3)-\mu \log(J)+ \frac{\lambda}{2} \log^2(J), \text{or equivalently}\nonumber\\
- \Psi(I_1, I_3)=\frac{\mu}{2}(I_1-\log(I_3)-3)+\frac{\lambda}{8}\log^2(I_3)
-\end{align}
-
-From this definition the following derivatives can be computed easily:
-
-\begin{gather*}
- \frac{\partial \Psi}{\partial I_1}=\frac{\mu}{2}\hspace{10mm}\text{and}\hspace{10mm}\frac{\partial \Psi}{\partial I_3}=-\frac{\mu}{2I_3}+\frac{\lambda \log(I_3)}{4 I_3}
-\end{gather*}
-
-By substituting into equation (\ref{eq:stresspBasedOnInvariants}) we get:
-\begin{align}
-\label{eq:NeohookeanStress}
- P(\boldsymbol{F})=\mu\boldsymbol{F}-\mu\boldsymbol{F}^{-T}+\frac{\lambda \log (I_3) }{2}\boldsymbol{F}^{-T}\hspace{10mm}\text{by some factorization}\nonumber\\
- P(\boldsymbol{F})=\mu(\boldsymbol{F}-\boldsymbol{F}^{-T})+\lambda\log(J)\boldsymbol{F}^{-T}
-\end{align}
-
-The Neohookean model has the following properties:
-
-\begin{enumerate}
- \item The material exhibits a very strong reaction to extreme compression. The logarithmic term in the energy: $\log^2(J)$ will approach 
- to $\infty$ as $J \rightarrow 0$ hence we will have $\Psi \rightarrow \infty$. This constructs a powerful energy barrier that strongly
- resists extreme compression. This is the only constitutive model we have seen so far that has this property, other models we discussed here
- will allow the material to compress to zero volume or even invert. While only absorbing a finite amount of energy.
- 
- \item In order to make incompressible materials the second Lam\'e coefficients ($\lambda$) should be set to very large value. By setting 
- $\boldsymbol{J}=1$ in the energy term of the Neohookean elasticity, a volume-preserving formulation will be produced. Incidentally, setting a
- high value for $\lambda$ in the earlier constitutive models does not quite have the desired effect, as their respective terms scaled by $\lambda$
- do not correspond to true volume change. Setting a high value for linear elasticity would enforce:
-\begin{gather*}
-  tr(\boldsymbol{F}-\boldsymbol{I})=0 \Rightarrow div\left[\vec{\phi}(\vec{X})-\vec{X}\right] = 0
-\end{gather*}
-
-this will ensure that displacement field $\vec{x}(\vec{X})-\vec{X}$ is divergence free. This condition approximates volume preservation only
-for small deformations.
-
-\item If the simulated model is accidentally forced into an inverted configuration, there is no mechanism for handling that situation.  
-In such cases, energy and stress are undefined, since $J <0$ (See equations \ref{eq:NeohookeanStrainEnergy} and \ref{eq:NeohookeanStress}).
-Such inversions can easily occur in practice, as a result of nonphysical kinematic constraints, instability of time integration techniques,
-or inadequate convergence of numerical solvers. In these situations the deformation gradient $F$ can be temporarily replaced by the nearest
-physically plausible value $\boldsymbol{F'}$ with $det\boldsymbol{F'} > \epsilon$
-\end{enumerate}
-
-In designing a finite element solution there are many aspects that must be considered such as the type of formulation used e.g.
-Total or updated Lagrangian, time integration scheme e.g. explicit or implicit and the type of elements used for discretization:
-e.g. hexahedral (uniform cubic voxel grid or non-uniform octree based grid) or n-simplices such as tetrahedral elements. 
-These design choices will impact the performance and the range of applications that can benefit from this formulation.
 
 \setlength{\unitlength}{\savedunitlength}

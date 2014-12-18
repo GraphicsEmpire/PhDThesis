@@ -9,16 +9,15 @@
 \begin{center}
 \textbf{ABSTRACT}
 \end{center}
-A surgical simulation system requires models of elastic material to behave 
-accurately, to appear as realistic as possible, and allow interaction that can 
-deform and change the topology of the model.
- For example pushing on a model  should produce physically accurate deformations without changing the topology. 
- A cutting operation is 
-more complex as it requires the  topology to change. Both of these procedures are required 
-for surgical scenes in order to bring those models to life sufficiently to be useful for surgical planning or
-training.
+Implicit models inherently support automatic blending and trivial collision detection 
+which makes them an effective tool for designing complex organic shapes with many applications in 
+various areas of research including surgical simulation systems. However, slow rendering speeds can 
+adversely affect the performance of simulation and modelling systems. In addition, when the models are 
+incorporated in a surgical simulation system, interactive and smooth cutting becomes a required feature 
+for many procedures.
+
 In this research we propose a comprehensive framework for high-performance rendering
-and physically-based animation of deformable  tissues using implicit surfaces.
+and physically-based animation of tissues modelled using implicit surfaces.
 Our system provides an interactive cutting ability using smooth intersection surfaces.
 Complex models can be created with implicit primitives, blending operators, affine
 transformations, deformations and constructive solid geometry in a design environment that organizes

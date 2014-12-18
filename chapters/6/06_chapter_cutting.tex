@@ -16,59 +16,6 @@ approximation for that application. Also, in the current stage of our system, we
 deformable object during a cut. 
 
 
-\section{Related Work}
-A number of approaches has been proposed by the computer graphics community to enable cutting of deformable and rigid models. 
-Except for a few methods most of them use tetrahedral meshes for the volumetric mesh representation. 
-Bielser \etal performed an adaptive refinement of the tetrahedral elements cut by a virtual scalpel \cite{Bielser1999}.
-In another work Bielser \etal presented a progressive approach to cutting \cite{Bielser2003}, where the decomposition of 
-a tetrahedron is changed depending on the movement of the cutting tool inside an element. However, the approach is highly 
-non-trivial to implement and also poses some stability problems due to badly-shaped elements.
-
-Mor \etal tried to reduce the number of sub-elements created while cutting tetrahedral meshes \cite{Mor2000}.
-One of the major issues in cutting is the creation of ill-shaped elements i.e. skinny elements, which can adversely affect the
-performance and stability of the system solver. Some work attempted to avoid such elements via mesh alignment techniques 
-\cite{Nienhuys2001b, Steinemann2006}. Other methods tried to solve the issue by removing them completely which resulted in 
-volume loss and jagged lines along the cut surface. 
-
- 
-Wu \etal \cite{Wu2011} proposed an algorithm for 3D mesh cutting using a combination of the adaptive octree refinement with an iterative composite
-element hierarchy to enable simulating high-resolution cuts with a small number of degrees of freedom (DOFs). 
-They used the dual contouring method \cite{Ju2002} to keep the sharp creases along the cut. Due to the high computational cost and naive implementation 
-their method is not scalable and has yet to become an interactive cutting approach.
-
-In a closely related work Courtecuisse \etal presented a soft-tissue cutting system with haptic 
-feedback \cite{Courtecuisse2010}. Their cutting strategy follows Mor \etal  \cite{Mor2000} work and 
-suffers from jagged lines along the cut surface as shown in their examples of a laparoscopic hepatecotomy.
-Progressive cutting, a feature that enables cutting the volume elements as soon as they become in contact with 
-the scalpel, is not supported in their system and as most of the other works in this area they produce too many
-new nodes when subdividing cut elements.
-
-Jerabkova \etal proposed a solution to the ill-shaped elements problem by using hexahedral elements instead of 
-tetrahedra \cite{Jerabkova2010}. Their approach relies on fine-level voxels to model object surface and simulate cutting. 
-The volume data requires more memory space than traditional, surface-based models. Cutting is performed by
-removing voxels. For sufficiently small voxels this typically remains unnoticeable but it may result in 
-significant volume loss in case of a large number of cuts. 
-
-Jin \etal proposed a meshless total Lagrangian adaptive dynamic relaxation cutting algorithm to predict the steady-state 
-responses of soft tissue \cite{Jin2013}. A cloud of points is used for discretization and approximation of the deformation 
-field within the continuum without generation of finite element meshes. They didn't report any performance measurements 
-and the quality of the cuts could not be verified with the simple truth cube model they reported in their paper.
-
-Sifakis \etal \cite{Sifakis2007} proposed a geometric algorithm for placing cracks and incisions on 
-tetrahedralized deformable objects. Their method is similar to the virtual node algorithm in that they avoid 
-sliver elements and their associated stringent timestep restrictions. Producing ill-conditioned triangles on 
-the material surface can have a negative effect on collision handling specially in case of a self collision.
-Also in their system a cut that partially intersects a tetrahedron without separating it into disconnected 
-fragments will not allow the material to separate within that embedding tetrahedron.
-
-Steinemann \etal \cite{Steinemann} created a hysteroscopy simulator and minimized the number of added elements 
-after a tetrahedral subdivision by cutting along existing edges and faces. The problem with their system is that
-the result of the cutting is produced only after it has been completed and this leads to a delay in the system. 
-Unfortunately they didn't report any performance statistics of their algorithm. 
-
-In the following sections we provide an overview of the system and the data structures involved in the process 
-and our cutting algorithm. The chapter is concluded by the analysis of the simulation results.
-
 \section{Overview}
 The physics simulation in VolCut uses tetrahedral meshes to compute deformations. In this section,
 we present our GPU-assisted approach to cutting tetrahedral meshes in real-time. 
