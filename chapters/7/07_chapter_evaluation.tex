@@ -42,11 +42,32 @@ experiment is equipped with an Nvidia Geforce GTX760 with 2GB of video memory an
 Intel Core i7-4770K with 256 KB, 1MB and 8MB of L1 to L3 cache. This processor has 4 cores and up to 8 threads can run in parallel. 
 Our system is also equipped with 16 GB of main memory. 
 
-\section{Eggshell experiment}
+\section{Experiments}
+In this section we review the experiments that are performed to evaluate the 
+performance and quality of our cutting algorithm in the context of the Craniotomy procedure. 
+In the first experiment we use an eggshell model that helps us to study the 
+quality of the cut surfaces and the amount of time it takes to apply mesh modifications in the associated 
+data-structures. Fewer finite element cells in the eggshell model helps us to isolate the mesh quality 
+issues in the vicinity of the cut surfaces. 
+
+Later we use the human skull model and drill multiple holes at different locations in the bone tissue.  
+The location of the drills are chosen according to the recorded videos of various brain biopsy 
+procedures. Beside the experiments with the drilling tool, the scalpel tool is also used for the visualization 
+of the internal mesh cross-sections, which can be helpful in the study of scanned volume data-sets from 
+arbitrary viewing angles. 
+
+Our system also allows controlled cutting along the major axes. The main benefit of 
+this feature is in studying the effects of vibrations and other hand movements when 
+cutting models interactively, i.e. by comparing the axis-locked, controlled cutting to 
+the same scenario with free-hand movements, one can investigate the effect of 
+small vibrations along the cut trajectory and how it can lead to the generation 
+of small and wedge-shaped elements in the volume mesh. 
+
+\subsection{The Eggshell Model}
 Before drilling an actual skull mesh with many tetrahedral elements we tested our system on a spherial model similar to 
 an eggshell. This model is composed of 840 nodes and 2280 tetrahedral cells. The outer surface is composed of two layers 
 of tetrahedral elements only (see figure \ref{fig:eggshell01}). To create this model implicitly a smaller sphere is subtracted 
-from a larger one. After tetrahedralization the mesh is post processed for smoothness.
+from a larger one. 
 
 \begin{figure}[H]
   \centering
@@ -78,7 +99,7 @@ drilled for the bare hole.
 After completing this experiment successfully our algorithm showed to be robust enough to handle 
 more complex meshes. In the next stage a real data-set of an skull tissue is used for the craniotomy operation.
 
-\section{Craniotomy}
+\subsection{Craniotomy}
 \label{sec:craniotomy}
 Fang \etal published a tetrahedral mesh data-set of the brain tissues \cite{fang2010mesh}. The MRI scanned data is 
 segmented into the following four regions:

@@ -8,11 +8,14 @@
 \section{General aim of this Research}
 Simulating the behavior of elastic objects in real time and with some level of user interaction is a challenging problem 
 with many applications in different areas of research including virtual surgery \cite{Meier2005}. 
-In computer graphics, the models used for the construction of objects with deformable behavior are known as deformable models. 
 A complete model should be quite realistic, interactive and should enable the user to modify the topology of the objects.
-Therefore, there exist a number of contrasting constrains: high fidelity, which in general implies accurate models and high frame rate,
-and use of low cost computers. A number of proposals have been recently presented to fulfill these objectives. But even if the efficiency
-of the simulation models have been largely improved in the last few years, soft object modelling and deformation remains a rather 
+Rendering such models on commodity hardware and supporting high fidelity which in general implies high 
+accuracy and interactive frame rates are two contrasting constrains. This is due 
+to the lack of algorithms and techniques that can efficiently map the modelling problems in this domain to the 
+parallel architecture of the graphics processor to support high quality generation and rendering of such models. 
+
+A number of proposals have been recently presented to fulfill these objectives. But even if the efficiency
+of the simulation models have been largely improved in the last few years, object modelling and deformation remains a rather 
 complex task and can be solved in interactive time only on models composed by a few hundreds of cells. In addition, integrating effects
 such as cut and lacerations, makes the simulation model more complex. In modern interactive simulation and modelling environments the ability to 
 cut 3-dimensional geometry in real-time is of fundamental importance. This creates the need for efficient cutting algorithms that process the 
@@ -79,21 +82,19 @@ using surgical simulation systems \cite{Liu2003, Basdogan2004}:
 In order to achieve these benefits, accurate, real-time bio-mechanical models are needed together
 with interactions with medical devices. Such interactions involve tissue manipulation and tissue dissection. 
 
-In this context, modelling and high-performance rendering of soft-tissues are the core requirements for 
-a simulation scenario. The development of fast algorithms to compute the deformation, contact response, 
-cutting and haptic feedback of soft tissues could enable a number of the aforementioned applications.
+In this context, modelling and high-performance rendering of tissues are the core requirements for 
+a simulation scenario. The development of fast algorithms for rendering, contact response, 
+cutting and haptic feedback of soft tissues can enable a number of the aforementioned applications.
 
 
 \section{Limitation of Current Models}
 \label{sec:limitationsOfCurrentModels}
 %%Requirements listed below and then 
 
-The requirements listed below are considered in our design of a robust deformable 
-model for surgical simulations:
+The requirements listed below are considered in our design of a robust model for surgical simulations:
 
 \begin{itemize}
-  \item Anatomical models and tissue properties need to be patient-specific and 
-obtained without complex additional procedures
+  \item Anatomical models and tissue properties need to be patient-specific and obtained without complex additional procedures
   \item Soft tissue behavior needs to be realistic and demonstrate a predictive capability, yet it should be 
   compatible with real-time computation
   \item Interactions with the surrounding anatomy and with medical devices need to involve advanced 
