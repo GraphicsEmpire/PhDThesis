@@ -60,12 +60,14 @@ Although our test environment was Intel based, our algorithm should be implement
 multicore machine with SIMD instructions and sufficient cache.
 
 \section{Naming Conventions}\label{sec:naming}
-The polygonization method used, is a space partitioning algorithm based on \cite{Wyvill1986}, which uses a  uniform grid of a user 
+The polygonization method used, is a space partitioning algorithm based on \cite{Wyvill1986}, which uses a uniform grid of a user 
 defined cell size (\textit{cellsize}). In order to leverage the SIMD parallel computation capabilities of the processor, the bounding 
 box of the model is divided into axis-aligned grids of 8x8x8 vertices where each grid is called  model partitioning unit (\textit{MPU}). 
 
-An \textit{MPU} is $7*cellsize$ as shown in figure \ref{fig:MPU}. Each \textit{MPU} contains 7*7*7 or 343 cubic cells. An \textit{MPU}  is called \textit{empty} 
-if it does not intersect with the iso-surface of the model. 
+An \textit{MPU} is $7*cellsize$ as shown in figure \ref{fig:MPU}. Each \textit{MPU} contains 7*7*7 or 343 cubic cells. 
+In section \ref{sec:ExperimentWithMPUDimensionSize}, a detailed study is made on various dimension sizes and the impact
+of this parameter on the overall performance.
+An \textit{MPU} is called \textit{empty} if it does not intersect with the iso-surface of the model. 
 The list of all \textit{MPU}s is called the \textit{MPUSET} and a half open interval 
 $[a, b)$ over \textit{MPUSET} is called an \textit{MPURANGE} which contains consecutive \textit{MPU}s from $a$ to $b-1$.
  
@@ -271,6 +273,103 @@ Output is the local mesh contained in the \textit{MPU}}
 \end{algorithmic}
 \end{algorithm}
 
+\section{Experiment with various \textit{MPU} dimensions}
+\label{sec:ExperimentWithMPUDimensionSize}
+In a separate experiment we studied the impact of various \textit{MPU} dimension 
+sizes in the overall performance of the algorithm. 
+
+As shown in figure \ref{fig:MPU}, the default dimension for an \textit{MPU} is 8 
+along each side. Smaller sizes result in more \textit{MPU} work items and larger \textit{MPU}s consume
+more processing time per each item. Finding the optimal value for the dimension size
+is the primary goal of this experiment. 
+
+One requirement for the \textit{MPU} size parameter is that it has to be a multiple of SIMD width of
+the processor that it runs on (4 on SSE and 8 on AVX), otherwise the computations are wasted in the 
+regions outside the boundary of the \textit{MPU} (See figure \ref{fig:MPU}).
+
+For this experiment, the model shown in figure \ref{fig:ModelTower}, is polygonized with increasing 
+values of the \textit{MPU} size. 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width = 1.0\linewidth]{figures/cpupoly/MpuSizeAnalysis/AvgTimeSpentPerMPU.pdf}
+  \caption{\label{fig:AvgTimeSpentPerMPU}
+  {Average time spent per each \textit{MPU} when polygonizing the Towers model.}
+}
+\end{figure}
+
+The \textit{MPU} dimension is increased from 8 to 32 in the steps of 4 units at a time. As shown in
+figure \ref{fig:AvgTimeSpentPerMPU}, the amount of processing time spent per each \textit{MPU} is increased 
+as larger units of work are being processed. 
+
+The fastest polygonization time is when the \textit{MPU} dimension is set to 20 in this experiment. 
+This is depicted in figure \ref{fig:TotalPolyTime}. All the numbers used in these graphs are the average of 10 runs. 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width = 1.0\linewidth]{figures/cpupoly/MpuSizeAnalysis/TotalPolyTime.pdf}
+  \caption{\label{fig:TotalPolyTime}
+  {Total polygonization time in milliseconds when polygonizing the Towers model.}
+}
+\end{figure}
+
+By keeping the cellsize parameter as constant, the early discard method described 
+in section \ref{sec:surfaceextraction}, is used only in case of a \textit{MPU} 
+with the dimension size of 8. Since the side length is still smaller than one
+with this dimension. 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width = 1.0\linewidth]{figures/cpupoly/MpuSizeAnalysis/RatioOfIntersectedToTotal.pdf}
+  \caption{\label{fig:RatioOfIntersectedToTotal}
+  {Ratio of intersected to total number of \textit{MPU}s.}
+}
+\end{figure}
+
+One of the interesting graphs is figure \ref{fig:RatioOfIntersectedToTotal}, which illustrates the
+ratio of intersected \textit{MPU}s to total count as the dimension size increases. The highest
+ratio (more than 85 percent) is achieved when the largest dimension size (32) is used for processing.  
+
+However as shown in figure \ref{fig:TimeToFinish}, increasing the \textit{MPU} dimension will adversely widen the
+time difference between all threads to finish their processing. The reason for this phenomenon 
+is that when the units of work are large, having even a few more of them in the processing 
+queue of a thread can lead to a major imbalance in the workload distribution among all threads.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width = 1.0\linewidth]{figures/cpupoly/MpuSizeAnalysis/TimeToFinish.pdf}
+  \caption{\label{fig:TimeToFinish}
+  {Maximum time in milliseconds spent in idle mode while other active threads finish their current work.
+  The less is better, since it indicates a more uniform workload distribution across the running threads.}
+}
+\end{figure}
+
+Figure \ref{fig:TimeToFinish} exhibits an expected behavior: With the dimension size of 8 there are as many
+as 145152 \textit{MPU}s for processing, by refering to graph \ref{fig:AvgTimeSpentPerMPU} the time spent 
+per each item in this case is a fraction of a millisecond (approximately 140 microseconds). 
+
+In case of the dimension 32, a \textit{MPU} is 64 times larger than the one with dimension 8 and the total 
+count suddenly drops to 2023 and with the average processing time of 10 milliseconds per each 
+\textit{MPU} (10 milliseconds is almost 72 times larger than the amount of time reported for a dimension 8 \textit{MPU}). 
+
+The last graph in this section is associated with the amount of physical memory required to store the 
+input data-structures for processing a unit of work as efficiently as possible. We made an effort to fit all the required 
+data-structures inside the cache memory available on the processor cores. One of the main reasons that we
+chose the default dimension size of 8 for the \textit{MPU} is the fact that this memory is smaller on the 
+older generations of processors and increasing the dimension size will increase the required memory as shown in
+figure \ref{fig:TotalCacheMemUsage}. However, our algorithm is scalable and for modern processors with 
+access to larger cache memory, the higher \textit{MPU} dimensions can be used. 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width = 1.0\linewidth]{figures/cpupoly/MpuSizeAnalysis/TotalCacheMemUsage.pdf}
+  \caption{\label{fig:TotalCacheMemUsage}
+  {Total memory usage per each \textit{MPU} processing reported here in kilobytes. 
+  The limit in this case is the last level cache memory available on the processor to fit the 
+  entire data structures required for the processing of a \textit{MPU} efficiently.}
+}
+\end{figure}
+
 
 \section{Results}\label{sec:results}
 We have implemented our algorithm using Intel threading building blocks in C++ on a Linux platform. We used two systems with 
@@ -431,6 +530,8 @@ optimized with AVX instructions on a single core for Medusa model (See table \re
 
 
 The results shows that our algorithm outperforms that of Schmidt \etal by a factor of 6 when running on a single core in lower resolutions. 
+
+
 
 \section{Chapter Conclusions}\label{sec:futurework}
 In this chapter we presented a new parallel polygonization algorithm using SIMD processing techniques that takes advantage of 
