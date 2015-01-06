@@ -5,10 +5,8 @@ One of the main objectives of a virtual reality based surgical simulation system
 simulation, not only because of the nonlinear material behavior exhibited by soft tissue, but also due to the
 complexity of introducing the cutting-induced discontinuity. 
 
-We developed our new volumetric mesh cutting system named ``VolCut'' in the context of a human skull craniotomy simulation. When an abnormality of the brain is suspected, 
-Stereotactic \footnote{Stereotactic surgery or stereotaxy is a minimally invasive form of surgical intervention which makes use of a three-dimensional 
-coordinate system to locate small targets inside the body and to perform on them some action such as ablation, biopsy, lesion, injection, stimulation, 
-implantation, radiosurgery, etc.} brain needle biopsy is performed and guided precisely by a computer system to avoid 
+We developed our new volumetric mesh cutting system named ``VolCut'' in the context of a human skull craniotomy simulation. 
+When an abnormality of the brain is suspected, a brain needle biopsy is performed and guided precisely by a computer system to avoid 
 serious complications. A small hole is drilled into the skull, and a needle is inserted into the brain tissue guided by computer-assisted 
 imaging techniques (CT or MRI scans). The actual biopsy process can not be seen by the surgeon. For this reason,
 non-progressive cutting, where a tetrahedral element is decomposed after the sweep surface traverses the tetrahedral elements, is a reasonable
@@ -84,7 +82,6 @@ The following steps are performed to complete the cut induced by the scalpel on 
 
 
 \section{Data structure}
-The tetrahedron is the three-dimensional case of the more general concept of an Euclidean simplex. 
 Figure \ref{fig:tetconfig3} shows the structure of a tetrahedral element and the order we chose to 
 name the nodes, edges and faces in its canonical orientation. In this figure $P_0$ to $P_3$ are
 the nodes (i.e. degrees of freedom in the context of system deformation computation), $e_0$ to $e_5$ the edges 
@@ -327,7 +324,7 @@ already has the bottom-up links, it is trivial to access all the incident edges 
 \label{sec:cutconfigs}
 After building the list of cut-edges and cut-nodes, all the tetrahedral cells are inspected for intersection. 
 The list of cut-edges and cut-nodes are implemented as hash-tables in our system, therefore, performing a query operation can be done 
-in constant time and this step is not bottleneck in our system. Per each cell all the 6 edges are checked against the cut-edges hash table 
+in constant time and this step is not a bottleneck in our system. Per each cell all the 6 edges are checked against the cut-edges hash table 
 in the same order given in figure \ref{fig:tetconfig3}. If an edge is included in the cut-edges hash table then a flag bit is set for that
 particular edge. The same process is performed for the 4 nodes of each cell and a 4 bits cutnode code is computed for that cell.
 Using the lookup table given in table \ref{table:allcutconfigs} and the number of cut-edges and cut-nodes; per each cell a cut configuration

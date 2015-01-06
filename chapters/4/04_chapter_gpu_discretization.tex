@@ -25,60 +25,49 @@ the results and analysis.
 %Another requirement for the tetrahedral mesh generation is that the triangular surface mesh should be the boundary surface of the tetrahedral mesh. This is needed since 
 %after applying the displacements to the volumetric tetrahedral elements the surface vertices should be displaced as well.
 \section{Many-cores architectures}
-Shrinking of CMOS circuitry has allowed distances between transistors to scale fairly consistently for an extended period of time. The shrinking 
-of distances and reduction in size of capacitors allowed hardware architects to clock circuits at a higher rate. This led to Gordon Moore's
-famous self fulfilling prophecy about transistor density and its misinterpretations into the realm of execution frequency and overall performance.
+The advent of programmable graphics pipeline stages opened up new avenues to exploit computational resources of the
+GPU hardware. Before the introduction of general-purpose GPU (GPGPU) programming languages, such as open compute language (OpenCL), 
+researchers in the field were forced to use computer graphics shading languages (e.g. glsl, cg) to gain access to 
+the many-core architecture of GPUs. 
 
-Certainly, increasing frequency allowed the performance of nonparallel code to increase consistently during that time, such that it became an 
-expectation for software developers until the early 21st century. During the past decade, it has become obvious the continued scaling of clock 
-frequencies of CPUs is not practical, largely due to power and heat dissipation constraints. The reason for this is that power consumption is 
-dependent on frequency in a nonlinear manner \cite{gaster2012heterogeneous}. As a second problem, increasing clock frequency on-chip requires 
-either increasing off-chip memory bandwidth to provide data fast enough to not stall the linear workload running through the processor or increasing
-the amount of caching in the system. 
+Many of the terms associated with solving rendering issues were borrowed to explain solutions to problems in 
+other domains of science. Terms such as vertex, fragment and texture which define entities in a graphics 
+shading problem were used to refer to the processing threads, workitems and the input for a solution to a 
+problem in high performance computing domain. In addition to the lack of a general language for computing on the GPUs, 
+the complexity of mapping the problem domain to the graphics pipeline complicated the implementations and lead 
+to various ad-hoc solutions to the same problems. For instance, Georgii \etal created an interactive cloth simulation 
+by implementing a mass-spring system using fragment shader programming on an ATI X800 graphics card \cite{Georgii2005}. 
+As another example Sorensen \etal reviewed several techniques for accelerating linear system solving
+with applications in surgical simulation \cite{Sørensen2006a}. 
 
-Due to those reasons the computational hardware available in high-performance workstations shifted from increasingly efficient but complex sequential 
-computational units, to smaller units which are not faster than previous generations but the cores are duplicated to be able to execute more threads 
-in parallel. This new trend in design can be found in modern CPUs and recent Graphics Processing Units (GPUs). The latest generation of GPUs contains 
-hundreds of computation units (4096 in AMD Radeon 7990, 2496 in NVIDIA Tesla K20. For a brief discussion on how to count GPU cores refer to \cite{Fatahalian2008})
+At the time of this writing, the following languages are commonly used for GPGPU computing:
+\begin{itemize}
+ \item Nvidia CUDA (Compute Unified Device Architecture)
+ \item Microsoft's DirectCompute
+ \item OpenCL which is a standard language maintained by Khronos Group
+\end{itemize}
 
-This radical architectural change has important consequences on the type of algorithms which are applicable in interactive simulations. In terms of 
-programming, general purpose computations on GPUs initially required the use of graphics oriented libraries. The two major GPU vendors released general
-programming APIs, CUDA \cite{Nickolls2008} and CTM \cite{peercy2006performance} which provide direct access to the underlying parallel processors of the
-GPU, as well as full instruction sets, such as double precision computations and write operations at arbitrary locations. OpenCL which is a multi-vendor
-standard was released in 2009, with a programming model very similar to CUDA \cite{gaster2012heterogeneous}. The presented algorithms in this chapter
-have been implemented in OpenCL. 
+Among all, OpenCL is the only language that is designed to be platform and 
+host operating system independant, DirectCompute supports all hardware vendors
+but is limited to Windows and CUDA is only available on Nvidia's hardware. 
 
-In OpenCL and CUDA threads may access data from multiple memory spaces during their execution \cite{Nickolls2008}. Each thread has a 
-private \textit{local} memory. OpenCL uses this memory for thread-private variables that do not fit in the thread's registers, as well 
-as for stack frames and register spilling. Each thread block has a shared memory visible to all threads of the block that has the same 
-lifetime as the block. Finally, all threads have access to the same \textit{global} memory. 
+OpenCL and CUDA share similar concepts in their programming model \cite{gaster2012heterogeneous}.
+One of the major drawbacks of OpenCL when compared to CUDA is the initialization delay 
+associated with the kernel compile process at runtime. The delay is significant for long
+and complex kernels and at the time of this writing, no offline compiler is offered by Nvidia
+to alleviate this issue. One way to improve this is to compile and store the binaries 
+on disk upon the first kernel invocation and reuse the precompiled binaries for subsequent 
+executions. 
 
-Programs declare variables in shared and global memory with the \texttt{\_\_local} and \texttt{\_\_global} type qualifiers. On a Tesla-architecture 
-GPU, these memory spaces correspond to physically separate memories: per-block shared memory is a low-latency on-chip RAM, while global memory 
-resides in the fast DRAM on the graphics board. 
+The other technical issue that we faced with OpenCL is that the performance optimizations 
+made on one platform are not transferred to other platforms. This situation has been experienced
+by other researchers in the field and essentially there is no guaranteed portability for the 
+tuning and optimizations of the kernels.
 
-Shared memory is expected to be a low-latency memory near each processor, much like an L1 cache. It can therefore, provide for high-performance 
-communication and data sharing among the threads of a thread block. Since it has the same lifetime as its corresponding thread block, kernel 
-code will typically initialize data in shared variables, compute using shared variables, and copy shared memory results to global memory. 
-Thread blocks of sequentially dependent grids communicate via global memory, using it to read input and write results. 
+The algorithms that are presented in this chapter are implemented using OpenCL. 
 
-%Register spilling can increase the number of instructions required to generate prefetch addresses. Ideally only a single instruction would be needed for each prefetch,
-% i.e. the prefetch instruction itself. In some cases, as many as 20 extra instructions were added for each prefetch. 
-Register spilling occurs whenever the register allocator runs out of registers, and therefore must ``spill'' values by saving and restoring them from memory. Once 
-register spilling occurs, the instruction count within a loop body can increase dramatically. 
- 
-A potential cause of register spilling is the loop unrolling. Once a loop is unrolled, the compiler can optimize across the several replicated copies of the loop 
-body. In most cases this allows the compiler to reduce the overall instruction count for the following reasons:
- 
- \begin{enumerate}
-  \item branch instructions can be eliminated between unrolled iterations
-  \item it is more likely that ``hazard'' slots after multi-cycle operations can be filled with independent instructions. 
-  \item register allocations can be optimized across the unrolled iterations, possibly eliminating loads and stores.
- \end{enumerate}
 
-On the other hand the potential downside of the loop unrolling is creating too many intermediate values for the register allocator to handle, thus resulting in 
-register spilling. One way for the compiler to avoid those register-spilling problems is to perform loop unrolling with a greater awareness of its effect on register 
-pressure. 
+
 
 \section{Data Structures}
 \label{sec:datastructure}
@@ -464,15 +453,11 @@ As it can be seen computing vertices is still the most time-consuming stage due 
 gradiant-based Newthon-Raphson root-finding method. Computing other attributes such as colors and normals would also need 1 and 4 
 traversals respectively. The prefix-sum scan operator employed here uses multi-pass computing. The extra cost of kernel calls has
 increased the cost of using these operators. Several optimizations can be performed to benefit the overall performance. By 
-vectorizing all kernels the core SIMD units can be used more efficiently. 
-In Nvidia and AMD GPUs the local memory is divided into memory banks. Each bank can only address one dataset at a time, so if a halfwarp (16 threads)
-tries to load/store data from/to the same bank the access has to be serialized (this is called a bank conflict). 
-For NVidia GT200 GPUs there are 16 banks and in Fermi card this number is 32. If each thread in a halfwarp accesses successive 32bit values
-there are no bank conflicts. An exception from this rule are broadcasts: If all threads access the same address, the value is only read once and
-broadcasted to all threads (e.g. For GT200 it has to be all threads in the halfwarp accessing the same address).
+vectorizing all kernels the core SIMD units can be used more efficiently. The prefix-sum scan operator can also be implemented in such a way 
+that the memory-bank conflicts are completely avoided and the data-accesses are performed in parallel.
 
-The prefix-sum scan operator can also be implemented in such a way that the memory-bank conflicts are completely avoided and the data-accesses
-are performed in parallel.
+
+
 
 
 
