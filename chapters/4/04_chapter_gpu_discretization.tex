@@ -25,19 +25,19 @@ the results and analysis.
 %Another requirement for the tetrahedral mesh generation is that the triangular surface mesh should be the boundary surface of the tetrahedral mesh. This is needed since 
 %after applying the displacements to the volumetric tetrahedral elements the surface vertices should be displaced as well.
 \section{Many-cores architectures}
-The advent of programmable graphics pipeline stages opened up new avenues to exploit computational resources of the
+The advent of programmable graphics pipeline opened up new avenues to exploit computational resources of the
 GPU hardware. Before the introduction of general-purpose GPU (GPGPU) programming languages, such as open compute language (OpenCL), 
 researchers in the field were forced to use computer graphics shading languages (e.g. glsl, cg) to gain access to 
 the many-core architecture of GPUs. 
 
 Many of the terms associated with solving rendering issues were borrowed to explain solutions to problems in 
 other domains of science. Terms such as vertex, fragment and texture which define entities in a graphics 
-shading problem were used to refer to the processing threads, workitems and the input for a solution to a 
+shading problem were used to refer to the processing threads, work items and the input for a solution to a 
 problem in high performance computing domain. In addition to the lack of a general language for computing on the GPUs, 
 the complexity of mapping the problem domain to the graphics pipeline complicated the implementations and lead 
 to various ad-hoc solutions to the same problems. For instance, Georgii \etal created an interactive cloth simulation 
 by implementing a mass-spring system using fragment shader programming on an ATI X800 graphics card \cite{Georgii2005}. 
-As another example Sorensen \etal reviewed several techniques for accelerating linear system solving
+As another example S{\o}rensen \etal reviewed several techniques for accelerating linear system solving on GPUs
 with applications in surgical simulation \cite{Sørensen2006a}. 
 
 At the time of this writing, the following languages are commonly used for GPGPU computing:
@@ -63,9 +63,22 @@ The other technical issue that we faced with OpenCL is that the performance opti
 made on one platform are not transferred to other platforms. This situation has been experienced
 by other researchers in the field and essentially there is no guaranteed portability for the 
 tuning and optimizations of the kernels.
-
 The algorithms that are presented in this chapter are implemented using OpenCL. 
 
+OpenCL and CUDA use similar memory model to execute kernels on the GPU. Each thread of 
+execution on the GPU has access to a limited amount of local memory that is private to that thread. 
+The local memory for the thread is used to store the stack frames. It is also used in register spilling, 
+which occurs when the local and private variables of the thread can not fit into the register file of the
+physical core and they spill to the local memory. Each thread belongs to a thread block. In OpenCL terms 
+a thread is referred to as a processing element and a thread block is called a compute unit. 
+
+All processing elements within a compute unit has access to a shared memory block, which is 
+accessible by all processing elements within the same block. Beside the local and shared memory
+spaces, all processing elements have access to a global memory block which has the slowest access 
+time when compared to the other two spaces. 
+
+Physically, the local and shared memory spaces can be seen as level 1 and level 2 cache memory on the CPU and
+the global memory as the main memory (i.e. video memory on the GPU).
 
 
 
@@ -75,13 +88,13 @@ The \blob linearization step introduced in (section \ref{sec:linearization}) is 
 GPU polygonization algorithm. 
 
 All the structures are aligned at 16 bytes (four floating points) memory addresses (This is similar to the texture 
-accessing techniques in graphical shader programming languages such as (GLSL or Cg) where four floats represent the 
+accessing techniques in graphical shader programming languages such as GLSL or Cg, where four floats represent the 
 RGBA values of a texel accordingly.) If a primitive node has an associated transformation node with a non-identity 
 transformation matrix, that matrix will be stored in the primitive matrices section of the input structure and an 
 associated identifier (id) will be provided to the primitive. The default id is 0 which points to an identity transformation 
-matrix. The inverse of the primitive matrix is computed and the first three rows of it will be stored for further field 
-computations. To transform the axis-aligned bounding boxes of the primitives the full forward transformation matrix will 
-be stored in the box matrices section of the structure and it can be accessed using the same id provided for the primitive matrix.
+matrix. The inverse of the primitive matrix is computed and the first three rows are stored for further field 
+computations. To transform the axis-aligned bounding boxes of the primitives, the full forward transformation matrix is 
+stored in the box matrices section of the structure and it can be accessed using the same id provided for the primitive matrix.
 Figure (\ref{fig:datastructure}) depicts this pointerless representation in details.
 
 \begin{figure}[H]
@@ -113,10 +126,10 @@ Each input data-structure is numbered in figure (\ref{fig:datastructure}) for fu
  can happen if an operator is applied to a list of consecutive primitives, e.g. a global union operator.  The $NX$ 
  field is related to our stackless \blob traversal algorithm which is explained in the following sections and defines the next 
  operator node in the \blob traversal route. The operator-specific parameters and its axis-aligned bounding box are stored next. 
- The $F^*$ flag provides more control over the operator and the definition of its bits can be found at the bottom of figure
+ The $F^*$ field are the flag bits that provide more control over the operator and the definition of each can be found at the bottom of figure
  \ref{fig:datastructure}. Bits 1 and 0 are set in case the left child or the right child of the current node are operators as well. Bit 2 is 
  set if the $LC$ and $RC$ indices are actually defining a range of skeletal primitives as explained earlier. In this case the 
- first two fields will be set to zero. If the unary flag is set then the operator has only one child which stored in the $LC$ field.  
+ first two fields will be set to zero. If the unary flag is set then the operator has only one child which is stored in the $LC$ field.  
  Bit 4 is set when the current operator appears as a right node for its parent. Bit 5 is the break route flag and is discussed further 
  in our stackless \blob routing algorithm. The rest of the bits are reserved for future use. 
  
@@ -142,7 +155,7 @@ table are the break down of the required memory size per each component in the c
 \begin{center}
 	 \caption{\label{table:memfootprint}
   {Memory footprint of the input \blob in our GPU polygonization algorithm in bytes. The entire \blob for a model with 64K nodes (primitives and operators) 
-  takes about 20MB in our current system.}
+  takes up about 20 MiB in our current system.}
 }
   \begin{tabular}{ | c | c | c | c | c | c | c | c |}
     \hline    
@@ -169,7 +182,7 @@ local memory available per each thread on the GPU this reduction in memory usage
 running kernels significantly.
 
 In high performance rendering algorithms the use of hierarchical spatial data structures for acceleration reasons 
-is common. Vising nodes in such structures requires stack-based traversal algorithms. Unfortunately, even the latest 
+is common. Visiting nodes in such structures requires stack-based traversal algorithms. Unfortunately, even the latest 
 GPU architectures are poorly suited for implementing such algorithms. 
 
 A complex \blob scene-graph data structure may contain thousands of primitives and operators which can lead to deep tree structures. 
@@ -251,7 +264,7 @@ operators stack $S1$ and a \text{break} nodes stack $S2$. The latter is defined 
 
 \subsubsection{Up-sweep traversal on the GPU}
 Figure \ref{fig:stackless}, shows the final route for a sample \blob. The benefits of this type of routing encoded into the tree
-is that there is no need for storing a deep stack to store the intermediate operators. Using this new approach the tree is now only evaluated 
+is that there is no need for storing a deep stack for the intermediate operators. Using this new approach the tree is now only evaluated 
 from bottom to top. 
 
 The \blob root node $RT$ marks the starting point of the traversal. This field is stored in the header section of the 
