@@ -12,12 +12,12 @@ A complete model should be quite realistic, interactive and should enable the us
 Rendering such models on commodity hardware and supporting high fidelity which in general implies high 
 accuracy and interactive frame rates are two contrasting constrains. This is due 
 to the lack of algorithms and techniques that can efficiently map the modelling problems in this domain to the 
-parallel architecture of the graphics processor to support high quality generation and rendering of such models. 
+parallel architecture of the graphics processor to support high quality generation and rendering of those objects. 
 
 A number of proposals have been recently presented to fulfill these objectives. But even if the efficiency
 of the simulation models have been largely improved in the last few years, object modelling and deformation remains a rather 
 complex task and can be solved in interactive time only on models composed by a few hundreds of cells. In addition, integrating effects
-such as cut and lacerations, makes the simulation model more complex. In modern interactive simulation and modelling environments the ability to 
+such as cut and lacerations, makes the simulation model more complex. In modern interactive simulation environments the ability to 
 cut 3-dimensional geometry in real-time is of fundamental importance. This creates the need for efficient cutting algorithms that process the 
 underlying representation. In surgery simulation, interactive cutting algorithms enable the dynamic simulation of scalpel intersections that open 
 immediately behind the scalpel \cite{Nienhuys2001a}. Cutting a volumetric mesh under deformation is a non-trivial problem, due to several conflicting
@@ -30,7 +30,8 @@ Therefore the following major problems are identified in the surgical simulation
 \begin{itemize}
  \item Modelling complex tissues that are readily available for simulation \cite{Nealen2006,Meier2005,Gibson1997a}.
  \item Real-time visualization of those tissues \cite{Mario2010PolygonMesh,Bloomenthal1997}.
- \item Performing interactive topological modifications on complex models while under deformation \cite{Jin2013, Wu2011, Courtecuisse2010, Jerabkova2010}. 
+ \item Performing interactive mesh connectivity modifications on complex models 
+ while under deformation \cite{Jin2013, Wu2011, Courtecuisse2010, Jerabkova2010}. 
 \end{itemize}
 
 We present a comprehensive solution to these problems as following. 
@@ -43,14 +44,14 @@ comprehensive and compact scene graph data-structure. \blob provides the ability
 
 Secondly we propose a solution for high performance and scalable visualization of complex models created by \blob method.
 Volumetric models in general are often several orders of magnitude slower during visualization \cite{Bloomenthal1990a, Bloomenthal1997}.
-We proposed a data-driven algorithm for rendering complex implicit models in real-time on multi-core processors \cite{Shirazian2012}, later, we 
-fine tuned that algorithm for running on many core architectures such as the ones in high-end graphical processing units (GPUs). 
+We propose a data-driven algorithm for rendering complex implicit models in real-time on multi-core processors \cite{Shirazian2012}, later, we 
+fine tune that algorithm for running on many core architectures such as the ones in high-end graphical processing units (GPUs). 
 
 Third, we take a different approach to develop a stable and realistic cutting system. Our GPU-assisted interactive cutting algorithm allows
 arbitrary cuts in the model and can enable many scenarios for tissue manipulation while under deformations. 
 
-In what follows, the implicit modelling approach to deformable tissue design will be studied. To achieve the initial goal of this research, a
-computational framework for designing, rendering and animating deformable tissues has been developed and the details of the process is documented 
+In what follows, the implicit modelling approach to model design will be studied. To achieve the initial goal of this research, a
+computational framework for designing, rendering and animating tissues has been developed and the details of the process is documented 
 in the following chapters. 
 
 
@@ -60,14 +61,16 @@ in the following chapters.
 Laparoscopic surgery brought new technologies into the operating room and created a 
 distance between the surgeon and the patient. More recently, other minimally invasive techniques have 
 been proposed, such as natural orifice transluminal endoscopic surgery, which can be considered as an 
-evolution of laparoscopic surgery. Laparoscopy requires surgeons to acquire new skills, and adapt 
-to changes from conventional open surgery e.g. amplified tremor, diminished tactile sensation, loss of 
-depth perception.  Without open organ surgery, modern surgeons do not get 
-training in the motor skills of the previous generation. Thus there is a 
-motivation to develop realistic surgical simulations using 
+evolution of laparoscopic surgery. The new surgical techniques developed in Laparoscopy
+required the surgoens in the field to go under training to adapt themselves to the new environment.
+With the loss in depth perception and decreased levels of tactile sensation, the new technique was
+certainly different from conventional open surgery.
+
+Without open organ surgery, modern surgeons do not get training in the motor skills of the 
+previous generation. Thus there is a motivation to develop realistic surgical simulations using 
 real-time deformable models, and haptic rendering for further realism \cite{Lin2004}. 
-The following benefits have been reported from 
-using surgical simulation systems \cite{Liu2003, Basdogan2004}: 
+The following benefits have been reported from using surgical simulation systems 
+\cite{Liu2003, Basdogan2004}: 
 
 \begin{itemize}
  \item Systematic training and objective assessment of technical competence
@@ -91,25 +94,25 @@ cutting and haptic feedback of soft tissues can enable a number of the aforement
 \label{sec:limitationsOfCurrentModels}
 %%Requirements listed below and then 
 
-The requirements listed below are considered in our design of a robust model for surgical simulations:
+The requirements listed below are considered in our design of a robust modelling system for simulation:
 
 \begin{itemize}
-  \item Anatomical models and tissue properties need to be patient-specific and obtained without complex additional procedures
-  \item Soft tissue behavior needs to be realistic and demonstrate a predictive capability, yet it should be 
-  compatible with real-time computation
+  \item Complex models should be created incrementally from simpler, reusable primary components
+  \item Rendering should be interactive and the result of modifications to the model should be
+  seen in real-time.
   \item Interactions with the surrounding anatomy and with medical devices need to involve advanced 
-  contact models that can be computed in real-time
-  \item The different types of dissection performed on soft tissues should be simulated
-  \item Realistic visual and haptic feedback should be provided to create a higher level of immersion, in 
-  particular during training sessions
+  contact models that can be computed in real-time.
+  \item Guided cutting with scalpel and other variants of dissection operations should be supported.
+   
+  \item Modelling and simulation should be tightly coupled to enable the design of realistic environments 
+  for surgical training.
 \end{itemize}
 
 %%Chapter \ref{chapter:background} will provide more details on the state of the art techniques in soft tissue modelling. 
 
 %note to self
-Among the existing approaches we can cite methods based on spring-mass networks, methods based 
-on linear elasticity, and explicit finite element models for non-linear materials 
-\cite{Gibson1997a,Meier2005}. In chapter \ref{chapter:background} we discuss these methods in detail.  
+Popular existing techniques are based on mass-spring networks, methods based on linear elasticity, and explicit 
+finite element models for non-linear materials \cite{Gibson1997a,Meier2005}. 
 
 Mass-spring networks are quite simple to implement and very fast to compute, but they fail to properly 
 characterize soft tissues deformation as they introduce artificial anisotropy through the choice of the 
@@ -132,7 +135,7 @@ cutting algorithm which is built into our physically-based simulation system.
 \section{Contributions}
 \label{sec:contributions}
 In this research we take into account the requirements of modern surgical procedures and introduce a 
-new real-time deformable model with the ability to perform real-time topological changes (cutting) in a 
+new modelling framework with the ability to perform real-time topological changes (cutting) in a 
 non-linear model, providing more realistic behavior than that can be provided by existing models. 
 
 Contributions described in this thesis fall into four broad categories: a modelling system to create 
@@ -148,7 +151,7 @@ following:
  physically-based animation of rigid and deformable models.
  
  \item An algorithm for interactive polygonization of implicit surfaces on multi-core architectures with 
- SIMD instructions. % (Peer reviewed contribution \cite{Shirazian2012}) 
+ SIMD instructions. (Peer reviewed contribution \cite{Shirazian2012}) 
  
  \item An optimized GPU-assisted algorithm for high-performance polygonization of implicit surfaces 
  on many-core architectures. As opposed to related work in this domain which is based on static implicit
@@ -160,7 +163,7 @@ following:
  \item Smooth cutting of complex volumetric meshes to avoid producing the jagged lines without the 
  need for a post-processing step.
 
- \item A novel mesh data-structure suitable for storing dynamic meshes on the GPU to support realtime 
+ \item A novel mesh data-structure suitable for storing dynamic meshes on the GPU to support real-time 
  modifications during cutting
  
 \item Real-time Craniotomy simulation for neurosurgery and biopsy simulations.
@@ -171,14 +174,15 @@ following:
 \section{Overview}
 In the next chapter we start by providing background material on implicit modelling technique, the 
 \blob scene-graph and the concept of sketch-based, incremental modelling.
-We continue by reviewing the physics properties of the deformable tissues and cover some topics on 
-continuum mechanics concepts and force models used in our system to achieve non-linear deformations. 
+We continue by reviewing the related work in surface extraction algorithms from volumetric models and
+mesh connectivity modifications. 
+
 Chapter \ref{chapter:cpuPoly} presents our rendering framework to visualize complex \blob models using 
 multi-core architectures. Building on the outcomes of chapter \ref{chapter:cpuPoly}, the improved results 
 are reviewed in chapter \ref{chapter:GPUDiscretization}. 
 
 In Chapter \ref{chapter:Cutting} we present one of the main contributions of this thesis which is the high 
-performance soft tissue cutting. After a brief overview of the related work we present our novel technique 
+performance tissue cutting. After a brief overview of the related work we present our novel technique 
 in cutting complex soft tissues interactively. Chapter \ref{chapter:evaluation} showcases a skull craniotomy 
 simulation scenario and provides comments on the operation itself and the achieved results.
 
