@@ -12,7 +12,7 @@ scalability issues. The chapter concludes with a review of the related work in t
 Parametric surfaces such as Bezier patches has a generative form that enables 
 two dimensional iteration over the surface directly. However, in the case of implicit models, 
 the surface is surrounded by the object's volume and an extraction process is required to 
-access the final surface. The formal definition of the surface and volume in this case is as following:
+access the boundary surface. The formal definition of the surface and volume in this case is as following:
 
 \begin{equation}
 S = \left\{M = (x,y,z) \in \mathbb{R}^3 | F(x,y,x) = c\right\}
@@ -22,7 +22,7 @@ S = \left\{M = (x,y,z) \in \mathbb{R}^3 | F(x,y,x) = c\right\}
 V = \left\{M = (x,y,z) \in \mathbb{R}^3 | F(x,y,x) \geq c\right\}
 \end{equation}
 
-Function $F$ computes the field value at a certain position.  $c$ is a constant and is called the \textit{iso-value} 
+Function $F$ computes the field value at a certain position $M$.  $c$ is a constant and is called the \textit{iso-value} 
 which is set to $0.5$ in our system. For each point in space if the field is greater than $c$ the point is 
 considered inside the model otherwise outside. 
 
@@ -35,11 +35,15 @@ not bounded as the distance itself can be infinitely large.
 
 By modifying $dS$ with a field function $g$, it can be bound to a finite range. Usually the function maps the distances to the range $[0, 1]$, 
 where the field has values of 1 at the skeletons and 0 after a certain distance to the skeleton (usually at distance 1). A discussion of field 
-function appears in \cite{shirley2009graphics}. Skeletal implicit primitives are combined using binary operators, which are applied pair wise to 
-field-values f, and represented by a node in the \blob, whose children are either primitives or operators themselves.
-Field values are computed for the child-nodes and combined to yield a new value according to the operator type. This makes it possible to go beyond 
-the classical Boolean operators, and define general blend operators that e.g. create smooth transitions between shapes. The most common operator 
-that creates a smooth transition between several values is called the summation blend \cite{Bloomenthal1997}:
+function is provided in \cite{shirley2009graphics}. Skeletal implicit primitives are combined 
+using binary operators, which are applied pair-wise to field-values f, and represented by a 
+node in the \blob, whose children are either primitives or operators themselves.
+
+Field values are computed for the child-nodes and combined to yield a new value according 
+to the operator type. This makes it possible to go beyond the classical Boolean operators, 
+and define general blend operators that e.g. create smooth transitions between shapes. The 
+most common operator that creates a smooth transition between several values is called the 
+summation blend \cite{Bloomenthal1997}:
 
 \begin{equation}
 F_A(x, y, z)=\sum_{i=1}^{i=N_A}F_i(x, y, z)
