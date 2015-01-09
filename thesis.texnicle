@@ -287,12 +287,12 @@
         <relationship name="project" type="1/1" destination="PROJECT" idrefs="z119"></relationship>
     </object>
     <object type="TEXFILE" id="z121">
-        <attribute name="visiblerect" type="string">{{0, 0}, {935, 596}}</attribute>
-        <attribute name="cursor" type="string">{351, 0}</attribute>
+        <attribute name="visiblerect" type="string">{{0, 0}, {936, 596}}</attribute>
+        <attribute name="cursor" type="string">{1043, 0}</attribute>
         <attribute name="wasopen" type="bool">0</attribute>
-        <attribute name="lasteditdate" type="date">442510905.63925802707672119141</attribute>
+        <attribute name="lasteditdate" type="date">442513751.25781899690628051758</attribute>
         <attribute name="istext" type="bool">1</attribute>
-        <attribute name="fileloaddate" type="date">442510907.44341599941253662109</attribute>
+        <attribute name="fileloaddate" type="date">442513752.69499099254608154297</attribute>
         <attribute name="extension" type="string">tex</attribute>
         <attribute name="sortindex" type="int32">25</attribute>
         <attribute name="name" type="string">01_chapter_intro.tex</attribute>
@@ -461,10 +461,10 @@
     <object type="UISETTINGS" id="z131">
         <attribute name="showpdfthumbnails" type="bool">0</attribute>
         <attribute name="selectedcontrolstab" type="int16">0</attribute>
-        <attribute name="pdfviewscrollrect" type="string">{{0, 83498.485639686696}, {619.99999999987926, 1301.5143603133038}}</attribute>
+        <attribute name="pdfviewscrollrect" type="string">{{0, 83495.078534031432}, {619.99999999987745, 1304.9214659685676}}</attribute>
         <attribute name="maxoutlinedepth" type="int16">7</attribute>
         <attribute name="logoutputlevel" type="int16">0</attribute>
-        <attribute name="editorwidth" type="float">972</attribute>
+        <attribute name="editorwidth" type="float">973</attribute>
         <attribute name="controlswidth" type="float">308</attribute>
         <attribute name="consoleview" type="int16">0</attribute>
         <relationship name="project" type="1/1" destination="PROJECT" idrefs="z119"></relationship>
