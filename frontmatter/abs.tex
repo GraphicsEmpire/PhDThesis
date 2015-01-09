@@ -16,17 +16,19 @@ adversely affect the performance of simulation and modelling systems. In additio
 incorporated in a surgical simulation system, interactive and smooth cutting becomes a required feature 
 for many procedures.
 
-In this research we propose a comprehensive framework for high-performance rendering
+In this research, we propose a comprehensive framework for high-performance rendering
 and physically-based animation of tissues modelled using implicit surfaces.
 Our system provides an interactive cutting ability using smooth intersection surfaces.
 Complex models can be created with implicit primitives, blending operators, affine
 transformations, deformations and constructive solid geometry in a design environment that organizes
 all these in a scene graph data structure called the BlobTree. We show that the
 BlobTree modelling approach provides a very compact data structure which supports 
-the requirements above, as well as incremental changes and network-based cooperative design.
-A GPU-Assisted surface extraction algorithm is proposed to support interactive modelling of complex BlobTree models.
+the requirements above, as well as incremental changes and trivial collision detection.
+A GPU-assisted surface extraction algorithm is proposed to support interactive modelling of complex 
+BlobTree models.
+
 Using a finite element approach we discretize those models for accurate physically-based animation. 
-Interactions with the model are supported through smooth cut surfaces. We show an application of our
+Interactions with the models are supported through smooth cut surfaces. We show an application of our
 system in a human skull craniotomy simulation.
 
 
