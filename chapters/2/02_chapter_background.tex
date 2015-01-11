@@ -12,7 +12,7 @@ scalability issues. The chapter concludes with a review of the related work in t
 Parametric surfaces such as Bezier patches has a generative form that enables 
 two dimensional iteration over the surface directly. However, in the case of implicit models, 
 the surface is surrounded by the object's volume and an extraction process is required to 
-access the boundary surface. The formal definition of the surface and volume in this case is as following:
+access the \textit{iso-surface}. The formal definition of the surface and volume in this case is as following:
 
 \begin{equation}
 S = \left\{M = (x,y,z) \in \mathbb{R}^3 | F(x,y,x) = c\right\}
@@ -26,15 +26,17 @@ Function $F$ computes the field value at a certain position $M$.  $c$ is a const
 which is set to $0.5$ in our system. For each point in space if the field is greater than $c$ the point is 
 considered inside the model otherwise outside. 
 
-Most of the primitives used in the \blob are built from geometric skeletons, which are incorporated in many implicit modelling software packages 
-such as BlobTree.net \cite{Groot2008} or ShapeShop \cite{Schmidt2006}. They are ideally suited to prototype shapes of arbitrary topology 
-\cite{Bloomenthal1997}. In general these works conclude that the use of skeletal primitives can lead to a simple and intuitive user modelling 
-methodology. The basic building block of a skeletal primitive is a skeleton $S$. To create a skeletal primitive the distance-field $dS$ of the 
-volume encapsulating the shape has to be computed as described in \cite{Barbier2004}. The distance field is a volume of scalar values which is 
-not bounded as the distance itself can be infinitely large.
+Most of the primitives used in the \blob are built from geometric skeletons, which are incorporated in 
+other implicit modelling software packages such as BlobTree.net \cite{Groot2008} or ShapeShop 
+\cite{Schmidt2006}. They are ideally suited to prototype shapes of arbitrary topology \cite{Grasberger, Bloomenthal1997}. 
 
-By modifying $dS$ with a field function $g$, it can be bound to a finite range. Usually the function maps the distances to the range $[0, 1]$, 
-where the field has values of 1 at the skeletons and 0 after a certain distance to the skeleton (usually at distance 1). A discussion of field 
+The modeller has access to various skeletal primitives which are the basic building blocks of the 
+system for constructing complex shapes. Each primitive is a distance field $dS$ which encompasses a 
+volume of scalar values. In its raw form $dS$ is unbounded, by modifying $dS$ with a field function $g$, 
+the influence of the field is bounded to a finite range. 
+
+Usually the function maps the distances to the range $[0, 1]$, where the field has values of 1 at the 
+skeletons and 0 after a certain distance to the skeleton (usually at distance 1). A discussion of field 
 function is provided in \cite{shirley2009graphics}. Skeletal implicit primitives are combined 
 using binary operators, which are applied pair-wise to field-values f, and represented by a 
 node in the \blob, whose children are either primitives or operators themselves.
@@ -221,11 +223,13 @@ voxel position is dynamically computed in the vertex shader, then they used the 
 tessellate voxels into six tetrahedra spanning the voxel cube. However their method is limited to medical volume datasets.
 
 %Parallel Polygonization
-An adaptive parallel polygonization method is proposed by Yang \etal \cite{Yang2010}. They enhanced the Araujo's method 
-\cite{Rodriguesdearaujo2005} by dividing the bounding box of the model into eight parts and then processing them in parallel.
-For each part, their method find a seed point on the surface and increasingly expand it to form a 
-local mesh for the part by using the surface tracking approach. Using local curvature of the implicit 
-surface, their method produces triangles of varying sizes. However, their method is not scalable since 
+The polygonization method proposed by Yang \etal \cite{Yang2010}, is the enhanced version of the 
+Araujo's method \cite{Rodriguesdearaujo2005}. The main idea is to subdivide the bounding box of the 
+entire model into eight parts and then process them in parallel.
+
+For each part, a seed point is found on the surface and is increasingly expanded to form a 
+local mesh for that part by using the surface tracking approach. Using local curvature of the implicit 
+surface, triangles of varying sizes are produced. However, their method is not scalable since 
 it can not guarantee finding a seed point per each sub box in case the number of sub boxes increases. 
 They reported very slow rendering times even for the simple models that they have tested their system with. 
 
@@ -236,13 +240,16 @@ and ray traversal algorithm. However, their method is restricted to static impli
 algebraic surfaces.
 
 None of the proposed methods above used a modelling framework to define their input data in a hierarchical structure similar to 
-the \blobns. Their method is either limited to volume data or an algebraic implicit function to represent the underlying volume. 
-In a closely related work, Schmidt \etal \cite{SWG2005} used a field caching mechanism inside the \blob to perform fast potential field 
-reconstruction without traversing the entire tree. They used a trilinear reconstruction filter for field value and a triquaratic filter
-for gradient interpolation. They evaluated cache efficiency by polygonizing a \blob model once using cache nodes and the other time 
-without. They reported up to 16 times speedup for polygonizing a model with different resolutions. However, their method is not scalable since 
-the cache nodes cannot be updated from different processing threads without using locking
-mechanisms or a data race condition can occur. 
+the \blobns. The proposed methods are limited to constant volume data or static algebraic implicit 
+functions to represent the underlying volume. 
+
+In a closely related work, Schmidt \etal \cite{SWG2005} used a field caching mechanism inside the \blob 
+to perform fast potential field reconstruction without traversing the entire tree. They used a trilinear 
+reconstruction filter for field value and a triquaratic filter for gradient interpolation. They evaluated cache 
+efficiency by polygonizing a \blob model once using cache nodes and the other time without. They 
+reported up to 16 times speedup for polygonizing a model with different resolutions. However, their 
+method is not scalable since the cache nodes cannot be updated from different processing threads 
+without using locking mechanisms or a data race condition can occur. 
 
 \subsection{GPU-Accelerated rendering of implicits}
 GPU accelerated rendering techniques has been the topic of interest for the graphics community in the past two decades.

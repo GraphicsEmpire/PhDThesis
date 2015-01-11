@@ -85,8 +85,10 @@ $[a, b)$ over \textit{MPUSET} is called an \textit{MPURANGE} which contains cons
 
 
 \section{Algorithm}\label{sec:algorithm}
-The input to our algorithm is a \blob data structure, representing an implicit model whose iso-surface we wish to find. Output is a 
-triangle mesh.  The model bounding box and the cellsize parameter supplied by the user to control the resolution of the final mesh.
+The input to our algorithm is a \blob data structure, representing an implicit model whose iso-surface we wish to find. 
+Output is a triangle mesh.  The model bounding box and the cellsize parameter are supplied by the user to control 
+the resolution of the final mesh.
+
 The \blob structure is first converted into a compact, linear structure required for SIMD optimization techniques, then the model 
 bounding box is divided into the \textit{MPUSET} with respect to the \textit{cellsize} parameter.
 The \textit{MPUSET} is processed in parallel using multiple cores; with a fast empty \textit{MPU} rejection method and SIMD surface 
@@ -121,14 +123,75 @@ monitoring processors and starting new tasks on idle cores automatically (work-s
 
 \subsection{BlobTree Linearization}\label{sec:linearization}
 The first step in our algorithm is the \blob reduction and pruning as suggested by Fox \etal \cite{Fox2002}.
+As shown in figure \ref{fig:combinetransforms}, after the reduction process, the 
+leaf nodes are associated with the combined transformations of all nodes in that branch of the 
+\blob. Using this technique the transformation for the internal nodes can be 
+removed since they are simplified to identity matrices. 
+
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=1.0\linewidth]{figures/cpupoly/blob_original.pdf}
+  \caption{The original \blob.}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=1.0\linewidth]{figures/cpupoly/blob_combined.pdf}
+  \caption{The \blob after the flattening process.}
+  \label{fig:sub2}
+\end{subfigure}
+\caption{The reduction process combines all transformation nodes at primitives. After the operation, all internal operators 
+are associated with identity transformation matrices.}
+\label{fig:combinetransforms}
+\end{figure}
+
+
 In the second step, using the same linearization algorithm proposed for quadtrees \cite{Lee2000}; the \blob is converted into 
 a pointerless representation to achieve cache-memory efficiency by keeping all input data structures at 
-aligned memory addresses and fitting the entire \blob model into the last level cache memory of the processor. 
-The final linearized \blob is in the format cache-line aligned structure of arrays. With this format several computations
-can be optimized with SIMD instructions, e.g. applying a transformation matrix on a vector of 4 or 8 vertices as opposed to
-scalar computation. The output mesh is also in the format of cache-line aligned structure of arrays which is the key to
-compute colors and normals in SIMD fashion. 
+aligned memory addresses and fitting the entire \blob model into the last level cache memory of the processor 
+(see figure \ref{fig:linearized_blobtree}). 
 
+\begin{figure}[H]
+  \centering
+  % the following command controls the width of the embedded PS file
+  % (relative to the width of the current column)
+  \includegraphics[width=0.9\linewidth]{figures/cpupoly/blob_linearized.pdf}
+  \caption{\label{fig:linearized_blobtree}
+  {The \blob is flattened to a structure of arrays (SOA), and is stored at aligned memory addresses for performance
+  reasons. Each row represents an array of values of the same type. $N$ is determined in such a way that the entire structure 
+  fits in the cache memory of the processor. }
+}
+\end{figure}
+
+The flattening process converts the pointer based \blob into a structure of 
+arrays. The operators have access to their children using the integer based 
+links for direct access. The operator flags determine the type of children i.e. primitive or operator. 
+Each primitive has an associated link to a transformation node (e.g. link zero is associated with the identity 
+transformation matrix to be reused globally.) $N$ is computed based on the size 
+of memory in the last level cache of the processor. An approximation of $N$ can 
+be computed as following: 
+
+\begin{equation}
+N = \lfloor \frac{0.6 * LLC}{sizeofOp + sizeofPrim + sizeofTransform} \rfloor
+\end{equation}
+
+$LLC$ denotes the size of cache memory available per each core in bytes. Other 
+variables, as their name suggests, are the sizes of one operator, one primitive and 
+one transformation node, respectively. Only 60 percent of the cache storage is assigned for 
+the \blob structure, since there are certainly other input structures and intermediate variables that need 
+to be stored for the process at each core. 
+
+Using this estimation the computed value for $N$ is 1200 in one of our systems with a total cache memory of 
+256 KiBytes per core. In our current implementation the memory usage is 96, 56 and 64 bytes per each 
+primitive, operator and transformation nodes, respectively. 
+
+The final linearized \blob is in the format of cache-aligned structure of arrays. With this arrangement several 
+computations can be optimized with SIMD instructions, e.g. applying a transformation matrix on a vector of 
+4 or 8 vertices as opposed to scalar computation. The output mesh is also in the format of cache-aligned 
+structure of arrays which is the key to compute colors, normals and other attributes in SIMD fashion. 
 
 
 \subsection{Surface Extraction}\label{sec:surfaceextraction}
@@ -504,9 +567,15 @@ the number of cores available on each processor.
 
 Finally, we compare our method against Schmidt \etal's \cite{SWG2005} using the Medusa model provided by them   
 which has 2920 primitives and 11 operators and the tree structure has a depth of 6 (figure \ref{fig:ModelMedusa}).
-In this experiment, we divided polygonization timings reported in \cite{SWG2005} by 8 as the best AVX
+
+The Medusa model is programmatically reconstructed in our modelling system and the results of its 
+polygonization are already published by Schmidt \etal \cite{SWG2005}. 
+
+
+We divided polygonization timings reported in \cite{SWG2005} by 8 as the best AVX
 optimized version of Schmidt's method. Then we ran our polygonization algorithm
 optimized with AVX instructions on a single core for Medusa model (See table \ref{table:stats}). 
+
 
 \begin{table}[H]
 \begin{center}
