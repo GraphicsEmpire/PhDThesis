@@ -1,30 +1,74 @@
 \startchapter{GPU discretization}
 \label{chapter:GPUDiscretization}
-In the previous chapter we presented an algorithm for fast triangle mesh extraction from \blob scene graphs. The output of that 
-algorithm is a list of vertices with their associated attributes such as position, color and normal and a list of triangles that
-defines the connectivity of the surface mesh. While the surface mesh is used for rasterization it can also facilitate  
-collision detection and contact modelling algorithms as we will see in the following chapters.  In this chapter we propose an improved 
-version of that algorithm that can take advantage of the processing capabilities of the GPU and provides real-time \blob rendering performance. 
+In the previous chapter we presented an algorithm for polygonization of the \blob scene graphs on 
+multi-core architectures. The output of that algorithm is a list of vertices with their associated attributes 
+such as position, color and normal and a list of triangles that defines the connectivity of the surface mesh. 
+While the surface mesh is used for rasterization it can also facilitate collision detection and contact 
+modelling algorithms as we will see in the following chapters.  In this chapter we present an improved 
+version of that algorithm that can take advantage of the processing capabilities of the GPU and provides 
+scalable rendering performance on many-core architectures. 
 
-Building on top of the results from our SIMD polygonization algorithm, in this chapter we present our work in optimizing that 
-algorithm for many-core architectures such as GPU. When compared to the related work in the field, our proposed method has the following
-benefits:
+
+Building on top of the results from our SIMD polygonization algorithm, in this chapter we present our 
+work in optimizing that algorithm for many-core architectures such as GPU. The following are some of 
+the reasons behind this effort:
+
+\begin{enumerate}
+ \item The polygonization process extracts a triangle mesh which ultimately requires rasterization for 
+ rendering. Using a GPU implementation both steps can be fused together thus avoiding the expensive 
+ read-backs. 
+
+ \item GPUs provide a higher degree of SIMD processing which is also called SIMT for single instruction
+ multiple threads. Using the same strategy, multiple units execute the same 
+ fetched and decoded instruction; however, on the GPU side there is a wider access to 
+ register sets, multiple flow paths and access to multiple memory addresses that can scale the 
+ performance of each running thread significantly. 
+  
+ \item Using flexible and portable OpenCL programming, the polygonization code can be written 
+ in simple, scalar arithmetic and the runtime environment will handle multi-threaded task 
+ parallelism and vector width SIMD processing on the target hardware. This 
+ is certainly much more readable and extensible code than using non-portable, machine 
+ intrinsic functions for SIMD processing.
+ 
+ 
+\end{enumerate}
+
+
+When compared to the related work in the field, our proposed method has the following benefits:
 
 \begin{itemize}
- \item It is data-driven, i.e. the input to our algorithm is a dynamic \blob structure that can change 
+ \item It is dynamic, i.e., the input to our algorithm is a dynamic \blob structure that can change 
  in every frame. This is a key advantage that can enable interactive modelling sessions in an implicit 
- framework, i.e. the result of modifications to the model can be viewed in real-time.
+ framework, i.e. the result of modifications to the model can be viewed in real-time. 
+ After each change the associated meshes are updated dynamically. 
 
- \item The proposed GPU-based data-structure is compact enough to enable rendering complex \blob models 
- in the order of 60,000 nodes. (64,000 nodes only requires about 20MiB of video memory in our system).
+ \item It is high performance. The proposed GPU-based data-structure is compact enough to enable 
+ rendering complex \blob models in the order of 60,000 nodes. (64,000 nodes only requires about 
+ 20MiB of video memory in our system).
 \end{itemize}
 
-The data-structure and algorithm are explained in the following sections. The chapter concludes with 
-the results and analysis.
+
+The next section provides an overview on the design differences between a CPU and 
+a GPU. Other considerations for memory and access patterns are discussed in that section.  
+Next the data-structure and the new algorithm are explained. The chapter concludes with the results 
+and analysis.
 
 %Another requirement for the tetrahedral mesh generation is that the triangular surface mesh should be the boundary surface of the tetrahedral mesh. This is needed since 
 %after applying the displacements to the volumetric tetrahedral elements the surface vertices should be displaced as well.
 \section{Many-cores architectures}
+One of the main differences between a multi-core CPU versus a many-core GPU 
+architecture is the fact that the former is optimized for the fast execution of 
+a single task by supporting a broad-set of instructions in hardware, where as the latter can accommodate 
+heavy parallel processing in the format of single instruction multiple data (SIMD). 
+
+CPU designers incorporate complex multi-cycle pipeline methodologies to amortize 
+the amount of computation in a single machine cycle, e.g. by overlapping the execution of independent 
+instructions at different cores, all cores of a processor are kept busy working on a different instruction. 
+GPU designs take a different approach to parallelism. They achieve higher SIMD throughput by assigning 
+more of the chip area to arithmetic logic units (ALUs) and less to fancy branch predictions and flow control. 
+GPUs also have access to higher memory bandwidth when compared to their CPU counterparts.
+
+
 The advent of programmable graphics pipeline opened up new avenues to exploit computational resources of the
 GPU hardware. Before the introduction of general-purpose GPU (GPGPU) programming languages, such as open compute language (OpenCL), 
 researchers in the field were forced to use computer graphics shading languages (e.g. glsl, cg) to gain access to 
@@ -37,8 +81,8 @@ problem in high performance computing domain. In addition to the lack of a gener
 the complexity of mapping the problem domain to the graphics pipeline complicated the implementations and lead 
 to various ad-hoc solutions to the same problems. For instance, Georgii \etal created an interactive cloth simulation 
 by implementing a mass-spring system using fragment shader programming on an ATI X800 graphics card \cite{Georgii2005}. 
-As another example S{\o}rensen \etal reviewed several techniques for accelerating linear system solving on GPUs
-with applications in surgical simulation \cite{Sørensen2006a}. 
+As another example S{\o}rensen \etal reviewed several shader programming techniques for accelerating 
+linear system solving on GPUs with applications in surgical simulation \cite{Sørensen2006a}. 
 
 At the time of this writing, the following languages are commonly used for GPGPU computing:
 \begin{itemize}
@@ -77,24 +121,24 @@ accessible by all processing elements within the same block. Beside the local an
 spaces, all processing elements have access to a global memory block which has the slowest access 
 time when compared to the other two spaces. 
 
-Physically, the local and shared memory spaces can be seen as level 1 and level 2 cache memory on the CPU and
-the global memory as the main memory (i.e. video memory on the GPU).
+Physically, the local and shared memory spaces can be seen as level 1 and level 2 cache memory on the 
+CPU and the global memory as the main memory (i.e. video memory on the GPU).
 
 
 
 \section{Data Structures}
 \label{sec:datastructure}
-The \blob linearization step introduced in (section \ref{sec:linearization}) is modified to create a compact representation of the input model in our 
-GPU polygonization algorithm. 
+The \blob linearization step introduced in (section \ref{sec:linearization}) is modified to create a compact 
+representation of the input model in our GPU polygonization algorithm. 
 
-All the structures are aligned at 16 bytes (four floating points) memory addresses (This is similar to the texture 
+All the structures are aligned at 16 bytes (four floating points) memory addresses. This is similar to the texture 
 accessing techniques in graphical shader programming languages such as GLSL or Cg, where four floats represent the 
-RGBA values of a texel accordingly.) If a primitive node has an associated transformation node with a non-identity 
+RGBA values of a texel accordingly. If a primitive node has an associated transformation node with a non-identity 
 transformation matrix, that matrix will be stored in the primitive matrices section of the input structure and an 
-associated identifier (id) will be provided to the primitive. The default id is 0 which points to an identity transformation 
-matrix. The inverse of the primitive matrix is computed and the first three rows are stored for further field 
-computations. To transform the axis-aligned bounding boxes of the primitives, the full forward transformation matrix is 
-stored in the box matrices section of the structure and it can be accessed using the same id provided for the primitive matrix.
+associated identifier (id) will be provided to the primitive. The inverse of the primitive matrix is computed 
+and the first three rows are stored for further field computations. To transform the axis-aligned bounding 
+boxes of the primitives, the full forward transformation matrix is stored in the box matrices section of 
+the structure and it can be accessed using the same id provided for the primitive matrix.
 Figure (\ref{fig:datastructure}) depicts this pointerless representation in details.
 
 \begin{figure}[H]
@@ -120,16 +164,15 @@ Each input data-structure is numbered in figure (\ref{fig:datastructure}) for fu
  computed from sketched control points (e.g. the thin-plate spline primitives \cite{Turk1999, Grasberger}) the indices to the 
  associated first and last control points are stored in the last texel.
 
- \item A \blob operator is defined in 4 texels. The type of the operator is defined first in the $TP$ field. 
- The following fields define the left and right children, in case all the children are primitives and their indices are in 
- consecutive order (e.g. a range); $LC$ and $RC$ are the indices to the first and last children respectively. This situation 
- can happen if an operator is applied to a list of consecutive primitives, e.g. a global union operator.  The $NX$ 
- field is related to our stackless \blob traversal algorithm which is explained in the following sections and defines the next 
- operator node in the \blob traversal route. The operator-specific parameters and its axis-aligned bounding box are stored next. 
- The $F^*$ field are the flag bits that provide more control over the operator and the definition of each can be found at the bottom of figure
- \ref{fig:datastructure}. Bits 1 and 0 are set in case the left child or the right child of the current node are operators as well. Bit 2 is 
- set if the $LC$ and $RC$ indices are actually defining a range of skeletal primitives as explained earlier. In this case the 
- first two fields will be set to zero. If the unary flag is set then the operator has only one child which is stored in the $LC$ field.  
+ \item A \blob operator is defined in 4 texels. Similar to the structure shown 
+ in figure \ref{fig:linearized_blobtree}, links are provided to the child nodes.  
+ Other fields added to support our stackless \blob traversal algorithm which is explained in the following 
+ sections. The $NX$ field defines the next operator node in the \blob traversal route. 
+ The $F^*$ field contains the flag bits that provide more control over the operator and the definition of 
+ each can be found at the bottom of figure \ref{fig:datastructure}. Bits 1 and 0 are set in case the left child 
+ or the right child of the current node are operators as well. Bit 2 is 
+ set if the $LC$ and $RC$ indices are actually defining a range of indices for primitive children. If the unary 
+ flag is set then the operator has only one child which is stored in the $LC$ field.  
  Bit 4 is set when the current operator appears as a right node for its parent. Bit 5 is the break route flag and is discussed further 
  in our stackless \blob routing algorithm. The rest of the bits are reserved for future use. 
  
@@ -143,13 +186,17 @@ Each input data-structure is numbered in figure (\ref{fig:datastructure}) for fu
 \end{enumerate}
 
 \section{Memory foot prints}\label{sec:memory}
-After analyzing the performance of our OpenCL kernels, register spilling often found to be the major cause for many latencies. Resorting to shared memory spaces, reducing 
-number of intermediate variable in field-evaluation kernels and avoiding loop unrolling in some cases helped to optimize the performance. Upon every
-change in the input \blob the scene-graph is compacted and transferred from main memory to the GPU. Currently the maximum number of nodes is set at 64K which covers
-all of the complex cases we modelled for this thesis. However, for larger \blob models  we can easily increase this amount to support them. The memory footprint of 
-our current \blob representation is summarized in table \ref{table:memfootprint}. Each row in the table represents a \blob with a specific number of nodes.
-Starting from the simplest \blob with only one node (e.g. a sphere primitive) to the most complex \blob with one million nodes. The middle columns in the 
-table are the break down of the required memory size per each component in the compacted \blob data structure.
+After analyzing the performance of our OpenCL kernels, register spilling often found to be the major 
+cause for many latencies. Resorting to shared memory spaces, reducing number of intermediate variables 
+in field-evaluation kernels and avoiding loop unrolling in some cases helped to optimize the performance. 
+Upon every change in the input \blob the linearized \blob is updated and transferred from main memory 
+to the GPU. Currently the maximum number of nodes is set at 64K which covers all of the complex cases 
+we modelled for this thesis. However, for larger \blob models we can easily increase this amount to 
+support them. The memory footprint of our current \blob representation is summarized in table 
+\ref{table:memfootprint}. Each row in the table represents a \blob with a specific number of nodes.
+Starting from the simplest \blob with only one node (e.g. a sphere primitive) to the most complex \blob 
+with one million nodes. The middle columns in the table are the break down of the required memory 
+size per each component in the compacted \blob data structure.
 
 \begin{table}[H]
 \begin{center}
@@ -178,40 +225,56 @@ stage is the computation of normals and colors which require extra field evaluat
 
 In this section we describe our novel stackless \blob traversal algorithm. 
 Without a stack to be maintained the \blob traversal incurs less memory footprint. When dealing with small 
-local memory available per each thread on the GPU this reduction in memory usage improves the performance of the 
-running kernels significantly.
+local memory available per thread on the GPU this reduction in memory usage improves the performance of the 
+running kernels significantly. The idea behind the stackless traversal is to pre-compute a serial route to 
+visit and evaluate all the operator nodes in the tree without using a global temporary storage to keep 
+track of the visited nodes. An index based data structure is designed to provide sibling node access 
+as well as two-way parent child relationships. This type of links help to perform horizontal and 
+vertical moves in the tree structure.
+
 
 In high performance rendering algorithms the use of hierarchical spatial data structures for acceleration reasons 
-is common. Visiting nodes in such structures requires stack-based traversal algorithms. Unfortunately, even the latest 
-GPU architectures are poorly suited for implementing such algorithms. 
+is common. Visiting nodes in such structures requires a stack-based depth-first search (DFS) traversal algorithm. 
+Unfortunately, even the latest GPU architectures are poorly suited for implementing such algorithms. 
 
-A complex \blob scene-graph data structure may contain thousands of primitives and operators which can lead to deep tree structures. 
-In the original stack-based traversal algorithm, the fieldvalue evaluation process has two stages: A ``down traversal'' followed by an ``up traversal''. 
-During the down traversal stage all operators starting from the root node are visited and pushed onto an operators stack until a leaf node (primitive) 
-is reached at which point the field due to the primitive is computed and pushed onto a separate fields stack and the next 
-stage which is the up traversal begins.
+A complex \blob scene-graph data structure may contain thousands of primitives and operators which 
+can lead to deep tree structures. Using the original DFS algorithm, the fieldvalue evaluation 
+process has two stages: A ``down traversal'' followed by an ``up traversal''. 
+
+During the down traversal stage all operators starting from the root node are visited and pushed onto an 
+operators stack until a leaf node (primitive) is reached at which point the field due to the primitive is 
+computed and pushed onto a separate fields stack and the next stage which is the up traversal begins.
 
 During the up traversal stage the operators are popped out of the stack and per each child an associated field is popped from the fields stack for the 
 operator to combine them in its own specific way. The resulting field is again pushed back on the fields stack.  This process continues until the 
 operators stack get emptied and the final fieldvalue due to the root node is computed and returned.
 
-Performing many push and pop operations limit the performance of the traversal process. The other issue relates to the 
-inherently dynamic storage requirement for the stack itself. Although, creating a fixed-size stack is possible but since the stack size is a function of
-the count of nodes in the input \blob, this will ultimately limit the maximum number of nodes in a complex scene. If $N$ is the maximum number of nodes 
-(primitives plus operators) allowed in a \blob model then the minimum number of elements to be stored in the stack during the traversal process 
-is given by: $M=\log(N)$ or the depth of the binary tree created by $N$ nodes. Recalling from section \ref{sec:memory} there is a limited amount of
-local memory available per each thread executing on the GPU. Keeping the stack in the shared memory will also complicate the implementation and
-the access patterns from other threads in the current thread block and may impact the performance. Needless to say that implementing a stack in the global 
-video memory will require very expensive memory transfers and is not an option for a real-time rendering algorithm. 
-
+Performing many push and pop operations limit the performance of the traversal process. The other issue 
+relates to the inherently dynamic storage requirement for the stack itself. Although, creating a fixed-size 
+stack is possible but since the stack size is a function of the number of nodes in the input, this will 
+ultimately limit the maximum number of nodes in a complex scene. If $N$ is the maximum number of nodes 
+(primitives plus operators) allowed in a \blob model then the minimum number of elements to be stored 
+in the stack during the traversal process is equivalent to the depth of the tree. Implementing a stack in the 
+global video memory will require very expensive memory transfers and is not an option for a real-time 
+rendering algorithm. 
 
 Our algorithm is based on the neighbor cell-links concept in the stackless traversal of spatial subdivision trees 
 which is first introduced by Samet \etal \cite{Samet1984,Samet1990}. Using a similar technique Popov \etal presented 
-a stackless KD-Tree Traversal for high performance GPU ray tracing algorithm \cite{Popov2007}. 
+a stackless KD-Tree traversal for high performance GPU ray tracing algorithm \cite{Popov2007}. 
 
-%Although the \blob traversal algorithm presented here is somewhat different in my approach, a similar idea was put forward 
-%by my fellow student, Herbert Grasberger, and submitted for publication. The details to be found in his thesis \cite{Grasberger2015}. 
-%The following \blob traversal stage was developed independently inspired by his draft publication.
+The novelty of our technique is in the route computation and evaluation process which is completely 
+different than what is proposed in Samet's and Popov's work. In our system, the geometry is not explicitly 
+defined in the input structure at the time of route computation. Both Samet's and Popov's algorithms are 
+based on spatial data-structures that provide explicit access to the geometry and therefore it is possible 
+to recompute the missing sibling and parent-child relationships if they are not pre-computed. The 
+second difference is the fact that not all the child nodes in  accelerator structures such as KD-Trees or 
+BSP-trees need to be visited to answer an inclusion query, but in case of a \blob structure all nodes are 
+visited in order to compute the final field due at a point in space. Once the field is computed then it is 
+trivial to answer the inclusion query. A third difference is in the order of evaluating the operator nodes. 
+Some operations such as difference, are not commutative and need a specific handling when computing 
+the route. Such differences require special handling that clearly show the need for a different tree 
+traversal algorithm.
+
 
 The algorithm is divided into two stages. A preprocessing stage to compute a traversal route for the entire 
 \blob and the GPU-based stackless traversal stage to compute the field-value due to a given point in space. 

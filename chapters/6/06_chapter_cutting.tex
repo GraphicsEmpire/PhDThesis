@@ -211,13 +211,20 @@ In the next section we describe the cutting algorithm which is based on the edge
 
 \section{Cutting Algorithm}
 \label{sec:cutalg}
-Our cutting algorithm follows the same strategy presented by Ganovelli \etal \cite{Ganovelli2000} which suggests use of lookup tables to 
-handle different configurations. We also applied the optimizations suggested by
-Steinemann and Mor \etal \cite{Steinemann, Mor2000} to have minimal new elements added to the mesh cut. 
-The first stage in our cutting algorithm is detecting the cut sweep-surface. The input to this stage is the cut trajectory which is a list of points
-that the scalpel passed through in Euclidean space. The cut trajectory is not collected until the axis-aligned bounding box of the cutting tool intersects
-with that of the tissue. The tissue bounding box is expanded to rule out the boundary cases where the surface of the model contacts with its own bounding 
-box. In such cases the scalpel might miss the surface if the bounding box test fails to detect the initial contact. 
+Our cutting algorithm follows the same strategy presented by Ganovelli \etal \cite{Ganovelli2000} which 
+suggests use of lookup tables to handle different configurations. We also applied the optimizations 
+suggested by Steinemann and Mor \etal \cite{Steinemann, Mor2000} to have minimal new elements 
+added to the mesh cut. The novelty of our method lies in its generality in the scope of cut tools e.g., 
+scalpel versus tube-shaped, and its performance for updating mesh connectivity in real-time,
+and finally its ability to handle cuts of various sizes and trajectories e.g., freehand versus axis-locked
+cuts.
+
+The first stage in our cutting algorithm is detecting the cut sweep-surface. The input to this stage is the 
+cut trajectory which is a list of points that the scalpel passed through in Euclidean space. The cut 
+trajectory is not collected until the axis-aligned bounding box of the cutting tool intersects with that of 
+the tissue. The tissue bounding box is expanded to rule out the boundary cases where the surface of the 
+model contacts with its own bounding box. In such cases the scalpel might miss the surface if the 
+bounding box test fails to detect the initial contact. 
 
 
 \subsection{Edge Intersections}
@@ -416,11 +423,25 @@ Sub-elements are separated by semi-colon to fit on the line.}}
 %modifications and the post processing step that supports smoothness of the cuts in case of complex tissues. 
 
 \subsection{Topological Updates}
-During the cutting process, the intersected cells are being replaced by sub-cells as discussed in the previous section. Cell removal operation involves updating the entire 
-mesh structure which can be expensive if performed during the cut process. In our system all the intersected cells are being placed on a pending list for later deletion 
-which will be visited by a post-processing stage called ``garbage collection''. This way the indices of the mesh entities are left intact during the cutting process and 
-then once the cut is finalized the mesh can be cleaned and any unused entities such as cells, faces, edges or nodes are being purged to keep the structure as compact as 
-possible for the next cutting operations.
+During the cutting process, the intersected cells are being replaced by sub-cells as discussed in the 
+previous section. Cell removal operation involves updating the entire mesh structure which can be 
+expensive if performed during the cut process. In our system all the intersected cells are being placed 
+on a pending list for later deletion which will be visited by a post-processing stage called 
+``garbage collection''. This way the indices of the mesh entities are left intact during the cutting process 
+and then once the cut is finalized the mesh can be cleaned and any unused entities such as cells, faces, 
+edges or nodes are being purged to keep the structure as compact as possible for the next cutting 
+operations.
+
+The mentioned ``garbage collection'' process starts by visiting all the cells in the list of pending items 
+for deletion. First, the list is sorted in increasing order of cell indices, this step is required to correctly 
+update only the position of the items appearing in the subsequent index levels. 
+
+Then using the bottom up access links (list of incident cells per each face), the list of unreferenced faces 
+is extracted which contains all faces that are not associated with any cells. 
+The same operation is then performed for edges and nodes. At each step the list of unreferenced entities 
+are sorted and all the items in those lists are removed from the internal container structures. Finally, all 
+the containers are compacted and the indices of remaining entities are updated accordingly. 
+
 
 \section{Cutting Results}
 \label{sec:cutres}
