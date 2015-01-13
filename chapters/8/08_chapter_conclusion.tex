@@ -44,7 +44,10 @@ proposed compact data-structure for \blob in section \ref{sec:datastructure} ena
 rendering of large \blob in the order of 60,000 nodes interactively (as shown in that chapter using our 
 compact data-structure a 64K nodes \blob only takes about 20 MB in video memory).  The result is a 
 high performance polygonization method that enabled real-time updates in our incremental modelling 
-system. This result is better than the work of \cite{Knoll2007, Yang2010, singh2010real, chochlik2012gpu}.
+system. This result is better than the work of \cite{Knoll2007, singh2010real} 
+in rendering implicit models and the work of \cite{Yang2010, chochlik2012gpu} 
+in polygonization techniques.
+
  
 % 4. GPU based dynamic mesh
 An intuitive volumetric mesh data-structure is proposed which is suitable for storing dynamic meshes on 
@@ -55,7 +58,7 @@ data-structure is more performant and can benefit the related work in this domai
 % 5. cutting contribution how does it compare to previous work
 Our proposed GPU-based data-structure enables real-time updates of the volumetric meshes upon 
 cutting. Our cutting algorithm as shown in section \ref{sec:cutalg} is interactive for approximately 100,000 finite 
-element cells. This is sufficient for highly complex brain surgery simulations. The resulting finite element 
+element cells. This is sufficient to cover many surgical scenarios. The resulting finite element 
 cells are of high quality (the tetrahedral cells are not flat or wedge-shaped) as shown in section \ref{sec:cutres}. 
 This is better than what has been done in the work of Courtecuisse \etal \cite{Courtecuisse2010}.
 The cut edges are smooth, not jagged and a minimal amount of tetrahedral elements are 
@@ -80,13 +83,13 @@ physically-based simulation for this specific procedure.
 
 \section{Future Work}
 There are many areas in which the proposed system may be improved. The polygonization method 
-introduced in chapter \ref{chapter:GPUDiscretization} can be further extended to support for more 
+introduced in chapter \ref{chapter:GPUDiscretization} can be further extended to support more 
 complex implicit primitives such as skeletal curve primitives. Such primitives can be helpful in modelling 
 vain and other tube-shaped tissues. Support for implicit decals as suggested in \cite{DeGroot2014} can help 
 in creating realistically textured organs. 
 
-Our cutting algorithm can also be extended to support progressive cuts. Progressive cuts can drastically 
-enhance the perceived sense cutting. Also incorporating a fluid simulation will enhance the cutting 
+Our cutting algorithm can also be extended to support progressive cuts. Progressive cuts can 
+enhance the level of realism perceived in cutting. Also incorporating a fluid simulation will enhance the cutting 
 scenario for simulating blood and CSF fluids in the brain. Procedural models such as L-Systems can be 
 used to simulate the small blood vessels in the brain biopsy simulation. 
 

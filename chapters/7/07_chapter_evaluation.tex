@@ -1,23 +1,24 @@
 \startchapter{Evaluation, Analysis and Comparisons}
 \label{chapter:evaluation}
-During the past decade a new thrust has appeared with the development of deformable tissue modelling techniques which could make it
-possible to develop patient-specific simulations. Whenever the best surgical strategy is unclear or the patient presents a rare
-pathology such simulations could be beneficial. Other use-cases for such systems is in surgical skill training which is a long 
-and tedious process of acquiring fine motor skills. In all those scenarios physically-based animation of soft tissues is challenging and 
-has lots of room for improvement. 
+During the past decade a new thrust has appeared with the development of tissue modelling techniques 
+which could make it possible to develop patient-specific simulations. Whenever the best surgical strategy 
+is unclear or the patient presents a rare pathology such simulations could be beneficial. Other use-cases for such systems is in surgical skill training which is a long 
+and tedious process of acquiring fine motor skills. In all those scenarios physically-based animation of 
+tissues is challenging and has lots of room for improvement. 
 
 Our methods presented in the previous chapters have been integrated into our surgical simulation system. 
-The result is a comprehensive environment for soft-tissue modelling and simulation with support for cutting and
-probing. We present our results in the context of a skull craniotomy procedure.
+The result is a comprehensive environment for tissue modelling and simulation with support for cutting. 
+We present our results in the context of a skull craniotomy procedure.
 
-Craniotomy is a surgical operation in which a bone flap is temporarily removed 
-from the skull to access the brain. Craniotomies are often a critical operation performed on patients suffering 
-from brain lesions or traumatic brain injury (TBI), and can also allow doctors to surgically implant deep brain 
-stimulator for the treatment of Parkinson's disease, epilepsy and cerebellar tremor. The procedure is also widely 
-used in neuroscience for extracellular recording, brain imaging, and for neurological manipulations such as electrical 
-stimulation and chemical titration. Craniotomies are also named according to their size and complexity. Small dime-sized 
-craniotomies are called burr holes or keyhole craniotomies. Sometimes stereotactic frames, image-guided computer systems, 
-or endoscopes are used to precisely direct instruments through these small holes. Burr holes or keyhole craniotomies are 
+Craniotomy is a surgical operation in which a part of skull, called a bone flap is temporarily removed to access 
+the brain. The operation is performed on patients with brain lesions, traumatic brain injury 
+(TBI) or for brain biopsy purposes. Some treatment procedures are done by deep implantation of brain 
+stimulators; Parkinson disease, epilepsy and cerebellar tremor are examples of such cases that require 
+a craniotomy for the implantation process. 
+
+Small dime-sized craniotomies are called burr holes or keyhole craniotomies. In 
+order to precisely control surgical and biopsy instruments through these small holes, the surgeons 
+frequently use image-guided computer systems or endoscopes. Burr holes or keyhole craniotomies are 
 used for minimally invasive procedures to:
 
 \begin{itemize}
@@ -29,11 +30,26 @@ used for minimally invasive procedures to:
  \item insert an endoscope to remove small tumors and clip aneurysms
 \end{itemize}
 
-In the following sections we review the related work in this domain and then describe our simulation 
-setup. The chapter concludes with results and analysis.
-%The second simulation operation is brain biopsy which is the removal of a small piece of brain tissue for the diagnosis of abnormalities 
-%of the brain. It is used to diagnose Alzheimer's disease, tumors, infection, inflammation, and other brain disorders. By examining 
-%the tissue sample under a microscope, the biopsy sample provides doctors with the information necessary to guide diagnosis and treatment.
+In the following sections we review the previous work in this domain and then describe our experimental 
+setup . The chapter concludes with results and analysis.
+
+\section{Previous work}
+Abe \etal fabricated plastic skull models of seven individual patients by stereolithography from three-dimensional
+data based on computed tomography (CT) bone images \cite{Abe1998}. Surgical approaches and areas of craniotomy were 
+evaluated using the fabricated skull models. They reported a better understanding of anatomic relationships, preoperative
+evaluation of the proposed procedure and improved educational experiences for the residents and medical staff as the benefits of 
+their system. They also reported that the time and cost of making such models are the main disadvantages of using them.
+
+Wong \etal loaded patient specific CT scans of cranial bone and CT angiography of intracranial circulation
+into the Dextroscope workstation supplied by Volume Interactions Pte. Ltd \cite{Wong2007}. They showed various 
+use-cases of the zoom, rotate, move and crop functions of the Dextroscope to visualize various angles of 
+positioning the craniotomy. However, their system does not provide a physically-based simulation of the procedure. 
+
+Stadie \etal performed a study on the effectiveness of virtual reality systems for placing the craniotomies 
+in minimally invasive procedures \cite{Stadie2011}.  They used the Dextroscope and RadioDexter workstations 
+supplied by Volume Interactions Pte. Ltd. to visualize and annotate the 3D VR models. 
+Those systems are also used to measure the curvilinear distances of the proposed craniotomy centers on the 
+patients skull model but they can not perform a cutting procedure on the input VR models.
 
 \section{Architectural constraints}
 We are able to perform interactive cuts on a model with more than 60,000 cells. The GPU accelerated cutting algorithm 
@@ -90,14 +106,15 @@ drilled for the bare hole.
   % the following command controls the width of the embedded PS file
   % (relative to the width of the current column)
   \includegraphics[width=0.6\linewidth]{figures/evaluation/eggshell02.png}
-  \includegraphics[width=0.6\linewidth]{figures/evaluation/eggshell03.png}
+  \includegraphics[width=0.6\linewidth]{figures/evaluation/eggshell05.png}
   \caption{\label{fig:eggshell02}
-  {Eggshell model after being drilled by our cutting tool.}
+  {Eggshell model after being drilled by our cutting tool. Top: The first drill, Bottom: 
+  After drilling 6 holes to the model.}
 }
 \end{figure}
 
 After completing this experiment successfully our algorithm showed to be robust enough to handle 
-more complex meshes. In the next stage a real data-set of an skull tissue is used for the craniotomy operation.
+more complex meshes. In the next stage a real data-set of skull tissue is used for the craniotomy operation.
 
 \subsection{Craniotomy}
 \label{sec:craniotomy}
@@ -202,16 +219,19 @@ to show the internal tissues which are drawn in blue for better visibility.
 }
 \end{figure}
 
+
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.5\linewidth]{figures/evaluation/craniotomy06.png}
-  \includegraphics[width=0.5\linewidth]{figures/evaluation/craniotomy07.png}
-  \includegraphics[width=0.5\linewidth]{figures/evaluation/craniotomy08.png}
+  \includegraphics[width=0.4\linewidth]{figures/evaluation/craniotomy06.png}
+  \includegraphics[width=0.4\linewidth]{figures/evaluation/craniotomy07.png}
+  \includegraphics[width=0.4\linewidth]{figures/evaluation/craniotomy09.png}
+  \includegraphics[width=0.4\linewidth]{figures/evaluation/craniotomy10.png}
   \caption{\label{fig:craniotomy}
   {Simulation of the craniotomy operation using our surgical simulation framework with support for interactive cutting.}
 }
 \end{figure}
 
-Figure \ref{fig:craniotomy} shows the three stages of the operation (before, during and after the cutting operation). 
-During the drilling process 845 tetrahedral cells are being cut in the vicinity of the drilling tool. The interaction of the drilling tool and the skull 
-was interactive at all times supporting at least 60 frames per second.
+Figure \ref{fig:craniotomy} shows the operation (before, during and after drilling the first and the second holes). 
+During the drilling process 845 and 940 tetrahedral cells are being cut in the vicinity of the drilling tool 
+for the first and second holes, respectively. The interaction of the drilling tool and the skull 
+was interactive at all times, supporting at least 60 frames per second.
