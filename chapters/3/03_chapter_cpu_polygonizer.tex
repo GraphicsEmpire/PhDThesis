@@ -41,7 +41,7 @@ to find the intersection in a single run of a field evaluation kernel.
 %We have tested our algorithm on two different processors with various number of cores and cache memory. 
 The chapter is organized as follows;  In section \ref{sec:algorithm} our algorithm is explained along with 
 the improvements made to the distance-field computation process. Our performance results and future 
-work are presented in sections \ref{sec:results} and \ref{sec:futurework}, respectively.
+work are presented in sections \ref{sec:resultscpupoly} and \ref{sec:futurework}, respectively.
 
 %-------------------------------------------------------------------------
 \section{Architecture Constraints}\label{sec:architecture}
@@ -49,7 +49,7 @@ work are presented in sections \ref{sec:results} and \ref{sec:futurework}, respe
 In this section we define some processor architecture constraints, i.e. minimum 
 requirements from the hardware side to implement our algorithm as efficiently as possible.
 The algorithm scales with the number of physical cores and the SIMD vector width available on the processor.  
-See results section (\ref{sec:results}). 
+See results section (\ref{sec:resultscpupoly}). 
 
 Our current implementation leverages both Intel SSE with 4 float wide and Intel AVX with 8 float wide SIMD instruction sets.
 Using a cache-aware technique our algorithm is designed to minimize the movement of cache lines in and out of the processor's on-chip 
@@ -182,7 +182,7 @@ $LLC$ denotes the size of cache memory available per each core in bytes. Other
 variables, as their name suggests, are the sizes of one operator, one primitive and 
 one transformation node, respectively. Only 60 percent of the cache storage is assigned for 
 the \blob structure, since there are certainly other input structures and intermediate variables that need 
-to be stored for the process at each core. 
+to be stored for the processing on each core. 
 
 Using this estimation the computed value for $N$ is 1200 in one of our systems with a total cache memory of 
 256 KiBytes per core. In our current implementation the memory usage is 96, 56 and 64 bytes per each 
@@ -206,7 +206,7 @@ this fact empty \textit{MPU}s can be identified very fast by evaluating the fiel
 fields are zero. However, this test is only applicable when the cellsize parameter is smaller than or equal to $1/7$ or 0.1428. 
 For larger \textit{cellsize}s the iso-surface may still intersect with the \textit{MPU} while the fields at vertices of the \textit{MPU} are zero. 
 This process is depicted in the middle column of figure (\ref{fig:AlgorithmHighLevelView}).
-For a discussion on \textit{cellsize} versus performance see section~\ref{sec:results}.
+For a discussion on \textit{cellsize} versus performance see section~\ref{sec:resultscpupoly}.
 
 For larger \textit{cellsize}s we shoot 8 rays from the center of the \textit{MPU} to its eight vertices, using  the technique of Zhang \etal per 
 each step we march $0.866c$ (0.866 is half of the diagonal of an \textit{MPU} with side one and $c$ being the cellsize parameter) along each ray. 
@@ -336,7 +336,7 @@ Output is the local mesh contained in the \textit{MPU}}
 \end{algorithmic}
 \end{algorithm}
 
-\section{Analysis on \textit{MPU} size}
+\section{\textit{MPU} size Analysis}
 \label{sec:ExperimentWithMPUDimensionSize}
 In a separate experiment we studied the impact of various \textit{MPU} dimension 
 sizes in the overall performance of the algorithm. 
@@ -434,7 +434,7 @@ access to larger cache memory, the higher \textit{MPU} dimensions can be used.
 \end{figure}
 
 
-\section{Results}\label{sec:results}
+\section{Results}\label{sec:resultscpupoly}
 We have implemented our algorithm using Intel threading building blocks in C++ on a Linux platform. We used two systems with 
 different configurations. On the first system which has Intel i7-3960X processor with Sandy Bridge architecture, there are 6 
 physical cores given that each core runs in hyper-threaded mode; up to 12 threads can run in parallel on this machine. 

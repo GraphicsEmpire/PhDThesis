@@ -1,57 +1,35 @@
 \startchapter{Conclusions}
 \label{chapter:conclusion}
-The following contributions were made:
-
-
-\begin{enumerate}
-  
-\item A comprehensive modelling framework supporting a broad set of skeletal implicit primitives, 
- sketched primitive objects, warping, blending, affine transformations and constructive solid geometry 
- operators in the compact \blob structure. Our framework also provides a software architecture for 
- physically-based animation of rigid and deformable models.
- 
- \item An algorithm for interactive polygonization of implicit surfaces on multi-core architectures with 
- SIMD instructions (peer reviewed). 
- 
- \item An optimized GPU-accelerated algorithm for high-performance polygonization of implicit surfaces 
- on many-core architectures. 
- 
- \item A novel mesh data-structure suitable for storing dynamic meshes on the GPU to support realtime 
- modifications during cutting
- 
- \item Smooth, interactive cutting for complex elastic and rigid tissues 
- 
-% \item A novel technique for collision detection using implicit fields which is used in our system to detect 
-%the intersection of the scalpel tool with the volume mesh in real-time. 
- 
-\item A real-time Craniotomy simulation for neurosurgery and biopsy simulations.
-
-\end{enumerate} 
-
 % 1. modelling framework
-Our modelling framework enables physically-based animation of deformable models. 
-This is better than what has been done by Cani \etal \cite{Grascuel1997}.  
+We presented a system for modelling and interactive rendering of complex implicit 
+objects which bridges the gap between modelling and simulation. This is better than what has been done 
+by Cani \etal \cite{Grascuel1997}.  
+
 
 % 2. SIMD polygonization method
-Our SIMD polygonization method is peer reviewed \cite{Shirazian2012}. 
-The proposed algorithm is scalable, dynamic and data-driven as opposed to the related work in this 
+Our SIMD polygonization method is peer reviewed \cite{Shirazian2012}. The proposed algorithm is 
+scalable, dynamic and data-driven as opposed to the related work in this 
 area where the input model can be either simple static functions or constant range data-sets 
-\cite{Johansson2006, Tatarchuk2007, Knoll2007, Yang2010}.
+\cite{Johansson2006, Tatarchuk2007, Knoll2007, Yang2010}. The \blob pruning and linearization 
+described in section \ref{sec:linearization}, is an important step for designing compact and cache-line 
+optimized input data-structure and the presented method is generic enough to be 
+reused in applications involving hierarchical and tree-based structures. 
+
 
 % 3. GPU accelerated polygonization
 Our proposed SIMD polygonization method is later optimized for using GPU acceleration. The 
 proposed compact data-structure for \blob in section \ref{sec:datastructure} enables the transfer and 
 rendering of large \blob in the order of 60,000 nodes interactively (as shown in that chapter using our 
 compact data-structure a 64K nodes \blob only takes about 20 MB in video memory).  The result is a 
-high performance polygonization method that enabled real-time updates in our incremental modelling 
+high performance polygonization method that enables real-time updates in our incremental modelling 
 system. This result is better than the work of \cite{Knoll2007, singh2010real} 
 in rendering implicit models and the work of \cite{Yang2010, chochlik2012gpu} 
 in polygonization techniques.
 
- 
+
 % 4. GPU based dynamic mesh
 An intuitive volumetric mesh data-structure is proposed which is suitable for storing dynamic meshes on 
-the GPU to support realtime modifications during cutting. Our cutting results show that the presented 
+the GPU to support real-time modifications during cutting. Our cutting results show that the presented 
 data-structure is more performant and can benefit the related work in this domain 
 \cite{Wu2004a, Wu2005, Courtecuisse2010}.
 
@@ -68,15 +46,36 @@ created as the result of elements subdivision and this is better than the result
 
 % 7. Craniotomy simulation
 We presented a Craniotomy simulation based on our real-time cutting algorithm and the segmented 
-brain data-set published by Fang \etal \cite{fang2010mesh}. 
-%Although at this point we don't support haptic feedback but the simulation is well-received by one neurosurgeon at Stanford school of 
-%medicine and Dr. Sandrine deRibaupierre from Western University. 
-Given the large number of finite element cells in the brain mesh (around 100,000), our 
-simulation still runs at interactive rates and the cutting output is smooth for a high-quality simulation 
-as shown in section \ref{sec:craniotomy}. Colchester \etal used superimposed surface mesh for 
-guiding a Craniotomy simulation \cite{Colchester1994}. Abe \etal used plastic skull models for 
-training this procedure \cite{Abe1998}. To the best of our knowledge our proposed method is the only 
-physically-based simulation for this specific procedure. 
+brain data-set published by Fang \etal \cite{fang2010mesh}. Given the large number of finite element 
+cells in the brain mesh (around 100,000), our simulation still runs at interactive rates and the cutting 
+output is smooth for a high-quality simulation as shown in section \ref{sec:craniotomy}. Colchester 
+\etal used superimposed surface mesh for guiding a Craniotomy simulation \cite{Colchester1994}. 
+Abe \etal used plastic skull models for training this procedure \cite{Abe1998}. To the best of our 
+knowledge our proposed method is the only physically-based simulation for this specific procedure. 
+
+The following provides a summary of all the contributions made in this work:
+
+\begin{enumerate}
+  
+\item A comprehensive modelling framework based on the \blob scenegraph for designing complex 
+tissues. Our framework also provides a software architecture for physically-based animation of rigid and 
+deformable models.
+ 
+ \item An algorithm for interactive polygonization of implicit surfaces on multi-core architectures with 
+ SIMD instructions (peer reviewed). 
+ 
+ \item An optimized GPU-accelerated algorithm for high-performance polygonization of implicit surfaces 
+ on many-core architectures. 
+ 
+ \item A novel mesh data-structure suitable for storing dynamic meshes on the GPU to support real-time 
+ modifications during cutting.
+ 
+ \item Smooth, interactive cutting for complex tissues 
+ 
+\item A real-time Craniotomy simulation for neurosurgery and biopsy simulations.
+
+\end{enumerate} 
+
 
 
 

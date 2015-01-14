@@ -80,6 +80,7 @@ small vibrations along the cut trajectory and how it can lead to the generation
 of small and wedge-shaped elements in the volume mesh. 
 
 \subsection{The Eggshell Model}
+\label{sec:eggshell}
 Before drilling an actual skull mesh with many tetrahedral elements we tested our system on a spherial model similar to 
 an eggshell. This model is composed of 840 nodes and 2280 tetrahedral cells. The outer surface is composed of two layers 
 of tetrahedral elements only (see figure \ref{fig:eggshell01}). To create this model implicitly a smaller sphere is subtracted 
@@ -97,18 +98,19 @@ from a larger one.
 
 After the drilling operation, only 120 new elements are added to the mesh for a total of 2400 elements. The entire process is completed 
 interactively. The small disjoint parts fall down on the ground due to gravity. Each disjoint part becomes an independent
-deformable model in our system and subject to forces and deformations. Figure \ref{fig:eggshell02} shows the mesh after being 
-drilled for the bare hole.
+deformable model in our system and subject to forces and deformations. Figure \ref{fig:eggshell02} left, shows the mesh after being 
+drilled for the bare hole. In order to perform a stress test on the model 6 
+holes are drilled in various locations of the eggshell model (see figure \ref{fig:eggshell02}, right).
 
 
 \begin{figure}[H]
   \centering
   % the following command controls the width of the embedded PS file
   % (relative to the width of the current column)
-  \includegraphics[width=0.6\linewidth]{figures/evaluation/eggshell02.png}
-  \includegraphics[width=0.6\linewidth]{figures/evaluation/eggshell05.png}
+  \includegraphics[width=0.4\linewidth]{figures/evaluation/eggshell02.png}
+  \includegraphics[width=0.4\linewidth]{figures/evaluation/eggshell05.png}
   \caption{\label{fig:eggshell02}
-  {Eggshell model after being drilled by our cutting tool. Top: The first drill, Bottom: 
+  {Eggshell model after being drilled by our cutting tool. Left: The first drill, Right: 
   After drilling 6 holes to the model.}
 }
 \end{figure}
@@ -181,21 +183,7 @@ polygonal shape of the cutting tool while in contact with the skull tissue.
 When in contact with the skull tissue the intersection of the side wall of the tool is computed against the edges of the 
 skull model. With $N$ line segments the cutting tool has $N$ quadrilateral faces on its side wall, the edge intersection 
 test is performed in our system by calling the kernel function given in algorithm \ref{alg:edgeIntersections} once per each quad.
-After each call the hash-table storing the cut-edges is filled with the new cuts. In case an edge is cut twice by the tool only 
-the first cut is retained. This situation happens when a long edge of the tissue model is cut by relatively shorter segments of 
-the cutting tool which is also illustrated in figure \ref{fig:ringscalpalissue}.
-
-\begin{figure}[H]
-  \centering
-  % the following command controls the width of the embedded PS file
-  % (relative to the width of the current column)
-  \includegraphics[width=0.2\linewidth]{figures/evaluation/ringscalpalissue.png}
-  \caption{\label{fig:ringscalpalissue}
-  {An edge in the volumetric mesh model is cut by multiple segments of the scalpel (Intersection points are shown in red dots)
-   Only the first intersection is accepted in this case.}
-}
-\end{figure}
-
+After each call the hash-table storing the cut-edges is filled with the new cuts. 
 
 The cutting configurations presented in section \ref{sec:cutconfigs} are extracted based on one intersection per edge, therefore
 it's not possible to cut a given edge more than once. In our system we only accept the first cut-edge and this did not produce any 
