@@ -1,0 +1,66 @@
+\startchapter{Deformable Model}
+\label{chapter:deformablemodel}
+Interactive visualization techniques developed in the previous chapters support a \blob based modelling 
+system for the incremental construction process. In a surgical simulation scenario, tissues undergo 
+various levels of deformations and topological modifications. Researchers in the field studied different 
+approaches to recreate the elastic behavior of tissues. The two main challenges that are reported 
+continuously in this field are interactivity and fidelity of motion \cite{Meier2005}. 
+
+Based on the foundation built so far, we build a deformable model to support 
+the required interactions with surgical tools i.e., elastic deformations by pushing the tissue. 
+The next chapter will address the problem associated with cutting, which is a primary operation in 
+many surgical simulation scenarios. The goal is to make a comprehensive system that bridges the gap 
+between modelling and simulation of tissues. 
+
+\section{Overview}
+A software pipeline is developed to support physically based simulation of deformable tissues using our 
+implicit modelling framework, figure \ref{fig:systempipeline}. 
+
+\begin{figure}[H]
+  \centering
+  % the following command controls the width of the embedded PS file
+  % (relative to the width of the current column)
+  \includegraphics[width=1.0\linewidth]{figures/deformable/pipeline.pdf}
+  \caption{\label{fig:systempipeline}
+  {High-level system software pipeline to support deformations and cutting. }
+}
+\end{figure}
+
+Stages 1 and 2 in the pipeline are associated with the modelling process which is 
+already discussed in section \ref{sec:implicitmodellingintro}. Stage 3 is 
+associated with the polygonization algorithms that are developed in chapters \ref{chapter:cpuPoly} 
+and \ref{chapter:GPUDiscretization}. Also in stage 3 is the volume discretization technique that converts 
+the \blob model into a tetrahedral mesh for physical simulation. This stage is discussed further in 
+section \ref{sec:physicalmodel}. The material that is discussed in the current and the next chapters are associated with the 
+stage 4 of the pipeline shown above. The output of the system is the simulation environment that 
+facilitates deformations and cutting which is shown as the final stage of the pipeline. 
+
+
+\section{Physical Model}
+\label{sec:physicalmodel}
+
+
+
+\cite{Labelle2007}
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

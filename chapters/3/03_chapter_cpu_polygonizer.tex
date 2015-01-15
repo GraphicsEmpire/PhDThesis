@@ -510,16 +510,15 @@ The red curve shows the polygonization time when the discard method described in
 is the timing when that method is in effect. Note that with the blue curve as soon as the \textit{MPU} side is less than one; (\textit{cellsize} = 0.14) empty 
 \textit{MPU}s started to get discarded efficiently thus the constant part of the time value is reduced at that point.
 
-\begin{figure}[htb]
+\begin{figure}[H]
   \centering
-  \includegraphics[width = 1.0\linewidth]{figures/cpupoly/DiscardEffect2.pdf}
+  \includegraphics[width = 0.8\linewidth]{figures/cpupoly/DiscardEffect2.pdf}
   \caption{\label{fig:DiscardEffect}
   {Reducing cellsize parameter results in more \textit{MPU} generation and increase in polygonization time.
   However, at a certain cellsize our early discard method stops polygonization time increase by rejecting 
   all empty \textit{MPU}s more efficiently.}
 }
 \end{figure}
-
 
 
 %\ref{fig:ResultScaleSNBTower}, \ref{fig:ResultScaleXeonTower}
@@ -529,9 +528,9 @@ the idle time is very short and the cores are active almost all the time. This s
 190463 \textit{MPU}s are processed and 116723 of them are intersected with the iso-surface (40 percent were empty).
 40 percent of the \textit{MPUSET} has been processed in less than 10 percent of the total polygonization time.
 
-\begin{figure}[htb]
+\begin{figure}[H]
   \centering
-  \includegraphics[width = 1.0\linewidth]{figures/cpupoly/PerCoreTimeBreakDown.pdf}
+  \includegraphics[width = 0.8\linewidth]{figures/cpupoly/PerCoreTimeBreakDown.pdf}
   \caption{\label{fig:TowerSNBTimeBreakDown}
   {Towers model per-core time breakdowns. Each bar represents a logical core on the processor for a total of 12 cores. 
   Vertical axis is the total polygonization time. 190463 \textit{MPU}s processed with 12 cores in 9283 milliseconds. 
@@ -540,25 +539,15 @@ the idle time is very short and the cores are active almost all the time. This s
 }
 \end{figure}
 
-\begin{figure}[htb]
+\begin{figure}[H]
   \centering
   % the following command controls the width of the embedded PS file
   % (relative to the width of the current column)
-  \includegraphics[height = 0.8\linewidth]{figures/cpupoly/towers64}
+  \includegraphics[height = 0.5\linewidth]{figures/cpupoly/towers64}
   \caption{\label{fig:ModelTower}
   {Towers model created with skeletal primitives and binary operators in 
   our incremental designing system. The model is a grid of 8 by 8 towers for a total of
   7360 operators and 7296 primitives.}
-}
-\end{figure}
-
-\begin{figure}[htb]
-  \centering
-  % the following command controls the width of the embedded PS file
-  % (relative to the width of the current column)
-  \includegraphics[width=0.7\linewidth]{figures/cpupoly/medusa}
-  \caption{\label{fig:ModelMedusa}
-  {Medusa model courtesy of Schmidt \etal \cite{SWG2005}.}
 }
 \end{figure}
 
@@ -598,9 +587,8 @@ optimized with AVX instructions on a single core for Medusa model (See table \re
 \end{table}
 
 
-The results shows that our algorithm outperforms that of Schmidt \etal by a factor of 6 when running on a single core in lower resolutions. 
-
-
+The results shows that our algorithm outperforms that of Schmidt \etal by a factor of 6 when running 
+on a single core in lower resolutions. 
 
 \section{Chapter Conclusions}\label{sec:futurework}
 In this chapter we presented a new parallel polygonization algorithm using SIMD processing techniques that takes advantage of 
@@ -608,6 +596,12 @@ a multi-core machine. Our main contribution is a scalable algorithm both in term
 multicore architectures and the number of SIMD vector width as shown in the results section.  We also presented a SIMD technique for 
 finding the intersection of an iso-surface and a cube edge.
 
-%\section{Acknowledgement}
-%We would like to thank Intel Corporation for their support and providing us with their cutting-edge server and processors.
-%This work is partly supported by the GRAND NCE foundation of Canada, and the Natural Sciences and Engineering Research Council of Canada.
+\begin{figure}[H]
+  \centering
+  % the following command controls the width of the embedded PS file
+  % (relative to the width of the current column)
+  \includegraphics[width=0.5\linewidth]{figures/cpupoly/medusa}
+  \caption{\label{fig:ModelMedusa}
+  {Medusa model courtesy of Schmidt \etal \cite{SWG2005}.}
+}
+\end{figure}
