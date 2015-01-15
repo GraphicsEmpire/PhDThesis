@@ -81,7 +81,8 @@ The following steps are performed to complete the cut induced by the scalpel on 
 \end{enumerate}
 
 
-\section{Data structure}
+\section{Tetrahedral Mesh Data structure}
+\label{sec:tetmeshstructure}
 Figure \ref{fig:tetconfig3} shows the structure of a tetrahedral element and the order we chose to 
 name the nodes, edges and faces in its canonical orientation. In this figure $P_0$ to $P_3$ are
 the nodes (i.e. degrees of freedom in the context of system deformation computation), $e_0$ to $e_5$ the edges 
@@ -526,7 +527,7 @@ Where $V$ is the volume of a tetrahedra, $SA_i$ is the surface area of the $i$th
 \end{center}
 \end{table}
 
-Graichen \etal presented an excellent study on the tetrahedral mesh quality measures \cite{Graichen1993}. 
+Graichen \etal presented an excellent study on the tetrahedral mesh quality measures \cite{parthasarathy1994comparison}. 
 Thin, wedge-like, flat and sliver elements (where 4 points of the element are co-planar) are the source of poor simulation 
 results. Table \ref{table:meshquality} summarizes the statistical quality factors before and after cutting the two example meshes. 
 The original volumetric mesh of both of these models are extracted from their associated \blob representation using our GPU tetrahedralization
