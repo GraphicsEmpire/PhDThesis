@@ -369,12 +369,12 @@
         <relationship name="bookmarks" type="0/0" destination="BOOKMARK"></relationship>
     </object>
     <object type="TEXFILE" id="z125">
-        <attribute name="visiblerect" type="string">{{0, 3244}, {931, 593}}</attribute>
-        <attribute name="cursor" type="string">{11131, 0}</attribute>
+        <attribute name="visiblerect" type="string">{{0, 4673}, {931, 593}}</attribute>
+        <attribute name="cursor" type="string">{15622, 0}</attribute>
         <attribute name="wasopen" type="bool">1</attribute>
-        <attribute name="lasteditdate" type="date">443055610.74519699811935424805</attribute>
+        <attribute name="lasteditdate" type="date">443066982.37535697221755981445</attribute>
         <attribute name="istext" type="bool">1</attribute>
-        <attribute name="fileloaddate" type="date">443055611.80421298742294311523</attribute>
+        <attribute name="fileloaddate" type="date">443066982.73904299736022949219</attribute>
         <attribute name="extension" type="string">tex</attribute>
         <attribute name="sortindex" type="int32">14</attribute>
         <attribute name="name" type="string">05_chapter_deformable.tex</attribute>
@@ -479,7 +479,7 @@
     <object type="UISETTINGS" id="z131">
         <attribute name="showpdfthumbnails" type="bool">0</attribute>
         <attribute name="selectedcontrolstab" type="int16">3</attribute>
-        <attribute name="pdfviewscrollrect" type="string">{{0, 84518.172323759907}, {620, 1312.845952996664}}</attribute>
+        <attribute name="pdfviewscrollrect" type="string">{{0, 84519.112271541977}, {620, 1312.8459529889369}}</attribute>
         <attribute name="maxoutlinedepth" type="int16">7</attribute>
         <attribute name="logoutputlevel" type="int16">0</attribute>
         <attribute name="editorwidth" type="float">974</attribute>

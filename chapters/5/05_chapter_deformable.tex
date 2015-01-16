@@ -54,6 +54,7 @@ in section \ref{sec:tetmeshstructure}.
 %describe our finite element force model
 
 \section{Collision and Contact with tools}
+\label{sec:collisionsandcontacts}
 The interactions of medical devices and the tissue model has to be accounted for to support surgical 
 training scenarios. The way these contacts are handled impacts the overall behavior of the system with 
 respect to the deformable tissues. Figure \ref{fig:contact}, shows the overall 
@@ -177,7 +178,7 @@ models. The number of tetrahedral cells reported in this table are extracted usi
 \end{center}
 \end{table}
 
-Figure \ref{fig:cellsize_elements} shows the effect of cellsize parameter in the count of finite element 
+Figure \ref{fig:cellsize_elements} shows the effect of cellsize parameter in the number of finite element 
 cells generated for the physical mesh. As shown in this graph, increasing the step size for the volume 
 discretization process, results in larger finite element cells and decreases the total count of elements.
 
@@ -191,6 +192,12 @@ discretization process, results in larger finite element cells and decreases the
 }
 \end{figure}
 
+Figure \ref{fig:tumor} and \ref{fig:3slabs} show the tumor and the 3slabs models when compressed with 
+the probe tool, respectively. The surface mesh which is extracted with our polygonization method is 
+deformed using the computed displacements for the volume mesh. The 3slabs model 
+in figure \ref{fig:3slabs} is fixed to the green wall and the external forces applied by the probe tool 
+barely reach the green slab. 
+
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.30\linewidth]{figures/deformable/shots/tumor01.png}
@@ -198,7 +205,9 @@ discretization process, results in larger finite element cells and decreases the
   \includegraphics[width=0.30\linewidth]{figures/deformable/shots/tumor03.png}
  
   \caption{\label{fig:tumor}
-  {Tumor result}
+  {Tumor model is pushed from the top using our probe tool. Left: The volume mesh used as physics 
+  model shown in gray. Middle: Model pushed down for compression. Right: The surface mesh deformations
+  are in sync with that of the volume mesh.}
 }
 \end{figure}
 
@@ -209,9 +218,14 @@ discretization process, results in larger finite element cells and decreases the
   \includegraphics[width=0.30\linewidth]{figures/deformable/shots/3slabs03.png}
  
   \caption{\label{fig:3slabs}
-  {3Slabs result}
+  {The force is applied to the 3slabs model horizontally. The green slab is fixed to the wall in this experiment.
+  Deformations are wider on the red slab. Middle: the volume mesh shown in gray.}
 }
 \end{figure}
+
+In the third experience, the cake model which is placed on the ground is compressed from the top 
+using the probe tool. The 6 images shown in figure \ref{fig:cake} show the progression of deformations 
+sequentially.
 
 \begin{figure}[H]
   \centering
@@ -225,10 +239,16 @@ discretization process, results in larger finite element cells and decreases the
 
  
   \caption{\label{fig:cake}
-  {cake result}
+  {The cake model is a 3 level structure which is compressed from above in this experiment. The sequence 
+  of images show the increasing stages of deformation from the beginning to the end. Last image on the bottom
+  row is the surface mesh which is always in sync with the physics model.}
 }
 \end{figure}
 
+Figure \ref{fig:1ring} shows the contact surface of the probe tool and the volume mesh. The external 
+forces are propagated to the volume mesh via the green vertices in the figure. 
+All collisions are detected correctly using the technique described in section 
+\ref{sec:collisionsandcontacts}.
 
 \begin{figure}[H]
   \centering
@@ -241,11 +261,43 @@ discretization process, results in larger finite element cells and decreases the
 }
 \end{figure}
 
+%
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{figures/deformable/systemsolvetime.pdf}
+ 
+  \caption{\label{fig:syssolvetime}
+  {System solve time reported in milliseconds vs. the cellsize parameter used for the volume discretization.}
+}
+\end{figure}
 
+Figure \ref{fig:syssolvetime}, illustrates the system solve time as the cellsize parameter increases 
+uniformly. Larger cellsize results in smaller amount of finite element cells which takes less time to solve
+for displacements. One way to keep the number of internal tetrahedral cells low 
+is by using the adaptive volume discretization technique that uses a coarser grid to extract the elements. 
+As overshoot in figure \ref{fig:syssolvetime} at cellsize 0.12 is due to a 
+sudden increase in the number of finite element cells despite using a coarser 
+grid size. At this point the algorithm was unable to use the coarser grid for 
+the internal sampling and a higher percentage of elements are created using the finer grid. 
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{figures/deformable/volumevscellsize.pdf}
+ 
+  \caption{\label{fig:volumevscellsize}
+  {Total volume versus the cellsize parameter for discretization. 
+  Maximum volume change in all of our experiments was less than 1 percent.}
+}
+\end{figure}
 
+One of the required features of a model for surgical simulation scenarios is 
+volume preservation. The total volume of the model should not change when it goes under deformations. 
 
+In an experiment, the volume is computed and logged while the model is deformed using the probe tool 
+(see figure \ref{fig:volumevscellsize}). Maximum volume change is always less then 1 percent in this test 
+for both models and the same results holds under various cellsizes. Both models 
+used a constant Poisson ratio of 0.45 in all tests. 
 
 
 
