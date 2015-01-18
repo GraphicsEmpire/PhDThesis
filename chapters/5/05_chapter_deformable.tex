@@ -7,7 +7,10 @@ approaches to recreate the elastic behavior of tissues. The two main challenges 
 continuously in this field are interactivity and fidelity of motion \cite{Meier2005}. 
 
 Based on the foundation built so far, we create a deformable model to support the required interactions 
-with surgical tools i.e., elastic deformations by pushing the tissue. 
+with surgical tools i.e., elastic deformations by pushing the tissue. The 
+novelty of our method is in the real-time collision and contact response computation using the implicit 
+model, which is discussed in section \ref{sec:collisionsandcontacts}.
+
 The next chapter will address the problem associated with cutting, which is a primary operation in 
 many surgical simulation scenarios. The goal is to make a comprehensive system that bridges the gap 
 between modelling and simulation of tissues. 
@@ -33,7 +36,7 @@ and \ref{chapter:GPUDiscretization}. Also in stage 3 is the volume discretizatio
 the \blob model into a tetrahedral mesh for physical simulation, this process is discussed further in 
 section \ref{sec:physicalmodel}. The material that is discussed in the current and the next chapters are associated with the 
 stage 4 of the pipeline shown above. The output of the system is the simulation environment that 
-facilitates deformations and cutting which is shown as the final stage. 
+facilitates deformations and cutting which is the final output. 
 
 
 \section{Physical Model}
@@ -47,18 +50,43 @@ in our system.
 A fine-grained cell-size parameter captures the exterior part of the model while a coarser sampling is 
 used to produce the internal tetrahedral cells. This approach allows us to maintain a balanced number 
 of tetrahedral cells for the physics simulation. The output of this stage is called \textit{volume mesh} in 
-order to differentiate it from the surface mesh which is extracted using the polygonization algorithm in 
-the previous chapters. The data structure representing the tetrahedral meshes in our system is described 
-in section \ref{sec:tetmeshstructure}.
+order to differentiate it from the \textit{surface mesh} extracted using the polygonization algorithm in 
+the previous chapters. An edge-based data structure representing the tetrahedral meshes in our system 
+is described in section \ref{sec:tetmeshstructure}.
+
+\begin{figure}[H]
+  \centering
+  % the following command controls the width of the embedded PS file
+  % (relative to the width of the current column)
+  \includegraphics[width=0.8\linewidth]{figures/deformable/solver.pdf}
+  \caption{\label{fig:solver}
+  {System solver component for the stage 5 of our pipeline. External forces are computed using 
+  our collision detection technique which is discussed in the next section. }
+}
+\end{figure}
 
 %describe our finite element force model
+As shown in figure \ref{fig:solver}, the volume mesh is augmented with a finite element force model. 
+For a detailed discussion on finite element concepts, refer to \cite{bathe1996finite}. In our system we 
+chose the co-rotational linear elastic force model. One of the drawbacks of pure linear force models is that under 
+large deformations, they can lead to inflated volume artifacts, which is not desirable in a 
+deformable model for surgical simulations. The co-rotational model assumes that deformation at each 
+element is composed of a rotation and a small displacement. This separation is achieved by using polar 
+decomposition of the deformation gradient, and it removes the linearization artifacts mentioned 
+earlier \cite{bathe1996finite}.
+
+The elastic properties of tissues are applied during the force model setup. From 
+figure \ref{fig:solver}, in case of collision with medical devices, the external 
+forces due to the contact response are computed and integrated in our system. This step is further explained
+in the next section. Finally all computed displacements are applied to the meshes. 
+
 
 \section{Collision and Contact with tools}
 \label{sec:collisionsandcontacts}
 The interactions of medical devices and the tissue model has to be accounted for to support surgical 
 training scenarios. The way these contacts are handled impacts the overall behavior of the system with 
-respect to the deformable tissues. Figure \ref{fig:contact}, shows the overall 
-collision and contact handling.
+respect to the deformable tissues. Figure \ref{fig:contact}, shows the collision and contact handling 
+module in our system.
 
 \begin{figure}[H]
   \centering
@@ -66,7 +94,7 @@ collision and contact handling.
   % (relative to the width of the current column)
   \includegraphics[width=0.8\linewidth]{figures/deformable/contact.pdf}
   \caption{\label{fig:contact}
-  {To compute the external forces applied to the physical model, we exploit the trivial collision detection 
+  {To compute the external forces applied by the medical tools, we exploit the trivial collision detection 
   facilities of the underlying implicit model.}
 }
 \end{figure}
@@ -76,7 +104,7 @@ and to compute the collision of the tool and the model several steps are perform
 axis aligned bounding box (AABB) of the tool is tested against the AABB of the model and if an 
 intersection is detected the process continues further. The second collision 
 test is performed by computing the field at vertices of the tool model. In case 
-of our probing tool which is modelled as a cube, the field due to the vertices of the cube are computed. 
+of our probing tool which is modelled as a cube, the field at vertices of the cube are computed. 
 If a field at a vertex is above the \textit{iso-value}, then that vertex is inside the model and an intersection 
 is detected.
 
@@ -116,9 +144,8 @@ A positive value for distance is due the fact that the collision has not happene
 is in close proximity of the surface, whereas negative values indicate a penetration into the model. 
 
 In case of a collision, the penetration depths are computed for the all colliding vertices of the tool.
-The interaction force is computed based on the computed penetration depths. The 
-contact force is computed using the direction of the tool and the gradient of the field as shown in the 
-following equation:
+The contact force is computed based on the penetration depth, the direction of the tool and the gradient 
+of the field as shown in the following equation:
 
 \begin{equation}
 CF(v) = (\frac{\nabla F(v) + T} { \| \nabla F(v) + T \|}) * dist_\mathrm{wyvill}( g_\mathrm{wyvill}(v)) * 
@@ -128,7 +155,7 @@ s
 
 The output of equation \ref{eq:contactforce} is a force vector at point $v$, $T$ is a directional vector that 
 represents the tool trajectory. The direction of the final external force is adjusted using the gradient of 
-the field i.e., instead of using the tool trajectory vector $T$ directly; we use the average of $T$ and the field 
+the field i.e., instead of using the tool trajectory vector ($T$), directly; we use the average of $T$ and the field 
 gradient at $v$. This choice is made to compensate for the tangential tool trajectories that can cause 
 unintended shearing at the boundary edges of the model.
 
@@ -138,6 +165,7 @@ is the impact factor to adjust the external force magnitude.
 Using this technique, the contact forces are computed upon collisions of the tool and the model. To
 apply this external force to the physical model we use a force propagating technique based on 
 the volume mesh data structure described in section \ref{sec:tetmeshstructure}. 
+This step is further explained in the following.
 
 The edge-based data structure for the tetrahedral mesh provides access to all the adjacent vertices to a 
 given vertex. This functionality can provide the access to the K-ring neighborhood of a contact point to 
@@ -153,7 +181,7 @@ distribution of the collision force for the simulation of tool-model interaction
   \includegraphics[width=7.0\linewidth]{figures/deformable/kring.pdf}
   \caption{\label{fig:kring}
   {The K-ring neighborhood of a vertex $p$ can be accessed using our tetrahedral mesh 
-  data-structure. The first and second rings of vertex $p$ are shown in orange and pink here, respectively.}
+  data-structure. Here, the first and second rings of vertex $p$ are shown in orange and pink, respectively.}
 }
 \end{figure}
 
@@ -188,14 +216,15 @@ discretization process, results in larger finite element cells and decreases the
   % (relative to the width of the current column)
   \includegraphics[width=0.8 \linewidth]{figures/deformable/cellsize_elements.pdf}
   \caption{\label{fig:cellsize_elements}
-  {The effect of cellsize parameter in the total number of generated tetrahedral cells for the physics mesh.}
+  {The effect of cellsize parameter in the total number of generated tetrahedral cells for the physics mesh.
+  Vertical axis is reported in thousands of elements.}
 }
 \end{figure}
 
-Figure \ref{fig:tumor} and \ref{fig:3slabs} show the tumor and the 3slabs models when compressed with 
+Figures \ref{fig:xptumor} and \ref{fig:xp3slabs} show the tumor and the 3slabs models when compressed with 
 the probe tool, respectively. The surface mesh which is extracted with our polygonization method is 
 deformed using the computed displacements for the volume mesh. The 3slabs model 
-in figure \ref{fig:3slabs} is fixed to the green wall and the external forces applied by the probe tool 
+in figure \ref{fig:xp3slabs} is fixed to the green wall and the external forces applied by the probe tool 
 barely reach the green slab. 
 
 \begin{figure}[H]
@@ -204,7 +233,7 @@ barely reach the green slab.
   \includegraphics[width=0.30\linewidth]{figures/deformable/shots/tumor02.png}
   \includegraphics[width=0.30\linewidth]{figures/deformable/shots/tumor03.png}
  
-  \caption{\label{fig:tumor}
+  \caption{\label{fig:xptumor}
   {Tumor model is pushed from the top using our probe tool. Left: The volume mesh used as physics 
   model shown in gray. Middle: Model pushed down for compression. Right: The surface mesh deformations
   are in sync with that of the volume mesh.}
@@ -217,14 +246,14 @@ barely reach the green slab.
   \includegraphics[width=0.30\linewidth]{figures/deformable/shots/3slabs02.png}
   \includegraphics[width=0.30\linewidth]{figures/deformable/shots/3slabs03.png}
  
-  \caption{\label{fig:3slabs}
+  \caption{\label{fig:xp3slabs}
   {The force is applied to the 3slabs model horizontally. The green slab is fixed to the wall in this experiment.
   Deformations are wider on the red slab. Middle: the volume mesh shown in gray.}
 }
 \end{figure}
 
 In the third experience, the cake model which is placed on the ground is compressed from the top 
-using the probe tool. The 6 images shown in figure \ref{fig:cake} show the progression of deformations 
+using the probe tool. The 6 images shown in figure \ref{fig:xpcake} illustrate the progression of deformations 
 sequentially.
 
 \begin{figure}[H]
@@ -238,7 +267,7 @@ sequentially.
   \includegraphics[width=0.30\linewidth]{figures/deformable/shots/cake06.png}
 
  
-  \caption{\label{fig:cake}
+  \caption{\label{fig:xpcake}
   {The cake model is a 3 level structure which is compressed from above in this experiment. The sequence 
   of images show the increasing stages of deformation from the beginning to the end. Last image on the bottom
   row is the surface mesh which is always in sync with the physics model.}
