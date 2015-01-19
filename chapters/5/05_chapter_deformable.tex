@@ -73,7 +73,9 @@ large deformations, they can lead to inflated volume artifacts, which is not des
 deformable model for surgical simulations. The co-rotational model assumes that deformation at each 
 element is composed of a rotation and a small displacement. This separation is achieved by using polar 
 decomposition of the deformation gradient, and it removes the linearization artifacts mentioned 
-earlier \cite{bathe1996finite}.
+earlier \cite{bathe1996finite}. A validation step such as the one performed in the work of Shahingohar \etal
+helps to compare the stability and accuracy of the deformable model \cite{Shahingohar2011}. 
+
 
 The elastic properties of tissues are applied during the force model setup. From 
 figure \ref{fig:solver}, in case of collision with medical devices, the external 
