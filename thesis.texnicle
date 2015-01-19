@@ -479,7 +479,7 @@
     <object type="UISETTINGS" id="z131">
         <attribute name="showpdfthumbnails" type="bool">0</attribute>
         <attribute name="selectedcontrolstab" type="int16">3</attribute>
-        <attribute name="pdfviewscrollrect" type="string">{{3.7192471324942744e-13, 84859.894459164963}, {619.9999999998721, 1320.1583113382221}}</attribute>
+        <attribute name="pdfviewscrollrect" type="string">{{0, 84859.894459110612}, {620, 1320.1583113382221}}</attribute>
         <attribute name="maxoutlinedepth" type="int16">7</attribute>
         <attribute name="logoutputlevel" type="int16">0</attribute>
         <attribute name="editorwidth" type="float">974</attribute>
