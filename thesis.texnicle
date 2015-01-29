@@ -406,11 +406,11 @@
     </object>
     <object type="TEXFILE" id="z127">
         <attribute name="visiblerect" type="string">{{0, 1992}, {931, 550}}</attribute>
-        <attribute name="cursor" type="string">{9453, 22}</attribute>
+        <attribute name="cursor" type="string">{10261, 0}</attribute>
         <attribute name="wasopen" type="bool">0</attribute>
-        <attribute name="lasteditdate" type="date">442996632.46528798341751098633</attribute>
+        <attribute name="lasteditdate" type="date">444024594.47871798276901245117</attribute>
         <attribute name="istext" type="bool">1</attribute>
-        <attribute name="fileloaddate" type="date">443389294.89470899105072021484</attribute>
+        <attribute name="fileloaddate" type="date">444024595.26496702432632446289</attribute>
         <attribute name="extension" type="string">tex</attribute>
         <attribute name="sortindex" type="int32">19</attribute>
         <attribute name="name" type="string">03_chapter_cpu_polygonizer.tex</attribute>
@@ -479,7 +479,7 @@
     <object type="UISETTINGS" id="z131">
         <attribute name="showpdfthumbnails" type="bool">0</attribute>
         <attribute name="selectedcontrolstab" type="int16">3</attribute>
-        <attribute name="pdfviewscrollrect" type="string">{{0, 84859.89445911831}, {620, 1320.1583113382221}}</attribute>
+        <attribute name="pdfviewscrollrect" type="string">{{0, 84859.894459133735}, {620, 1320.1583113382221}}</attribute>
         <attribute name="maxoutlinedepth" type="int16">7</attribute>
         <attribute name="logoutputlevel" type="int16">0</attribute>
         <attribute name="editorwidth" type="float">974</attribute>
